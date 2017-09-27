@@ -84,6 +84,13 @@ public class SqlGenerator {
    * @throws IOException
    */
   protected void processFile(CSVReader csvReader) throws IOException {
+    //
+    // Accumulate the SQL to be written out in a StringBuilder
+    /// It should be more than adequate for our purposes.
+    StringBuilder sql = new StringBuilder();
+    //
+    // Save the year to pass to writeFile()
+    String year = null;
     String[] line = {};
     List<String[]> data = new ArrayList<>();
     List<String> missingStrategies = new ArrayList<>();
@@ -106,7 +113,7 @@ public class SqlGenerator {
         /// We use this to figure out the tournament year so we don't have
         /// to do something lame like pass it on the command line.
         line = csvReader.readNext();
-        String year = fetchYear(line);
+        year = fetchYear(line);
         log.debug("For Year      ==> " + year);
         // Now fetch the next line of data, if it exists. It should, but
         /// I'm guessing these files can change without warning. If it
@@ -128,11 +135,9 @@ public class SqlGenerator {
         Context context = new Context(computeStrategy(statCategory));
         if (context.hasStrategy()) {
           cleanupData(data);
-          String sql = context.executeStrategy(statCategory, year, data);
+          sql.append("--NEXT STATISTICAL CATEGORY FOLLOWS:\n");
+          sql.append(context.executeStrategy(statCategory, year, data));
           if (StringUtils.isNotEmpty(sql)) {
-            log.debug("SQL Generated:\n" + sql);
-            // Now write the SQL to an output file
-            writeOutputFile(statCategory, sql);
           }
           Strategy strategy = context.getStrategy();
           log.info("Strategy summary: name => " + strategy.getStrategyName() + ", number of rows => "
@@ -142,6 +147,9 @@ public class SqlGenerator {
         }
       }
     }
+    log.debug("SQL Generated:\n" + sql);
+    // Now write the SQL to an output file
+    writeOutputFile(year, sql.toString());
     log.info("Of " + numberOfStatCategories + " statistics categories, there are " + missingStrategies.size()
         + " missing a Strategy.");
     // Now print an audit of missing Strategies if there are any
@@ -205,22 +213,21 @@ public class SqlGenerator {
    * Writes the specified SQL to the output directory specified on the
    * constructor call. The statCategory is used as the file name.
    * 
-   * @param statCategory
-   *          The statistics category for which the SQL
-   *          corresponds. This becomes part of the file name.
+   * @param year
+   *          The year of the data
    * 
    * @param sql
    *          The SQL to be written to the output file
    */
-  protected void writeOutputFile(String statCategory, String sql) {
-    File outputFile = new File(outputDirectory + File.separatorChar + "Load_"
-        + StringUtils.remove(StringUtils.remove(statCategory, ' '), '-') + ".sql");
+  protected void writeOutputFile(String year, String sql) {
+    File outputFile = new File(outputDirectory + File.separatorChar + "load_season_data_" + year + ".sql");
     try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputFile))) {
       bufferedWriter.write(sql);
       bufferedWriter.close();
     } catch (IOException e) {
       log.error(
-          "IOException occurred while writing output file => " + outputDirectory + File.separatorChar + outputFile.getName());
+          "IOException occurred while writing output file => " + outputDirectory + File.separatorChar
+              + outputFile.getName());
       ;
     }
   }
@@ -309,7 +316,7 @@ public class SqlGenerator {
     return
     // Sanity check
     !isDone(line) &&
-        // Stat Category header will not be an empty line
+    // Stat Category header will not be an empty line
         line.length > 0 &&
         // Stat Category header contains very specific text in all cases
         StringUtils.strip(line[0]).contains(NetworkProperties.getStatcatHeader());
@@ -328,12 +335,12 @@ public class SqlGenerator {
    */
   protected boolean isProbablyData(String[] line) {
     boolean ret =
-    // Sanity check
-    !isDone(line) &&
+        // Sanity check
+        !isDone(line) &&
         // There is no data line that will contain a single element.
         /// All data lines contain at least 2 or more column values.
-        line.length > 1 &&
-        // All headers contain the RANK
+            line.length > 1 &&
+            // All headers contain the RANK
             !line[0].contains(NetworkProperties.getHeaderRank());
     if (!ret) {
       log.debug("Line => " + Arrays.toString(line) + " **IS NOT DATA**");
@@ -358,7 +365,7 @@ public class SqlGenerator {
     Strategy ret = null;
     if (statCategory.equalsIgnoreCase(Strategy.STATCAT_WON_LOST_PERCENTAGE)) {
       ret = new WonLostPercentageStrategy();
-    } else if (statCategory.equalsIgnoreCase(Strategy.STATCAT_SCORING_OFFENSE)){
+    } else if (statCategory.equalsIgnoreCase(Strategy.STATCAT_SCORING_OFFENSE)) {
       ret = new ScoringOffense();
     } else if (statCategory.equalsIgnoreCase(Strategy.STATCAT_SCORING_DEFENSE)) {
       ret = new ScoringDefense();
@@ -437,7 +444,7 @@ public class SqlGenerator {
     public boolean hasStrategy() {
       return _strategy != null;
     }
-    
+
     /**
      * Returns the underlying Strategy implementation object.
      * 
@@ -471,7 +478,8 @@ public class SqlGenerator {
       if (_strategy != null) {
         ret = _strategy.generateSql(year, data);
       } else {
-        log.warn("No strategy will be employed for statistics category ==> " + statCategory + ". Maybe you forgot to add one?");
+        log.warn("No strategy will be employed for statistics category ==> " + statCategory
+            + ". Maybe you forgot to add one?");
       }
       return ret;
     }

@@ -1,3 +1,4 @@
+-- DELETE ME
 -- Script syntax for PostgreSQL
 
 \i :LOAD_SCRIPT_DIR/Load_WonLostPercentage.sql

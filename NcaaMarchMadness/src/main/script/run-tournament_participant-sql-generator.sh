@@ -6,16 +6,18 @@
 DEBUG=true
 
 function usage {
-  echo "Usage: $0 season_data_file"
-  echo "Description: creates SQL load scripts for the specified NCAA Basketball season data file"
+  echo "Usage: $0 tournament_participants_file year"
+  echo "Description: creates SQL load script for the specified NCAA Basketball tournament participants"
+  echo "  and writes it out to the same location for the specified year."
   echo "Where:"
-  echo -e "\tseason_data_file is the fully qualified path to the CSV file "
+  echo -e "\ttournament_participants_file is the fully qualified path to the file "
   echo -e "\tcontaining the raw data from which SQL load scripts are to be created."
+  echo -e "\tyear is the tournament year."
+  echo
   echo "Examples:"
-  echo "Create SQL load scripts from /Users/sperry/l/MarchMadness/data/2016/rankings.csv"
-  echo -e "\t$0 /Users/sperry/l/MarchMadness/data/2016/rankings.csv"
-  echo "Create SQL load scripts from /Users/sperry/l/MarchMadness/data/2015/rankings-2015.csv"
-  echo -e "\t$0 /Users/sperry/l/MarchMadness/data/2015/rankings-2015.csv"
+  echo "Create SQL load scripts from /Users/sperry/developerWorks/NcaaMarchMadness/src/main/data/tourney_teams_file_2009.txt"
+  echo "   for tournament year 2009"
+  echo -e "\t$0 /Users/sperry/l/MarchMadness/data/tourney_teams_file_2009.txt 2009"
   echo   
 }
 
@@ -68,4 +70,4 @@ $LIB_DIR/opencsv-3.6.jar
 if [ "$DEBUG" == "true" ]; then echo "CLASSPATH = $CP"; fi
 
 # Fire up the program
-java -cp $CP:$ROOT_DIR/target/classes com.makotojava.ncaabb.sqlgenerator.SqlGenerator $@
+java -cp $CP:$ROOT_DIR/target/classes com.makotojava.ncaabb.sqlgenerator.TournamentParticipantSqlGenerator $@

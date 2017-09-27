@@ -3,7 +3,7 @@
 -- If you need to rebuild the DB, dropping tables and views
 -- will be required, and you should run rebuild.sh
 --
-\set ROOT_DIR ''/Users/sperry/l/MarchMadness/eclipse_workspace/NcaaMarchMadness/src/main''
+\set ROOT_DIR ''/Users/sperry/home/development/projects/developerWorks/NcaaMarchMadness/src/main''
 \set SQL_ROOT_DIR :ROOT_DIR/sql
 \set DATA_ROOT_DIR :ROOT_DIR/data
 \set LOAD_SCRIPT_ROOT_DIR ''/Users/sperry/l/MarchMadness/data''
@@ -12,7 +12,7 @@
 \o :LOAD_SCRIPT_ROOT_DIR/DB_BUILD_LOG.txt
 
 \echo 'BUILDING DB...'
-\qecho 'BUILDING DB...'-- Goes to the log file
+\qecho 'BUILDING DB...'
 
 \echo 'Script variables:'
 \echo 'ROOT_DIR ==> ' :ROOT_DIR
@@ -20,83 +20,88 @@
 \echo 'DATA_ROOT_DIR ==> ' :DATA_ROOT_DIR
 \echo 'LOAD_SCRIPT_ROOT_DIR ==> ' :LOAD_SCRIPT_ROOT_DIR
 
-\qecho 'Script variables:'-- Goes to the log file
-\qecho 'ROOT_DIR ==> ' :ROOT_DIR-- Goes to the log file
-\qecho 'SQL_ROOT_DIR ==> ' :SQL_ROOT_DIR-- Goes to the log file
-\qecho 'DATA_ROOT_DIR ==> ' :DATA_ROOT_DIR-- Goes to the log file
-\qecho 'LOAD_SCRIPT_ROOT_DIR ==> ' :LOAD_SCRIPT_ROOT_DIR-- Goes to the log file
+\qecho 'Script variables:'
+\qecho 'ROOT_DIR ==> ' :ROOT_DIR
+\qecho 'SQL_ROOT_DIR ==> ' :SQL_ROOT_DIR
+\qecho 'DATA_ROOT_DIR ==> ' :DATA_ROOT_DIR
+\qecho 'LOAD_SCRIPT_ROOT_DIR ==> ' :LOAD_SCRIPT_ROOT_DIR
 
 \echo 'CREATING ALL TABLES...'
-\qecho 'CREATING ALL TABLES...'-- Goes to the log file
+\qecho 'CREATING ALL TABLES...'
 \i :SQL_ROOT_DIR/create_tables.sql
 
 \echo 'CREATING ALL VIEWS...'
-\qecho 'CREATING ALL VIEWS...'-- Goes to the log file
+\qecho 'CREATING ALL VIEWS...'
 \i :SQL_ROOT_DIR/create_views.sql
 
 \echo 'LOADING ALL TABLES:'
-\qecho 'LOADING ALL TABLES:'-- Goes to the log file
+\qecho 'LOADING ALL TABLES:'
 
 \echo 'YEAR: 2009...'
-\qecho 'YEAR: 2009...'-- Goes to the log file
-\set LOAD_SCRIPT_DIR :LOAD_SCRIPT_ROOT_DIR/2009
-\i :SQL_ROOT_DIR/load_tables.sql
-\i :DATA_ROOT_DIR/Load_TournamentParticipants-2009.sql
+\qecho 'YEAR: 2009...'
+--\set LOAD_SCRIPT_DIR :LOAD_SCRIPT_ROOT_DIR/2009
+\set YEAR 2009
+\i :LOAD_SCRIPT_ROOT_DIR/load_season_data_:YEAR.sql
+\i :DATA_ROOT_DIR/load_tournament_participants-2009.sql
 
 \echo 'YEAR: 2010...'
-\qecho 'YEAR: 2010...'-- Goes to the log file
-\set LOAD_SCRIPT_DIR :LOAD_SCRIPT_ROOT_DIR/2010
-\i :SQL_ROOT_DIR/load_tables.sql
-\i :DATA_ROOT_DIR/Load_TournamentParticipants-2010.sql
+\qecho 'YEAR: 2010...'
+\set YEAR 2010
+\i :LOAD_SCRIPT_ROOT_DIR/load_season_data_:YEAR.sql
+\i :DATA_ROOT_DIR/load_tournament_participants-2010.sql
 
 \echo 'YEAR: 2011...'
-\qecho 'YEAR: 2011...'-- Goes to the log file
-\set LOAD_SCRIPT_DIR :LOAD_SCRIPT_ROOT_DIR/2011
-\i :SQL_ROOT_DIR/load_tables.sql
-\i :DATA_ROOT_DIR/Load_TournamentParticipants-2011.sql
+\qecho 'YEAR: 2011...'
+\set YEAR 2011
+\i :LOAD_SCRIPT_ROOT_DIR/load_season_data_:YEAR.sql
+\i :DATA_ROOT_DIR/load_tournament_participants-2011.sql
 
 \echo 'YEAR: 2012...'
-\qecho 'YEAR: 2012...'-- Goes to the log file
-\set LOAD_SCRIPT_DIR :LOAD_SCRIPT_ROOT_DIR/2012
-\i :SQL_ROOT_DIR/load_tables.sql
-\i :DATA_ROOT_DIR/Load_TournamentParticipants-2012.sql
+\qecho 'YEAR: 2012...'
+\set YEAR 2012
+\i :LOAD_SCRIPT_ROOT_DIR/load_season_data_:YEAR.sql
+\i :DATA_ROOT_DIR/load_tournament_participants-2012.sql
 
 \echo 'YEAR: 2013...'
-\qecho 'YEAR: 2013...'-- Goes to the log file
-\set LOAD_SCRIPT_DIR :LOAD_SCRIPT_ROOT_DIR/2013
-\i :SQL_ROOT_DIR/load_tables.sql
-\i :DATA_ROOT_DIR/Load_TournamentParticipants-2013.sql
+\qecho 'YEAR: 2013...'
+\set YEAR 2013
+\i :LOAD_SCRIPT_ROOT_DIR/load_season_data_:YEAR.sql
+\i :DATA_ROOT_DIR/load_tournament_participants-2013.sql
 
 \echo 'YEAR: 2014...'
-\qecho 'YEAR: 2014...'-- Goes to the log file
-\set LOAD_SCRIPT_DIR :LOAD_SCRIPT_ROOT_DIR/2014
-\i :SQL_ROOT_DIR/load_tables.sql
-\i :DATA_ROOT_DIR/Load_TournamentParticipants-2014.sql
+\qecho 'YEAR: 2014...'
+\set YEAR 2014
+\i :LOAD_SCRIPT_ROOT_DIR/load_season_data_:YEAR.sql
+\i :DATA_ROOT_DIR/load_tournament_participants-2014.sql
 
 \echo 'YEAR: 2015...'
-\qecho 'YEAR: 2015...'-- Goes to the log file
-\set LOAD_SCRIPT_DIR :LOAD_SCRIPT_ROOT_DIR/2015
-\i :SQL_ROOT_DIR/load_tables.sql
-\i :DATA_ROOT_DIR/Load_TournamentParticipants-2015.sql
+\qecho 'YEAR: 2015...'
+\set YEAR 2015
+\i :LOAD_SCRIPT_ROOT_DIR/load_season_data_:YEAR.sql
+\i :DATA_ROOT_DIR/load_tournament_participants-2015.sql
 
 \echo 'YEAR: 2016...'
-\qecho 'YEAR: 2016...'-- Goes to the log file
-\set LOAD_SCRIPT_DIR :LOAD_SCRIPT_ROOT_DIR/2016
-\i :SQL_ROOT_DIR/load_tables.sql
-\i :DATA_ROOT_DIR/Load_TournamentParticipants-2016.sql
+\qecho 'YEAR: 2016...'
+\set YEAR 2016
+\i :LOAD_SCRIPT_ROOT_DIR/load_season_data_:YEAR.sql
+\i :DATA_ROOT_DIR/load_tournament_participants-2016.sql
 
 \echo 'YEAR: 2017...'
-\qecho 'YEAR: 2017...'-- Goes to the log file
-\set LOAD_SCRIPT_DIR :LOAD_SCRIPT_ROOT_DIR/2017
-\i :SQL_ROOT_DIR/load_tables.sql
-\i :DATA_ROOT_DIR/Load_TournamentParticipants-2017.sql
+\qecho 'YEAR: 2017...'
+\set YEAR 2017
+\i :LOAD_SCRIPT_ROOT_DIR/load_season_data_:YEAR.sql
+\i :DATA_ROOT_DIR/load_tournament_participants-2017.sql
 
 \echo 'LOADING TOURNAMENT RESULT DATA FOR ALL YEARS...'
-\qecho 'LOADING TOURNAMENT RESULT DATA FOR ALL YEARS...'-- Goes to the log file
+\qecho 'LOADING TOURNAMENT RESULT DATA FOR ALL YEARS...'
 \i :SQL_ROOT_DIR/load_tournament_result.sql
+
+\echo 'FIND MISSING TEAM NAMES...'
+\qecho 'FIND MISSING TEAM NAMES...'
+\i :SQL_ROOT_DIR/find_missing_team_names.sql
 
 --
 \echo 'DATABASE BUILD COMPLETE.'
-\qecho 'DATABASE BUILD COMPLETE.'-- Goes to the log file
+\qecho 'DATABASE BUILD COMPLETE.'
 -- Turn off output to log file
 \o 

@@ -93,9 +93,9 @@ public class TournamentParticipantSqlGenerator extends SqlGenerator {
   }
 
   @Override
-  protected void writeOutputFile(String statCategory, String sql) {
-    File outputFile = new File(getOutputDirectory() + File.separatorChar + "Load_"
-        + StringUtils.remove(StringUtils.remove(statCategory, ' '), '-') + "-" + getYear().toString() + ".sql");
+  protected void writeOutputFile(String year, String sql) {
+    File outputFile = new File(
+        getOutputDirectory() + File.separatorChar + "load_tournament_participants-" + getYear().toString() + ".sql");
     try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputFile))) {
       bufferedWriter.write(sql);
       bufferedWriter.close();
