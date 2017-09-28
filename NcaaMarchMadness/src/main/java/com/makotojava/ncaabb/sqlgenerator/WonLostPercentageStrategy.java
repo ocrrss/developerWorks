@@ -26,9 +26,11 @@ public class WonLostPercentageStrategy extends AbstractStrategy {
   private static final Logger LOG = Logger.getLogger(WonLostPercentageStrategy.class);
   
   public static final String TABLE_NAME = "won_lost_percentage";
+
+  public final static String STATCAT_WON_LOST_PERCENTAGE = "Won-Lost Percentage";
   
   public WonLostPercentageStrategy() {
-    super(STATCAT_WON_LOST_PERCENTAGE);
+    super(WonLostPercentageStrategy.STATCAT_WON_LOST_PERCENTAGE);
   }
   
   @Override

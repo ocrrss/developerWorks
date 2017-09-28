@@ -27,8 +27,10 @@ public class AssistsPerGame extends AbstractStrategy {
   
   public static final String TABLE_NAME = "assists_per_game";
 
+  public final static String STATCAT_ASSISTS_PER_GAME = "Assists Per Game";
+
   public AssistsPerGame() {
-    super(Strategy.STATCAT_ASSISTS_PER_GAME);
+    super(AssistsPerGame.STATCAT_ASSISTS_PER_GAME);
   }
 
   @Override

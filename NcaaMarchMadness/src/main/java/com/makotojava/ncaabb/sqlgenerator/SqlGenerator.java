@@ -363,45 +363,45 @@ public class SqlGenerator {
    */
   protected Strategy computeStrategy(String statCategory) {
     Strategy ret = null;
-    if (statCategory.equalsIgnoreCase(Strategy.STATCAT_WON_LOST_PERCENTAGE)) {
+    if (statCategory.equalsIgnoreCase(WonLostPercentageStrategy.STATCAT_WON_LOST_PERCENTAGE)) {
       ret = new WonLostPercentageStrategy();
-    } else if (statCategory.equalsIgnoreCase(Strategy.STATCAT_SCORING_OFFENSE)) {
+    } else if (statCategory.equalsIgnoreCase(ScoringOffense.STATCAT_SCORING_OFFENSE)) {
       ret = new ScoringOffense();
-    } else if (statCategory.equalsIgnoreCase(Strategy.STATCAT_SCORING_DEFENSE)) {
+    } else if (statCategory.equalsIgnoreCase(ScoringDefense.STATCAT_SCORING_DEFENSE)) {
       ret = new ScoringDefense();
-    } else if (statCategory.equalsIgnoreCase(Strategy.STATCAT_SCORING_MARGIN)) {
+    } else if (statCategory.equalsIgnoreCase(ScoringMargin.STATCAT_SCORING_MARGIN)) {
       ret = new ScoringMargin();
-    } else if (statCategory.equalsIgnoreCase(Strategy.STATCAT_FIELD_GOAL_PERCENTAGE)) {
+    } else if (statCategory.equalsIgnoreCase(FieldGoalPercentage.STATCAT_FIELD_GOAL_PERCENTAGE)) {
       ret = new FieldGoalPercentage();
-    } else if (statCategory.equalsIgnoreCase(Strategy.STATCAT_FIELD_GOAL_PERCENTAGE_DEFENSE)) {
+    } else if (statCategory.equalsIgnoreCase(FieldGoalPercentageDefense.STATCAT_FIELD_GOAL_PERCENTAGE_DEFENSE)) {
       ret = new FieldGoalPercentageDefense();
-    } else if (statCategory.equalsIgnoreCase(Strategy.STATCAT_THREE_POINT_FIELD_GOALS_PER_GAME)) {
+    } else if (statCategory.equalsIgnoreCase(ThreePointFieldGoalsPerGame.STATCAT_THREE_POINT_FIELD_GOALS_PER_GAME)) {
       ret = new ThreePointFieldGoalsPerGame();
-    } else if (statCategory.equalsIgnoreCase(Strategy.STATCAT_THREE_POINT_PERCENTAGE)) {
+    } else if (statCategory.equalsIgnoreCase(ThreePointPercentage.STATCAT_THREE_POINT_PERCENTAGE)) {
       ret = new ThreePointPercentage();
-    } else if (statCategory.equalsIgnoreCase(Strategy.STATCAT_THREE_POINT_PERCENTAGE_DEFENSE)) {
+    } else if (statCategory.equalsIgnoreCase(ThreePointPercentageDefense.STATCAT_THREE_POINT_PERCENTAGE_DEFENSE)) {
       ret = new ThreePointPercentageDefense();
-    } else if (statCategory.equalsIgnoreCase(Strategy.STATCAT_FREE_THROW_PERCENTAGE)) {
+    } else if (statCategory.equalsIgnoreCase(FreeThrowPercentage.STATCAT_FREE_THROW_PERCENTAGE)) {
       ret = new FreeThrowPercentage();
-    } else if (statCategory.equalsIgnoreCase(Strategy.STATCAT_REBOUND_MARGIN)) {
+    } else if (statCategory.equalsIgnoreCase(ReboundMargin.STATCAT_REBOUND_MARGIN)) {
       ret = new ReboundMargin();
-    } else if (statCategory.equalsIgnoreCase(Strategy.STATCAT_ASSISTS_PER_GAME)) {
+    } else if (statCategory.equalsIgnoreCase(AssistsPerGame.STATCAT_ASSISTS_PER_GAME)) {
       ret = new AssistsPerGame();
-    } else if (statCategory.equalsIgnoreCase(Strategy.STATCAT_ASSIST_TURNOVER_RATIO)) {
+    } else if (statCategory.equalsIgnoreCase(AssistTurnoverRatio.STATCAT_ASSIST_TURNOVER_RATIO)) {
       ret = new AssistTurnoverRatio();
-    } else if (statCategory.equalsIgnoreCase(Strategy.STATCAT_BLOCKED_SHOTS_PER_GAME)) {
+    } else if (statCategory.equalsIgnoreCase(BlockedShotsPerGame.STATCAT_BLOCKED_SHOTS_PER_GAME)) {
       ret = new BlockedShotsPerGame();
-    } else if (statCategory.equalsIgnoreCase(Strategy.STATCAT_STEALS_PER_GAME)) {
+    } else if (statCategory.equalsIgnoreCase(StealsPerGame.STATCAT_STEALS_PER_GAME)) {
       ret = new StealsPerGame();
-    } else if (statCategory.equalsIgnoreCase(Strategy.STATCAT_TURNOVERS_PER_GAME)) {
+    } else if (statCategory.equalsIgnoreCase(TurnoversPerGame.STATCAT_TURNOVERS_PER_GAME)) {
       ret = new TurnoversPerGame();
-    } else if (statCategory.equalsIgnoreCase(Strategy.STATCAT_TURNOVER_MARGIN)) {
+    } else if (statCategory.equalsIgnoreCase(TurnoverMargin.STATCAT_TURNOVER_MARGIN)) {
       ret = new TurnoverMargin();
-    } else if (statCategory.equalsIgnoreCase(Strategy.STATCAT_PERSONAL_FOULS_PER_GAME)) {
+    } else if (statCategory.equalsIgnoreCase(PersonalFoulsPerGame.STATCAT_PERSONAL_FOULS_PER_GAME)) {
       ret = new PersonalFoulsPerGame();
-    } else if (statCategory.equalsIgnoreCase(Strategy.STATCAT_TOURNAMENT_PARTICIPANT)) {
+    } else if (statCategory.equalsIgnoreCase(TournamentParticipant.STATCAT_TOURNAMENT_PARTICIPANT)) {
       ret = new TournamentParticipant();
-    } else if (statCategory.equalsIgnoreCase(Strategy.STATCAT_TOURNAMENT_RESULTS)) {
+    } else if (statCategory.equalsIgnoreCase(TournamentResult.STATCAT_TOURNAMENT_RESULTS)) {
       ret = new TournamentResult();
     } else {
       log.warn("No strategy could be inferred for statistics category ==> " + statCategory

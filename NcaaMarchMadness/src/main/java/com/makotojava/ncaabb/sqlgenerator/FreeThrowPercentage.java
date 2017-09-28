@@ -27,8 +27,10 @@ public class FreeThrowPercentage extends AbstractStrategy {
   
   public static final String TABLE_NAME = "free_throw_percentage";
 
+  public final static String STATCAT_FREE_THROW_PERCENTAGE = "Free-Throw Percentage";
+
   public FreeThrowPercentage() {
-    super(STATCAT_FREE_THROW_PERCENTAGE);
+    super(FreeThrowPercentage.STATCAT_FREE_THROW_PERCENTAGE);
   }
 
   @Override

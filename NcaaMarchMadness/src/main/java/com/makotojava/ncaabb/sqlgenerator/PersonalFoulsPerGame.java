@@ -26,9 +26,11 @@ public class PersonalFoulsPerGame extends AbstractStrategy {
   private static final Logger LOG = Logger.getLogger(PersonalFoulsPerGame.class);
   
   public static final String TABLE_NAME = "personal_fouls_per_game";
+
+  public final static String STATCAT_PERSONAL_FOULS_PER_GAME = "Personal Fouls Per Game";
   
   public PersonalFoulsPerGame() {
-    super(Strategy.STATCAT_PERSONAL_FOULS_PER_GAME);
+    super(PersonalFoulsPerGame.STATCAT_PERSONAL_FOULS_PER_GAME);
   }
 
   @Override

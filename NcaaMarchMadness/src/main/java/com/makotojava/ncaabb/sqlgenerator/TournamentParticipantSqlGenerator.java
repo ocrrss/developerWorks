@@ -79,7 +79,7 @@ public class TournamentParticipantSqlGenerator extends SqlGenerator {
 
   @Override
   protected String fetchStatCat(String[] line) {
-    return Strategy.STATCAT_TOURNAMENT_PARTICIPANT;
+    return TournamentParticipant.STATCAT_TOURNAMENT_PARTICIPANT;
   }
 
   @Override

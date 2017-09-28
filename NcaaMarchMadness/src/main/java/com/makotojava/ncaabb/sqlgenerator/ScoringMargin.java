@@ -27,8 +27,10 @@ public class ScoringMargin extends AbstractStrategy {
   
   public static final String TABLE_NAME = "scoring_margin";
 
+  public final static String STATCAT_SCORING_MARGIN = "Scoring Margin";
+
   public ScoringMargin() {
-    super(Strategy.STATCAT_SCORING_MARGIN);
+    super(ScoringMargin.STATCAT_SCORING_MARGIN);
   }
 
   @Override

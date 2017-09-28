@@ -26,9 +26,11 @@ public class TurnoversPerGame extends AbstractStrategy {
   private static final Logger LOG = Logger.getLogger(TurnoversPerGame.class);
   
   public static final String TABLE_NAME = "turnovers_per_game";
+
+  public final static String STATCAT_TURNOVERS_PER_GAME = "Turnovers Per Game";
   
   public TurnoversPerGame() {
-    super(Strategy.STATCAT_TURNOVERS_PER_GAME);
+    super(TurnoversPerGame.STATCAT_TURNOVERS_PER_GAME);
   }
 
   @Override

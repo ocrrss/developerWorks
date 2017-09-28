@@ -27,8 +27,10 @@ public class ReboundMargin extends AbstractStrategy {
   
   public static final String TABLE_NAME = "rebound_margin";
 
+  public final static String STATCAT_REBOUND_MARGIN = "Rebound Margin";
+
   public ReboundMargin() {
-    super(Strategy.STATCAT_REBOUND_MARGIN);
+    super(ReboundMargin.STATCAT_REBOUND_MARGIN);
   }
 
   @Override

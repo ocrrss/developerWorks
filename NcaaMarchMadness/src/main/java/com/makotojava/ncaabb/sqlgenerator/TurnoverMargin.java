@@ -25,10 +25,12 @@ public class TurnoverMargin extends AbstractStrategy {
   
   private static final Logger LOG = Logger.getLogger(ReboundMargin.class);
   
-  public static final String TABLE_NAME = "turnover_margin";  
+  public static final String TABLE_NAME = "turnover_margin";
+
+  public final static String STATCAT_TURNOVER_MARGIN = "Turnover Margin";  
 
   public TurnoverMargin() {
-    super(Strategy.STATCAT_TURNOVER_MARGIN);
+    super(TurnoverMargin.STATCAT_TURNOVER_MARGIN);
   }
 
   @Override

@@ -27,8 +27,10 @@ public class ThreePointPercentage extends AbstractStrategy {
   
   public static final String TABLE_NAME = "three_point_percentage";
 
+  public final static String STATCAT_THREE_POINT_PERCENTAGE = "Three-Point Field-Goal Percentage";
+
   public ThreePointPercentage() {
-    super(STATCAT_THREE_POINT_PERCENTAGE);
+    super(ThreePointPercentage.STATCAT_THREE_POINT_PERCENTAGE);
   }
 
   @Override

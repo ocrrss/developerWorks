@@ -26,9 +26,14 @@ public class TournamentResult extends AbstractStrategy {
   private static final Logger LOG = Logger.getLogger(TournamentResult.class);
   
   public static final String TABLE_NAME = "tournament_result";
+
+  // CONSTANTS for Statistics Categories. We use these to determine which
+  /// SQL Generation strategy to employ, which will vary for each type
+  /// of data block (i.e., different column values).
+  public final static String STATCAT_TOURNAMENT_RESULTS = "Tournament Results";
   
   public TournamentResult() {
-    super(Strategy.STATCAT_TOURNAMENT_RESULTS);
+    super(TournamentResult.STATCAT_TOURNAMENT_RESULTS);
   }
 
   @Override

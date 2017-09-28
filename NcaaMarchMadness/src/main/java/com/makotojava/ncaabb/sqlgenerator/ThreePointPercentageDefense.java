@@ -27,8 +27,10 @@ public class ThreePointPercentageDefense extends AbstractStrategy {
   
   public static final String TABLE_NAME = "three_point_percentage_defense";
 
+  public final static String STATCAT_THREE_POINT_PERCENTAGE_DEFENSE = "Three Pt FG Defense";
+
   public ThreePointPercentageDefense() {
-    super(STATCAT_THREE_POINT_PERCENTAGE_DEFENSE);
+    super(ThreePointPercentageDefense.STATCAT_THREE_POINT_PERCENTAGE_DEFENSE);
   }
 
   @Override

@@ -27,8 +27,10 @@ public class FieldGoalPercentageDefense extends AbstractStrategy {
   
   public static final String TABLE_NAME = "field_goal_percentage_defense";
 
+  public final static String STATCAT_FIELD_GOAL_PERCENTAGE_DEFENSE = "Field-Goal Percentage Defense";
+
   public FieldGoalPercentageDefense() {
-    super(Strategy.STATCAT_FIELD_GOAL_PERCENTAGE_DEFENSE);
+    super(FieldGoalPercentageDefense.STATCAT_FIELD_GOAL_PERCENTAGE_DEFENSE);
   }
 
   @Override

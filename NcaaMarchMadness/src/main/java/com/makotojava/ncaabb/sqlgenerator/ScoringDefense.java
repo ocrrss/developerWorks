@@ -27,8 +27,10 @@ public class ScoringDefense extends AbstractStrategy {
   
   public static final String TABLE_NAME = "scoring_defense";
 
+  public final static String STATCAT_SCORING_DEFENSE = "Scoring Defense";
+
   public ScoringDefense() {
-    super(STATCAT_SCORING_DEFENSE);
+    super(ScoringDefense.STATCAT_SCORING_DEFENSE);
   }
 
   @Override

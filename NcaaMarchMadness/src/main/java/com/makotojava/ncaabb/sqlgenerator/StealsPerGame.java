@@ -27,8 +27,10 @@ public class StealsPerGame extends AbstractStrategy {
   
   public static final String TABLE_NAME = "steals_per_game";
 
+  public final static String STATCAT_STEALS_PER_GAME = "Steals Per Game";
+
   public StealsPerGame() {
-    super(Strategy.STATCAT_STEALS_PER_GAME);
+    super(StealsPerGame.STATCAT_STEALS_PER_GAME);
   }
 
   @Override

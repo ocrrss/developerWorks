@@ -27,8 +27,10 @@ public class AssistTurnoverRatio extends AbstractStrategy {
 
   public static final String TABLE_NAME = "assist_turnover_ratio";
 
+  public final static String STATCAT_ASSIST_TURNOVER_RATIO = "Assist Turnover Ratio";
+
   public AssistTurnoverRatio() {
-    super(Strategy.STATCAT_ASSIST_TURNOVER_RATIO);
+    super(AssistTurnoverRatio.STATCAT_ASSIST_TURNOVER_RATIO);
   }
 
   @Override

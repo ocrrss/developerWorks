@@ -27,8 +27,10 @@ public class ThreePointFieldGoalsPerGame extends AbstractStrategy {
   
   public static final String TABLE_NAME = "three_point_field_goals_per_game";
 
+  public final static String STATCAT_THREE_POINT_FIELD_GOALS_PER_GAME = "Three-Point Field Goals Per Game";
+
   public ThreePointFieldGoalsPerGame() {
-    super(STATCAT_THREE_POINT_FIELD_GOALS_PER_GAME);
+    super(ThreePointFieldGoalsPerGame.STATCAT_THREE_POINT_FIELD_GOALS_PER_GAME);
   }
 
   @Override

@@ -26,8 +26,10 @@ public class TournamentParticipant extends AbstractStrategy {
 
   public static final String TABLE_NAME = "tournament_participant";
 
+  public final static String STATCAT_TOURNAMENT_PARTICIPANT = "Tournament Participants";
+
   public TournamentParticipant() {
-    super(Strategy.STATCAT_TOURNAMENT_PARTICIPANT);
+    super(TournamentParticipant.STATCAT_TOURNAMENT_PARTICIPANT);
   }
 
   @Override

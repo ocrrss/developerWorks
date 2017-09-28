@@ -26,9 +26,11 @@ public class BlockedShotsPerGame extends AbstractStrategy {
   private static final Logger LOG = Logger.getLogger(BlockedShotsPerGame.class);
   
   public static final String TABLE_NAME = "blocked_shots_per_game";
+
+  public final static String STATCAT_BLOCKED_SHOTS_PER_GAME = "Blocked Shots Per Game";
   
   public BlockedShotsPerGame() {
-    super(Strategy.STATCAT_BLOCKED_SHOTS_PER_GAME);
+    super(BlockedShotsPerGame.STATCAT_BLOCKED_SHOTS_PER_GAME);
   }
 
   @Override
