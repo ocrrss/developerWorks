@@ -27,6 +27,8 @@ import com.makotojava.ncaabb.dao.SeasonAnalyticsDao;
 import com.makotojava.ncaabb.dao.SeasonAnalyticsJdbcDao;
 import com.makotojava.ncaabb.dao.SeasonDataDao;
 import com.makotojava.ncaabb.dao.SeasonDataJdbcDao;
+import com.makotojava.ncaabb.dao.TournamentAnalyticsDao;
+import com.makotojava.ncaabb.dao.TournamentAnalyticsJdbcDao;
 import com.makotojava.ncaabb.dao.TournamentResultDao;
 import com.makotojava.ncaabb.dao.TournamentResultJdbcDao;
 import com.makotojava.ncaabb.util.NetworkProperties;
@@ -39,8 +41,8 @@ import com.makotojava.ncaabb.util.NetworkProperties;
  */
 @Configuration
 @ComponentScan(basePackages = {
-  "com.makotojava.ncaabb.dao.*" 
-  })
+    "com.makotojava.ncaabb.dao.*"
+})
 @EnableTransactionManagement
 public class ApplicationConfig {
 
@@ -51,23 +53,28 @@ public class ApplicationConfig {
     ret.setDatabaseName(NetworkProperties.getDatabaseName());
     ret.setPortNumber(5432);
     ret.setUser(NetworkProperties.getDatabaseUser());
-    
+
     return ret;
   }
-  
+
   @Bean(name = "seasonDataDao")
   public SeasonDataDao getSeasonDataDao() {
     return new SeasonDataJdbcDao(getDataSource());
   }
-  
+
   @Bean(name = "tournamentResultDao")
   public TournamentResultDao getTournamentResultDao() {
     return new TournamentResultJdbcDao(getDataSource());
   }
-  
+
   @Bean(name = "SeasonAnalyticsDao")
   public SeasonAnalyticsDao getSeasonAnalyticsDao() {
     return new SeasonAnalyticsJdbcDao(getDataSource());
   }
-  
+
+  @Bean(name = "tournamentAnalyticsDao")
+  public TournamentAnalyticsDao getTournamentAnalyticsDao() {
+    return new TournamentAnalyticsJdbcDao(getDataSource());
+  }
+
 }

@@ -28,10 +28,12 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 import com.makotojava.ncaabb.dao.SeasonAnalyticsDao;
 import com.makotojava.ncaabb.dao.SeasonDataDao;
+import com.makotojava.ncaabb.dao.TournamentAnalyticsDao;
 import com.makotojava.ncaabb.dao.TournamentResultDao;
 import com.makotojava.ncaabb.model.NormalizedData;
 import com.makotojava.ncaabb.model.SeasonAnalytics;
 import com.makotojava.ncaabb.model.SeasonData;
+import com.makotojava.ncaabb.model.TournamentAnalytics;
 import com.makotojava.ncaabb.model.TournamentResult;
 import com.makotojava.ncaabb.springconfig.ApplicationConfig;
 import com.makotojava.ncaabb.util.NetworkProperties;
@@ -45,12 +47,13 @@ import com.makotojava.ncaabb.util.StatsUtils;
  *
  */
 public class DataCreator {
-  
+
   private static final Logger log = Logger.getLogger(DataCreator.class);
-  
+
   private SeasonDataDao seasonDataDao;
   private TournamentResultDao tournamentResultDao;
   private SeasonAnalyticsDao seasonAnalyticsDao;
+  private TournamentAnalyticsDao tournamentAnalyticsDao;
 
   /**
    * The main (driver) method for this class.
@@ -70,7 +73,8 @@ public class DataCreator {
     // First let's figure out what year(s) we are running.
     Integer[] yearsForTraining = trainingDataCreator.computeYearsToTrain(args);
     log.info("*********** CREATING TRAINING DATA **************");
-    log.info("Using data from the following years for training: " + ReflectionToStringBuilder.toString(yearsForTraining));
+    log.info(
+        "Using data from the following years for training: " + ReflectionToStringBuilder.toString(yearsForTraining));
     //
     // Now create the data
     trainingDataCreator.go(yearsForTraining);
@@ -95,6 +99,9 @@ public class DataCreator {
       // Pull the current year's season analytics
       SeasonAnalytics seasonAnalytics = pullSeasonAnalytics(year);
       //
+      // Pull the current year's tournament analytics
+      TournamentAnalytics tournamentAnalytics = pullTournamentAnalytics(year);
+      //
       // This is the data that gets written out.
       DataSet trainingData = new DataSet(NetworkProperties.getNumberOfInputs(), NetworkProperties.getNumberOfOutputs());
       //
@@ -114,12 +121,14 @@ public class DataCreator {
         SeasonData seasonDataWinning = pullSeasonData(year, winningTeamName);
         SeasonData seasonDataLosing = pullSeasonData(year, losingTeamName);
         // Winner is LHS, Loser is RHS
-        DataSetRow dataSetRow = DataCreator.processAsDataSetRowForTraining(seasonAnalytics, tournamentResult, seasonDataWinning,
-            seasonDataLosing);
+        DataSetRow dataSetRow =
+            processAsDataSetRowForTraining(seasonAnalytics, tournamentAnalytics, tournamentResult, seasonDataWinning,
+                seasonDataLosing);
         trainingData.addRow(dataSetRow);
         // Loser is LHS, Winner is RHS
-        dataSetRow = DataCreator.processAsDataSetRowForTraining(seasonAnalytics, tournamentResult, seasonDataLosing,
-            seasonDataWinning);
+        dataSetRow =
+            processAsDataSetRowForTraining(seasonAnalytics, tournamentAnalytics, tournamentResult, seasonDataLosing,
+                seasonDataWinning);
         trainingData.addRow(dataSetRow);
       }
       if (log.isDebugEnabled()) {
@@ -148,8 +157,9 @@ public class DataCreator {
     seasonDataDao = applicationContext.getBean(SeasonDataDao.class);
     tournamentResultDao = applicationContext.getBean(TournamentResultDao.class);
     seasonAnalyticsDao = applicationContext.getBean(SeasonAnalyticsDao.class);
+    tournamentAnalyticsDao = applicationContext.getBean(TournamentAnalyticsDao.class);
   }
- 
+
   /**
    * Pulls season data for the specified year and team.
    * 
@@ -160,7 +170,7 @@ public class DataCreator {
   protected SeasonData pullSeasonData(Integer year, String teamName) {
     return seasonDataDao.fetchByYearAndTeamName(year, teamName);
   }
-  
+
   /**
    * 
    * @param year
@@ -169,15 +179,19 @@ public class DataCreator {
   protected List<TournamentResult> pullTournamentResults(Integer year) {
     return tournamentResultDao.fetchAllByYear(year);
   }
-  
+
   protected SeasonAnalytics pullSeasonAnalytics(Integer year) {
     return seasonAnalyticsDao.fetchByYear(year);
   }
-  
+
+  protected TournamentAnalytics pullTournamentAnalytics(Integer year) {
+    return tournamentAnalyticsDao.fetchByYear(year);
+  }
+
   protected static boolean isTournamentGameWinner(SeasonData teamSeasonData, TournamentResult tournamentResult) {
     return teamSeasonData.getTeamName().equalsIgnoreCase(tournamentResult.getWinningTeamName());
   }
-  
+
   /**
    * Creates a single row of normalized training data based on the specified
    * {@link SeasonAnalytics}, {@link TournamentResult} data, along with {@link SeasonData} for
@@ -194,7 +208,9 @@ public class DataCreator {
    *          Team 2's {@link SeasonData}.
    * @return DataSetRow - the row of normalized data that will be used for training the network.
    */
-  public static DataSetRow processAsDataSetRowForTraining(SeasonAnalytics seasonAnalytics, TournamentResult tournamentResult,
+  public DataSetRow processAsDataSetRowForTraining(SeasonAnalytics seasonAnalytics,
+      TournamentAnalytics tournamentAnalytics,
+      TournamentResult tournamentResult,
       SeasonData team1SeasonData, SeasonData team2SeasonData) {
     DataSetRow ret;
     //
@@ -206,7 +222,8 @@ public class DataCreator {
     //
     // For training, we need to set the output values based on each team's score in the game.
     /// This only works for sports that do not allow ties (like Basketball, for example)
-    setScoresInOutputData(inputAndOutput, seasonAnalytics, tournamentResult, team1SeasonData, team2SeasonData);
+    setScoresInOutputData(inputAndOutput, seasonAnalytics, tournamentAnalytics, tournamentResult, team1SeasonData,
+        team2SeasonData);
     if (log.isDebugEnabled()) {
       StringBuilder sb = new StringBuilder();
       sb.append("Training Data:");
@@ -230,6 +247,7 @@ public class DataCreator {
    * @param team2SeasonData
    */
   private static void setScoresInOutputData(double[] inputAndOutput, SeasonAnalytics seasonAnalytics,
+      TournamentAnalytics tournamentAnalytics,
       TournamentResult tournamentResult, SeasonData team1SeasonData, SeasonData team2SeasonData) {
     //
     // The output scores are at the end of the array. The last index is for team2, and the next
@@ -249,10 +267,12 @@ public class DataCreator {
     BigDecimal team2Score = (winningTeamName.equals(team2SeasonData.getTeamName())) ? winningScore : losingScore;
     //
     // Compute Team1's normalized score
-    BigDecimal team1NormalizedScore = StatsUtils.normalize(team1Score, seasonAnalytics.getMinAvgPointsPg(),
-        seasonAnalytics.getMaxAvgPointsPg());
-    BigDecimal team2NormalizedScore = StatsUtils.normalize(team2Score, seasonAnalytics.getMinAvgPointsPg(),
-        seasonAnalytics.getMaxAvgPointsPg());
+    BigDecimal team1NormalizedScore =
+        StatsUtils.normalize(team1Score, BigDecimal.valueOf(tournamentAnalytics.getMinScore()).setScale(5),
+            BigDecimal.valueOf(tournamentAnalytics.getMaxScore()).setScale(5));
+    BigDecimal team2NormalizedScore =
+        StatsUtils.normalize(team2Score, BigDecimal.valueOf(tournamentAnalytics.getMinScore()).setScale(5),
+            BigDecimal.valueOf(tournamentAnalytics.getMaxScore()).setScale(5));
     //
     // Set the scores in their places in the array
     inputAndOutput[team1ScoreIndex] = team1NormalizedScore.doubleValue();
@@ -286,7 +306,7 @@ public class DataCreator {
     ret = createDataSetRow(inputAndOutput);
     return ret;
   }
-  
+
   /**
    * Transform the normalized data into the double[] required by Neuroph.
    * 
@@ -314,7 +334,8 @@ public class DataCreator {
     // Bail out if something doesn't look right
     if (inputAndOutput.length != expectedInputAndOutputLength) {
       throw new RuntimeException(
-          "The expected size of " + expectedInputAndOutputLength + " does not match the actual size of " + inputAndOutput.length);
+          "The expected size of " + expectedInputAndOutputLength + " does not match the actual size of "
+              + inputAndOutput.length);
     }
     //
     // Split up the array into input and output
@@ -389,5 +410,5 @@ public class DataCreator {
       throw new RuntimeException("Invalid year: " + year + " (must be between 2009 and 2017, inclusive)");
     }
   }
-  
+
 }

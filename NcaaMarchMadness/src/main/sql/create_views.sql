@@ -213,6 +213,14 @@ SELECT year,
        max(num_dq) AS max_num_dq
 FROM v_season_data
 GROUP BY 1;
+
+CREATE VIEW v_tournament_analytics AS
+SELECT year,
+       min(losing_score) AS min_score,
+       max(winning_score) AS max_score
+FROM tournament_result 
+GROUP BY 1;
+;
 --
 -- Create views for normalizing the data
 --
