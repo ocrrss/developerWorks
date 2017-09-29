@@ -16,6 +16,7 @@
 package com.makotojava.ncaabb.util;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.neuroph.core.Layer;
 import org.neuroph.core.NeuralNetwork;
@@ -37,7 +39,7 @@ import org.neuroph.nnet.learning.BackPropagation;
  *
  */
 public class NetworkUtils {
-  
+
   private static final Logger log = Logger.getLogger(NetworkUtils.class);
 
   /**
@@ -79,12 +81,25 @@ public class NetworkUtils {
     // Load all of the networks in the specified directory
     File arrayDirectory = new File(networkArrayDirectory);
     if (arrayDirectory.exists()) {
-      File[] networkFiles = arrayDirectory.listFiles();
+      File[] networkFiles = arrayDirectory.listFiles(new FileFilter() {
+        @Override
+        public boolean accept(File pathname) {
+          //
+          // Only accept files that are neural networks
+          return StringUtils.endsWithIgnoreCase(pathname.getName(), ".ann");
+        }
+      });
       log.info("Found " + networkFiles.length + " networks in directory '" + arrayDirectory.getPath() + "'...");
       for (File networkFile : networkFiles) {
-        @SuppressWarnings("unchecked")
-        T network = (T) NeuralNetwork.createFromFile(networkFile);
-        ret.add(network);
+        try {
+          log.info("Loading network file '" + networkFile.getName() + "'...");
+          @SuppressWarnings("unchecked")
+          T network = (T) NeuralNetwork.createFromFile(networkFile);
+          ret.add(network);
+        } catch (Exception e) {
+          String message = "Could not load file '" + networkFile.getName() + "'. Skipping...";
+          log.warn(message, e);
+        }
       }
     } else {
       String message = "** ERROR: directory '" + networkArrayDirectory
@@ -109,7 +124,7 @@ public class NetworkUtils {
     // Return value is the network's output
     ret = network.getOutput();
     if (log.isTraceEnabled()) {
-      log.trace("Input : "  + Arrays.toString(input));
+      log.trace("Input : " + Arrays.toString(input));
       log.trace("Output: " + Arrays.toString(ret));
     }
     return ret;
@@ -123,12 +138,13 @@ public class NetworkUtils {
    * @return
    */
   public static String computeTrainingDataFileName(Integer year) {
-    String filename = NetworkProperties.getBaseDirectory() + File.separator + NetworkProperties.getTrainingDirectoryName()
-        + File.separator +
-        NetworkProperties.getTrainingDataFileBase() + "-" + year + NetworkProperties.getTrainingDataFileExtension();
+    String filename =
+        NetworkProperties.getBaseDirectory() + File.separator + NetworkProperties.getTrainingDirectoryName()
+            + File.separator +
+            NetworkProperties.getTrainingDataFileBase() + "-" + year + NetworkProperties.getTrainingDataFileExtension();
     return filename;
   }
-  
+
   /**
    * Fetches the name of the network directory using NetworkProperties settings
    * and returns that name to the caller.

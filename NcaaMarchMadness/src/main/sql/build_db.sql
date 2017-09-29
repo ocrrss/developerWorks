@@ -37,13 +37,6 @@
 \echo 'LOADING ALL TABLES:'
 \qecho 'LOADING ALL TABLES:'
 
-\echo 'YEAR: 2009...'
-\qecho 'YEAR: 2009...'
---\set LOAD_SCRIPT_DIR :LOAD_SCRIPT_ROOT_DIR/2009
-\set YEAR 2009
-\i :LOAD_SCRIPT_ROOT_DIR/load_season_data_:YEAR.sql
-\i :DATA_ROOT_DIR/load_tournament_participants-2009.sql
-
 \echo 'YEAR: 2010...'
 \qecho 'YEAR: 2010...'
 \set YEAR 2010

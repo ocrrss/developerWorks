@@ -149,7 +149,7 @@ public class TournamentMatrixPredictor implements NetworkRunner<MultiLayerPercep
   @Override
   public List<MultiLayerPerceptron> loadNetworks() {
     //
-    // Network file location is, for exampple, /base_directory/network_directory.
+    // Network file location is, for example, /base_directory/network_directory.
     String networkArrayDirectory = NetworkProperties.getBaseDirectory() + File.separator
         + NetworkProperties.getNetworkDirectoryName();
     //
@@ -180,7 +180,8 @@ public class TournamentMatrixPredictor implements NetworkRunner<MultiLayerPercep
     // Now generate the matrix. Every team in the file against
     /// every other team in the file. This will let us make up
     /// different brackets without having to re-run the simulator.
-    Map<String, List<GameSimulationResult<MultiLayerPerceptron>>> matrix = computeMatrix(tournamentYear, networks, teamNames);
+    Map<String, List<GameSimulationResult<MultiLayerPerceptron>>> matrix =
+        computeMatrix(tournamentYear, networks, teamNames);
     //
     // Write the matrix to CSV file (TODO: use POI?)
     writeMatrixFile(matrix);
@@ -376,7 +377,7 @@ public class TournamentMatrixPredictor implements NetworkRunner<MultiLayerPercep
     //
     //
     String[] EMPTY_LINE = { "" };
-      for (String teamName : matrix.keySet()) {
+    for (String teamName : matrix.keySet()) {
       String teamPredictionFilename = NetworkUtils.fetchSimulationDirectoryAndCreateIfNecessary() +
           File.separator + teamName + ".csv";
       //
@@ -427,18 +428,20 @@ public class TournamentMatrixPredictor implements NetworkRunner<MultiLayerPercep
             sb.append(BigDecimal.valueOf(gsr.getTeamAwayResults().get(aa)).setScale(3, RoundingMode.HALF_UP));
             sb.append(")");
           }
-          log.info("Opponent: " + gsr.getOpponentName() +
-              " | Win % " + gsr.getPercentWins() +
-              " | Loss %" + gsr.getPercentLosses() +
-              " | Push % " + gsr.getPercentPushes() +
-              ((log.isDebugEnabled()) ? " | Network Results -> " + sb.toString() : ""));
-          csvWriter.writeNext(output);
+          if (log.isDebugEnabled()) {
+            log.debug("Opponent: " + gsr.getOpponentName() +
+                " | Win % " + gsr.getPercentWins() +
+                " | Loss %" + gsr.getPercentLosses() +
+                " | Push % " + gsr.getPercentPushes() +
+                ((log.isDebugEnabled()) ? " | Network Results -> " + sb.toString() : ""));
           }
+          csvWriter.writeNext(output);
+        }
         csvWriter.close();
       } catch (IOException e) {
 
-        }
       }
+    }
 
   }
 
