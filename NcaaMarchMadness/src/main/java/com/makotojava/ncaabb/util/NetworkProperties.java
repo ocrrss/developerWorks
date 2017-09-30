@@ -185,6 +185,10 @@ public class NetworkProperties {
     return getStringPropertyValue("statcat.prologue", "Division I");
   }
 
+  public static Boolean getRandomizeMomentum() {
+    return getBooleanPropertyValue("randomize.momentum", Boolean.TRUE);
+  }
+
   public static final String getTeamMatrixFileName() {
     return getStringPropertyValue("team.matrix.file.name", "all-vs");
   }
@@ -201,12 +205,8 @@ public class NetworkProperties {
     return getStringPropertyValue("training.directory", "TrainingData");
   }
 
-  public static Boolean isUsingBiasNeurons() {
-    return getBooleanPropertyValue("using.bias.neurons", Boolean.TRUE);
-  }
-
-  public static Boolean randomizeMomentum() {
-    return getBooleanPropertyValue("randomize.momentum", Boolean.TRUE);
+  public static Boolean getUseBiasNeurons() {
+    return getBooleanPropertyValue("use.bias.neurons", Boolean.TRUE);
   }
 
   // ****************************
@@ -238,7 +238,8 @@ public class NetworkProperties {
       ret = Boolean.valueOf(propertyValue);
     }
     if (ret == null) {
-      throw new RuntimeException("You must specify a value for property '" + propertyName + "' in " + PROPERTIES_FILE_NAME + "!");
+      throw new RuntimeException(
+          "You must specify a value for property '" + propertyName + "' in " + PROPERTIES_FILE_NAME + "!");
     }
     return ret;
   }
@@ -271,7 +272,8 @@ public class NetworkProperties {
       ret = Double.valueOf(propertyValue);
     }
     if (ret == null) {
-      throw new RuntimeException("You must specify a value for property '" + propertyName + "' in " + PROPERTIES_FILE_NAME + "!");
+      throw new RuntimeException(
+          "You must specify a value for property '" + propertyName + "' in " + PROPERTIES_FILE_NAME + "!");
     }
     return ret;
   }
@@ -304,7 +306,8 @@ public class NetworkProperties {
       ret = Integer.valueOf(propertyValue);
     }
     if (ret == null) {
-      throw new RuntimeException("You must specify a value for property '" + propertyName + "' in " + PROPERTIES_FILE_NAME + "!");
+      throw new RuntimeException(
+          "You must specify a value for property '" + propertyName + "' in " + PROPERTIES_FILE_NAME + "!");
     }
     return ret;
   }
@@ -335,7 +338,8 @@ public class NetworkProperties {
       ret = propertyValue;
     }
     if (ret == null) {
-      throw new RuntimeException("You must specify a value for property '" + propertyName + "' in " + PROPERTIES_FILE_NAME + "!");
+      throw new RuntimeException(
+          "You must specify a value for property '" + propertyName + "' in " + PROPERTIES_FILE_NAME + "!");
     }
     return ret;
   }

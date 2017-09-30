@@ -266,7 +266,7 @@ public class MlpNetworkTrainer implements LearningEventListener {
     NeuronProperties neuronProperties = new NeuronProperties();
     neuronProperties.setProperty("transferFunction", NEURON_PROPERTY_TRANSFER_FUNCTION);
     neuronProperties.setProperty("inputFunction", WeightedSum.class);
-    neuronProperties.setProperty("useBias", NetworkProperties.isUsingBiasNeurons());
+    neuronProperties.setProperty("useBias", NetworkProperties.getUseBiasNeurons());
 
     MultiLayerPerceptron network = networkCache.get(neuronLayerDescriptor);
     if (network == null) {
@@ -518,7 +518,7 @@ public class MlpNetworkTrainer implements LearningEventListener {
     //
     // If the system is configured to randomize momentum, then calculate
     /// a new random value between the MIN and MAX
-    if (NetworkProperties.randomizeMomentum()) {
+    if (NetworkProperties.getRandomizeMomentum()) {
       Random momentumRandomNg = new Random();
       double momentum = momentumRandomNg.nextDouble()
           * (NetworkProperties.getLearningRuleMomentumMax() - NetworkProperties.getLearningRuleMomentumMin())
