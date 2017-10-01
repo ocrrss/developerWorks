@@ -131,11 +131,11 @@ public class DataCreator {
                 seasonDataWinning);
         trainingData.addRow(dataSetRow);
       }
-      if (log.isDebugEnabled()) {
+      if (log.isTraceEnabled()) {
         List<DataSetRow> rows = trainingData.getRows();
-        log.debug("Dumping out training data:");
+        log.trace("Dumping out training data:");
         for (DataSetRow row : rows) {
-          log.debug("Row: " + ReflectionToStringBuilder.toString(row));
+          log.trace("Row: " + ReflectionToStringBuilder.toString(row));
         }
       }
       log.info("*********** SAVING TRAINING DATA **************");
@@ -391,24 +391,9 @@ public class DataCreator {
     }
     // Validate
     for (Integer year : ret) {
-      validateYear(year);
+      NetworkUtils.validateYear(year);
     }
     return ret;
-  }
-
-  /**
-   * Validates the year against known "good" years.
-   * 
-   * @param year
-   *          The year to validate.
-   * 
-   * @throws RuntimeException
-   *           - If the specified year is invalid.
-   */
-  protected void validateYear(Integer year) {
-    if (year < 2009 || year > 2017) {
-      throw new RuntimeException("Invalid year: " + year + " (must be between 2009 and 2017, inclusive)");
-    }
   }
 
 }

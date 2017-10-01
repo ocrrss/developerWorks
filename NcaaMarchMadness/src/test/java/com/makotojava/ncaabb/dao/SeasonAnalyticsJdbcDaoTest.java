@@ -29,23 +29,14 @@ import com.makotojava.ncaabb.springconfig.ApplicationConfig;
 public class SeasonAnalyticsJdbcDaoTest {
 
   private static final Logger log = Logger.getLogger(SeasonAnalyticsJdbcDaoTest.class);
-  
+
   private ApplicationContext applicationContext;
   private SeasonAnalyticsDao classUnderTest;
-  
+
   @Before
   public void setUp() throws Exception {
     applicationContext = new AnnotationConfigApplicationContext(ApplicationConfig.class);
     classUnderTest = applicationContext.getBean(SeasonAnalyticsDao.class);
-  }
-
-  @Test
-  public void testFetchByYear_2009() {
-    log.info("*** BEGIN Test ***");
-    Integer year = 2009;
-    SeasonAnalytics seasonAnalytics = classUnderTest.fetchByYear(year);
-    assertNotNull(seasonAnalytics);
-    log.info("*** END Test ***");  
   }
 
   @Test
@@ -54,7 +45,7 @@ public class SeasonAnalyticsJdbcDaoTest {
     Integer year = 2010;
     SeasonAnalytics seasonAnalytics = classUnderTest.fetchByYear(year);
     assertNotNull(seasonAnalytics);
-    log.info("*** END Test ***");  
+    log.info("*** END Test ***");
   }
 
   @Test
@@ -63,7 +54,7 @@ public class SeasonAnalyticsJdbcDaoTest {
     Integer year = 2011;
     SeasonAnalytics seasonAnalytics = classUnderTest.fetchByYear(year);
     assertNotNull(seasonAnalytics);
-    log.info("*** END Test ***");  
+    log.info("*** END Test ***");
   }
 
   @Test
@@ -72,7 +63,7 @@ public class SeasonAnalyticsJdbcDaoTest {
     Integer year = 2012;
     SeasonAnalytics seasonAnalytics = classUnderTest.fetchByYear(year);
     assertNotNull(seasonAnalytics);
-    log.info("*** END Test ***");  
+    log.info("*** END Test ***");
   }
 
   @Test
@@ -81,7 +72,7 @@ public class SeasonAnalyticsJdbcDaoTest {
     Integer year = 2013;
     SeasonAnalytics seasonAnalytics = classUnderTest.fetchByYear(year);
     assertNotNull(seasonAnalytics);
-    log.info("*** END Test ***");  
+    log.info("*** END Test ***");
   }
 
   @Test
@@ -90,7 +81,7 @@ public class SeasonAnalyticsJdbcDaoTest {
     Integer year = 2014;
     SeasonAnalytics seasonAnalytics = classUnderTest.fetchByYear(year);
     assertNotNull(seasonAnalytics);
-    log.info("*** END Test ***");  
+    log.info("*** END Test ***");
   }
 
   @Test
@@ -99,7 +90,7 @@ public class SeasonAnalyticsJdbcDaoTest {
     Integer year = 2015;
     SeasonAnalytics seasonAnalytics = classUnderTest.fetchByYear(year);
     assertNotNull(seasonAnalytics);
-    log.info("*** END Test ***");  
+    log.info("*** END Test ***");
   }
 
   @Test
@@ -108,7 +99,7 @@ public class SeasonAnalyticsJdbcDaoTest {
     Integer year = 2016;
     SeasonAnalytics seasonAnalytics = classUnderTest.fetchByYear(year);
     assertNotNull(seasonAnalytics);
-    log.info("*** END Test ***");  
+    log.info("*** END Test ***");
   }
 
   @Test

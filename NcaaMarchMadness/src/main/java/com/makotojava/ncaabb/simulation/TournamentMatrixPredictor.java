@@ -119,6 +119,10 @@ public class TournamentMatrixPredictor implements NetworkRunner<MultiLayerPercep
     //
     // Get the tournament year
     Integer year = Integer.valueOf(args[0]);
+
+    //
+    // Validate the year
+    NetworkUtils.validateYear(year);
     //
     // Instantiate the class and handoff
     TournamentMatrixPredictor simulator = new TournamentMatrixPredictor(

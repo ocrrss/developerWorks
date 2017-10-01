@@ -43,6 +43,27 @@ public class NetworkUtils {
   private static final Logger log = Logger.getLogger(NetworkUtils.class);
 
   /**
+   * Validates the year. If not between the specified range, an exception is thrown,
+   * terminating the run.
+   * 
+   * Note: as you add years to the DB, you will need to modify this method accordingly.
+   * 
+   * TODO: Add a TournamentParticipantDao.fetchAllYears() method to return this list
+   * so it is dynamic.
+   * 
+   * @param year
+   *          The year to validate.
+   * 
+   * @throws RuntimeException
+   *           - if the year to validate is outside the supported range.
+   */
+  public static void validateYear(Integer year) {
+    if (year < 2010 || year > 2017) {
+      throw new RuntimeException("Invalid year: " + year + " (must be between 2011 and 2017, inclusive)");
+    }
+  }
+
+  /**
    * Returns a NxNxNxN style string showing the layer structure
    * of the specified network.
    * 

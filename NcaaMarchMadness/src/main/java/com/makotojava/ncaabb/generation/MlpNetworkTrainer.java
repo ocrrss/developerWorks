@@ -68,7 +68,6 @@ public class MlpNetworkTrainer implements LearningEventListener {
    */
   public static final TransferFunctionType NEURON_PROPERTY_TRANSFER_FUNCTION = TransferFunctionType.SIGMOID;
 
-
   private SeasonDataDao seasonDataDao;
   private TournamentResultDao tournamentResultDao;
   private SeasonAnalyticsDao seasonAnalyticsDao;
@@ -76,7 +75,8 @@ public class MlpNetworkTrainer implements LearningEventListener {
   /**
    * The network metrics cache
    */
-  private Map<MultiLayerPerceptron, NetworkMetrics> networkMetricsCache = new HashMap<MultiLayerPerceptron, NetworkMetrics>();
+  private Map<MultiLayerPerceptron, NetworkMetrics> networkMetricsCache =
+      new HashMap<MultiLayerPerceptron, NetworkMetrics>();
 
   /**
    * The network cache
@@ -157,7 +157,8 @@ public class MlpNetworkTrainer implements LearningEventListener {
       for (List<Integer> neuronLayerDescriptor : networks) {
         //
         // Loop through the current network a bunch of times
-        log.info("Training the network with DataSet from years " + Arrays.toString(yearsForTrainingData) + " and with " + trainingData.size() + " rows...");
+        log.info("Training the network with DataSet from years " + Arrays.toString(yearsForTrainingData) + " and with "
+            + trainingData.size() + " rows...");
         log.info("*********** CREATING NEURAL NETWORK **************");
         //
         // Now create the network itself
@@ -172,8 +173,10 @@ public class MlpNetworkTrainer implements LearningEventListener {
           //
           // Fetch the metrics
           NetworkMetrics metrics = networkMetricsCache.get(network);
-          log.error("***** NETWORK ERROR (" + network.getLearningRule().getTotalNetworkError() + ") HIGHER THAN THRESHOLD MAX ("
-              + BigDecimal.valueOf(NetworkProperties.getMaxNetworkError() * 100.0).setScale(2, RoundingMode.HALF_UP).toString()
+          log.error("***** NETWORK ERROR (" + network.getLearningRule().getTotalNetworkError()
+              + ") HIGHER THAN THRESHOLD MAX ("
+              + BigDecimal.valueOf(NetworkProperties.getMaxNetworkError() * 100.0).setScale(2, RoundingMode.HALF_UP)
+                  .toString()
               + "%). ABORTING! *****");
           metrics.setNumberOfAbortedRuns(metrics.getNumberOfAbortedRuns() + 1);
         } else {
@@ -210,7 +213,7 @@ public class MlpNetworkTrainer implements LearningEventListener {
     for (int aa = 0; aa < args.length - 1; aa++) {
       Integer year = Integer.valueOf(args[aa]);
       // Validate year
-      validateYear(year);
+      NetworkUtils.validateYear(year);
       ret[aa] = year;
     }
     return ret;
@@ -239,7 +242,7 @@ public class MlpNetworkTrainer implements LearningEventListener {
     while (strtok.hasMoreTokens()) {
       Integer year = Integer.valueOf(strtok.nextToken());
       // Validate year
-      validateYear(year);
+      NetworkUtils.validateYear(year);
       yts.add(year);
     }
     ret = yts.toArray(new Integer[yts.size()]);
@@ -325,7 +328,8 @@ public class MlpNetworkTrainer implements LearningEventListener {
     log.info("*********** FETCHING NETWORK METRICS **************");
     NetworkMetrics metrics = networkMetricsCache.get(network);
     if (metrics == null) {
-      log.info("*********** CREATED NEW NETWORK METRICS FOR THIS NETWORK (" + neuronLayerDescriptorString + ") **************");
+      log.info("*********** CREATED NEW NETWORK METRICS FOR THIS NETWORK (" + neuronLayerDescriptorString
+          + ") **************");
       metrics = new NetworkMetrics();
       networkMetricsCache.put(network, metrics);
     }
@@ -364,27 +368,6 @@ public class MlpNetworkTrainer implements LearningEventListener {
     metrics.setNumberOfAsymmetricWinsThisIteration(0);
     metrics.setNumberOfSymmetricWinsThisIteration(0);
     metrics.setNumberOfGamesThisIteration(0);
-  }
-
-  /**
-   * Validates the year. If not between the specified range, an exception is thrown,
-   * terminating the run.
-   * 
-   * Note: as you add years to the DB, you will need to modify this method accordingly.
-   * 
-   * TODO: Add a TournamentParticipantDao.fetchAllYears() method to return this list
-   * so it is dynamic.
-   * 
-   * @param year
-   *          The year to validate.
-   * 
-   * @throws RuntimeException
-   *           - if the year to validate is outside the supported range.
-   */
-  protected static void validateYear(Integer year) {
-    if (year < 2010 || year > 2016) {
-      throw new RuntimeException("Invalid year: " + year + " (must be between 2011 and 2016, inclusive)");
-    }
   }
 
   /**
@@ -494,10 +477,12 @@ public class MlpNetworkTrainer implements LearningEventListener {
    */
   private void randomizeNetworkWeights(NeuralNetwork<BackPropagation> network) {
     Random randWeight = new Random();
-    double minWeight = randWeight.nextDouble() * (NetworkProperties.getMinWeight() - NetworkProperties.getMinMinWeight())
-        + NetworkProperties.getMinMinWeight();
-    double maxWeight = randWeight.nextDouble() * (NetworkProperties.getMaxWeight() - NetworkProperties.getMinMaxWeight())
-        + NetworkProperties.getMinMaxWeight();
+    double minWeight =
+        randWeight.nextDouble() * (NetworkProperties.getMinWeight() - NetworkProperties.getMinMinWeight())
+            + NetworkProperties.getMinMinWeight();
+    double maxWeight =
+        randWeight.nextDouble() * (NetworkProperties.getMaxWeight() - NetworkProperties.getMinMaxWeight())
+            + NetworkProperties.getMinMaxWeight();
     log.info("Randomizing weights: min=" + minWeight + ", max=" + maxWeight);
     network.randomizeWeights(minWeight, maxWeight);
   }
@@ -541,7 +526,8 @@ public class MlpNetworkTrainer implements LearningEventListener {
     //
     // Get NetworkMetrics object from cache
     NetworkMetrics metrics = networkMetricsCache.get(network);
-    log.info("********* BEGINNING VALIDATION FOR YEARS " + Arrays.toString(metrics.getSimulationYears()) + " **************");
+    log.info("********* BEGINNING VALIDATION FOR YEARS " + Arrays.toString(metrics.getSimulationYears())
+        + " **************");
     for (Integer yearToSimulate : metrics.getSimulationYears()) {
       int numberOfWinnersThisYear = 0;
       int numberOfGamesThisYear = 0;
@@ -562,8 +548,9 @@ public class MlpNetworkTrainer implements LearningEventListener {
       numberOfWinners += numberOfWinnersThisYear;
       //
       // This year?
-      log.info("WINNING PERCENTAGE (" + yearToSimulate + "): " + 
-          BigDecimal.valueOf(numberOfWinnersThisYear*100.0/numberOfGamesThisYear).setScale(2, RoundingMode.HALF_UP) + 
+      log.info("WINNING PERCENTAGE (" + yearToSimulate + "): " +
+          BigDecimal.valueOf(numberOfWinnersThisYear * 100.0 / numberOfGamesThisYear).setScale(2, RoundingMode.HALF_UP)
+          +
           "% (" + numberOfWinnersThisYear + "/" + numberOfGamesThisYear + ")");
     }
     //
@@ -619,7 +606,8 @@ public class MlpNetworkTrainer implements LearningEventListener {
     // An asymmetric win/loss is one where the team one as LHS and lost as RHS (or vice versa).
     if (numberOfCorrectPicks == 2) {
       // Increment number of Symmetric wins
-      metrics.setNumberOfSymmetricWinsThisIteration(metrics.getNumberOfSymmetricWinsThisIteration() + numberOfCorrectPicks);
+      metrics.setNumberOfSymmetricWinsThisIteration(
+          metrics.getNumberOfSymmetricWinsThisIteration() + numberOfCorrectPicks);
       metrics.setTotalNumberOfSymmetricWins(metrics.getTotalNumberOfSymmetricWins() + numberOfCorrectPicks);
     } else if (numberOfCorrectPicks == 0) {
       // Increment number of symmetric losses
@@ -630,7 +618,8 @@ public class MlpNetworkTrainer implements LearningEventListener {
           metrics.getTotalNumberOfSymmetricLosses() + 2);
     } else {
       // Increment number of asymmetric wins
-      metrics.setNumberOfAsymmetricWinsThisIteration(metrics.getNumberOfAsymmetricWinsThisIteration() + numberOfCorrectPicks);
+      metrics.setNumberOfAsymmetricWinsThisIteration(
+          metrics.getNumberOfAsymmetricWinsThisIteration() + numberOfCorrectPicks);
       metrics.setTotalNumberOfAsymmetricWins(metrics.getTotalNumberOfAsymmetricWins() + numberOfCorrectPicks);
     }
     return numberOfCorrectPicks;
@@ -679,8 +668,9 @@ public class MlpNetworkTrainer implements LearningEventListener {
       // Get the normalized data for the home and away teams. Each iteration of the loop
       /// the actual teams switch places to hopefully eliminate any positional bias in the network,
       /// the idea being to get better picks.
-      DataSetRow dataSetRow = DataCreator.processAsDataSetRowForSimulation(seasonAnalytics, seasonDataHomeTeam[simulationIndex],
-          seasonDataAwayTeam[simulationIndex]);
+      DataSetRow dataSetRow =
+          DataCreator.processAsDataSetRowForSimulation(seasonAnalytics, seasonDataHomeTeam[simulationIndex],
+              seasonDataAwayTeam[simulationIndex]);
       //
       // Run the network and capture the output, which contains the win(index 0) and loss(index 1) percentages.
       double[] networkOutput = runNetwork(network, dataSetRow.getInput());
@@ -762,7 +752,7 @@ public class MlpNetworkTrainer implements LearningEventListener {
     // Calculate winning percentage
     BigDecimal winningPercentage = BigDecimal
         .valueOf(100.0 * metrics.getNumberOfWinsThisIteration() / metrics.getNumberOfGamesThisIteration()).setScale(5,
-        RoundingMode.HALF_UP);
+            RoundingMode.HALF_UP);
     //
     // Keep track of best and worst so far
     if (winningPercentage.doubleValue() > metrics.getBestNetworkWinPercentage()) {
@@ -778,14 +768,16 @@ public class MlpNetworkTrainer implements LearningEventListener {
       saveNetworkToFile(network);
       metrics.setNumberOfAcceptableNetworks(metrics.getNumberOfAcceptableNetworks() + 1);
     }
-    log.info("Number of winners: " + metrics.getNumberOfWinsThisIteration() + " out of " + metrics.getNumberOfGamesThisIteration()
+    log.info("Number of winners: " + metrics.getNumberOfWinsThisIteration() + " out of "
+        + metrics.getNumberOfGamesThisIteration()
         + " games played.");
     log.info("WINNING PERCENTAGE: " + winningPercentage.toPlainString() + "%");
     //
     // Calculate the "symmetric" winning percentage - that is, the number of wins that were both
     /// from Home and Away (no positional bias in the network).
     BigDecimal symmetricWinningPercentage = BigDecimal
-        .valueOf(100.0 * metrics.getNumberOfSymmetricWinsThisIteration() / metrics.getNumberOfGamesThisIteration()).setScale(5,
+        .valueOf(100.0 * metrics.getNumberOfSymmetricWinsThisIteration() / metrics.getNumberOfGamesThisIteration())
+        .setScale(5,
             RoundingMode.HALF_UP);
     log.info("SYMMETRIC WINNING PERCENTAGE: " + symmetricWinningPercentage.toPlainString() + "%");
   }
@@ -811,7 +803,8 @@ public class MlpNetworkTrainer implements LearningEventListener {
     BigDecimal winningPercentage = BigDecimal
         .valueOf(100.0 * metrics.getNumberOfWinsThisIteration() / metrics.getNumberOfGamesThisIteration()).setScale(5,
             RoundingMode.HALF_UP);
-    BigDecimal currentPerformance = BigDecimal.valueOf(winningPercentage.doubleValue()).setScale(0, RoundingMode.HALF_UP);
+    BigDecimal currentPerformance =
+        BigDecimal.valueOf(winningPercentage.doubleValue()).setScale(0, RoundingMode.HALF_UP);
     //
     // Return true if network performed above threshold, false otherwise
     return currentPerformance.doubleValue() >= NetworkProperties.getPerformanceThreshold().doubleValue();
@@ -840,8 +833,9 @@ public class MlpNetworkTrainer implements LearningEventListener {
     String maxError = Double.toString(learningRule.getMaxError());
     // String momentum = BigDecimal.valueOf(learningRule.getMomentum()).setScale(5,
     // RoundingMode.HALF_UP).toPlainString();
-    String networkError = BigDecimal.valueOf(100.0 * learningRule.getTotalNetworkError()).setScale(2, RoundingMode.HALF_UP)
-        .toPlainString();
+    String networkError =
+        BigDecimal.valueOf(100.0 * learningRule.getTotalNetworkError()).setScale(2, RoundingMode.HALF_UP)
+            .toPlainString();
     BigDecimal winningPercentage = BigDecimal
         .valueOf(100.0 * metrics.getNumberOfWinsThisIteration() / metrics.getNumberOfGamesThisIteration()).setScale(5,
             RoundingMode.HALF_UP);
@@ -914,8 +908,9 @@ public class MlpNetworkTrainer implements LearningEventListener {
     log.info("* Worst Learn time                : "
         + ((metrics.getWorstLearnTime() == Long.MIN_VALUE) ? "N/A" : metrics.getWorstLearnTime() / 1000 + "s"));
     log.info("* Average Learn time              : "
-        + BigDecimal.valueOf((double) metrics.getTotalLearnTime() / 1000 / metrics.getNumberOfIterationsSoFar()).setScale(2,
-            RoundingMode.HALF_UP)
+        + BigDecimal.valueOf((double) metrics.getTotalLearnTime() / 1000 / metrics.getNumberOfIterationsSoFar())
+            .setScale(2,
+                RoundingMode.HALF_UP)
         + "s");
     log.info("* Iteration Time (this loop)      : " + metrics.getIterationTime() / 1000 + "s");
     log.info("* Best Iteration time             : "
@@ -923,8 +918,9 @@ public class MlpNetworkTrainer implements LearningEventListener {
     log.info("* Worst Iteration time            : "
         + ((metrics.getWorstIterationTime() == Long.MIN_VALUE) ? "N/A" : metrics.getWorstIterationTime() / 1000 + "s"));
     log.info("* Average Iteration time          : "
-        + BigDecimal.valueOf((double) metrics.getTotalIterationTime() / 1000 / metrics.getNumberOfIterationsSoFar()).setScale(2,
-            RoundingMode.HALF_UP)
+        + BigDecimal.valueOf((double) metrics.getTotalIterationTime() / 1000 / metrics.getNumberOfIterationsSoFar())
+            .setScale(2,
+                RoundingMode.HALF_UP)
         + "s");
     log.info("* Number of games                 : " + metrics.getNumberOfGamesThisIteration());
     log.info("* Number of symetric wins         : " + metrics.getNumberOfSymmetricWinsThisIteration());
@@ -987,7 +983,8 @@ public class MlpNetworkTrainer implements LearningEventListener {
     sb.append("\tMax Error           : " + maxError + "\n");
     sb.append("\tMomentum            : " + momentum + "\n");
     sb.append("\tLayer Structure     : " + metrics.getLayerStructure() + "\n");
-    sb.append("\tTotal Network Error : " + BigDecimal.valueOf(learningRule.getTotalNetworkError()*100.0).setScale(2, RoundingMode.HALF_UP));
+    sb.append("\tTotal Network Error : "
+        + BigDecimal.valueOf(learningRule.getTotalNetworkError() * 100.0).setScale(2, RoundingMode.HALF_UP));
     log.info(sb.toString());
 
   }
@@ -1048,7 +1045,7 @@ public class MlpNetworkTrainer implements LearningEventListener {
     if (mbp.getCurrentIteration() == 1) {
       log.info("Epoch: " + mbp.getCurrentIteration() + " | Network error: " +
           BigDecimal.valueOf(currentNetworkError * 100.0).setScale(2, RoundingMode.HALF_UP) + "%");
-      NetworkMetrics metrics = networkMetricsCache.get((MultiLayerPerceptron) mbp.getNeuralNetwork());
+      NetworkMetrics metrics = networkMetricsCache.get(mbp.getNeuralNetwork());
       metrics.setPreviousEpochBreakNetworkError(currentNetworkError);
     }
     if (event.getEventType().equals(LearningEvent.Type.LEARNING_STOPPED)) {
@@ -1056,14 +1053,14 @@ public class MlpNetworkTrainer implements LearningEventListener {
           BigDecimal.valueOf(currentNetworkError * 100.0).setScale(2, RoundingMode.HALF_UP) + "%");
       log.info("Training completed in " + mbp.getCurrentIteration() + " Epochs");
     } else {
-      if (log.isTraceEnabled() && mbp.getCurrentIteration() %100 == 0) {
+      if (log.isTraceEnabled() && mbp.getCurrentIteration() % 100 == 0) {
         log.trace("Epoch: " + mbp.getCurrentIteration() + " | Network error: " +
             BigDecimal.valueOf(currentNetworkError * 100.0).setScale(2, RoundingMode.HALF_UP) + "%");
       }
       //
       // Every epoch break, let's see what's going on
       if (mbp.getCurrentIteration() % NetworkProperties.getEpochBreakIterationCount() == 0) {
-        NetworkMetrics metrics = networkMetricsCache.get((MultiLayerPerceptron) mbp.getNeuralNetwork());
+        NetworkMetrics metrics = networkMetricsCache.get(mbp.getNeuralNetwork());
         double networkErrorUptrend = currentNetworkError - metrics.getPreviousEpochBreakNetworkError();
         //
         // If the network error is going up, we will randomize the momentum and weights
@@ -1072,11 +1069,14 @@ public class MlpNetworkTrainer implements LearningEventListener {
             currentNetworkError > metrics.getPreviousEpochBreakNetworkError()
             && (networkErrorUptrend >= NetworkProperties.getMaxNetworkErrorUptrend())) {
           log.warn("* Network error trending upwards: previous error: "
-              + BigDecimal.valueOf(metrics.getPreviousEpochBreakNetworkError() * 100.0).setScale(2, RoundingMode.HALF_UP) +
+              + BigDecimal.valueOf(metrics.getPreviousEpochBreakNetworkError() * 100.0).setScale(2,
+                  RoundingMode.HALF_UP)
+              +
               "%, current error: " + BigDecimal.valueOf(currentNetworkError * 100.0).setScale(2, RoundingMode.HALF_UP) +
               ", trend is " + BigDecimal.valueOf(networkErrorUptrend * 100.0).setScale(2, RoundingMode.HALF_UP)
               + "% (max allowable is "
-              + BigDecimal.valueOf(NetworkProperties.getMaxNetworkErrorUptrend() * 100.0).setScale(2, RoundingMode.HALF_UP)
+              + BigDecimal.valueOf(NetworkProperties.getMaxNetworkErrorUptrend() * 100.0).setScale(2,
+                  RoundingMode.HALF_UP)
               + "%), computing new Momentum value...");
           //
           // Alter the momentum to see if it helps get us out of this upward error trend,
@@ -1098,7 +1098,7 @@ public class MlpNetworkTrainer implements LearningEventListener {
             BigDecimal.valueOf(metrics.getPreviousEpochBreakNetworkError() * 100.0).setScale(5, RoundingMode.HALF_UP)
             // previousNetworkError * 100.0
             + "%, " +
-            "Error Trend: " + 
+            "Error Trend: " +
             BigDecimal.valueOf(networkErrorUptrend * 100.0).setScale(5, RoundingMode.HALF_UP) +
             // networkErrorUptrend * 100.0 +
             "%");
