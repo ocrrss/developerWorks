@@ -27,6 +27,9 @@ enum ShipmentStatus {
   o ARRIVED
 }
 
+/**
+ * Directions of the compass
+ */
 enum CompassDirection {
   o N
   o S
