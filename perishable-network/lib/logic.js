@@ -103,6 +103,7 @@ function payOut(shipmentReceived) {
 function temperatureReading(temperatureReading) {
 
     var shipment = temperatureReading.shipment;
+    var NS = 'org.acme.shipping.perishable';
 
     console.log('Adding temperature ' + temperatureReading.centigrade + ' to shipment ' + shipment.$identifier);
 
@@ -112,7 +113,7 @@ function temperatureReading(temperatureReading) {
         shipment.temperatureReadings = [temperatureReading];
     }
 
-    return getAssetRegistry('org.acme.shipping.perishable.Shipment')
+    return getAssetRegistry(NS + '.Shipment')
         .then(function (shipmentRegistry) {
             // add the temp reading to the shipment
             return shipmentRegistry.update(shipment);
