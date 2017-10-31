@@ -6,8 +6,7 @@ Feature: IoT Perishable Network
         """
         [
         {"$class":"org.acme.shipping.perishable.Grower", "email":"grower@email.com", "address":{"$class":"org.acme.shipping.perishable.Address", "country":"USA"}, "accountBalance":0},
-        {"$class":"org.acme.shipping.perishable.Importer", "email":"supermarket@email.com", "address":{"$class":"org.acme.shipping.perishable.Address", "country":"UK"}, "accountBalance":0},
-        {"$class":"org.acme.shipping.perishable.Shipper", "email":"shipper@email.com", "address":{"$class":"org.acme.shipping.perishable.Address", "country":"Panama"}, "accountBalance":0}
+        {"$class":"org.acme.shipping.perishable.Importer", "email":"supermarket@email.com", "address":{"$class":"org.acme.shipping.perishable.Address", "country":"UK"}, "accountBalance":0}
         ]
         """
         And I have added the following asset of type org.acme.shipping.perishable.Contract
@@ -17,35 +16,14 @@ Feature: IoT Perishable Network
         And I have added the following asset of type org.acme.shipping.perishable.Shipment
             | shipmentId | type    | status     | unitCount | contract |
             | SHIP_001   | BANANAS | IN_TRANSIT | 5000      | CON_001  |
-
-#    Scenario: Verify setups
-#        Then I should have the following participant
-#        """
-#        {"$class":"org.acme.shipping.perishable.Grower", "email":"grower@email.com", "address":{"$class":"org.acme.shipping.perishable.Address", "country":"USA"}, "accountBalance":0}
-#        """
-#        And I should have the following participant
-#        """
-#        {"$class":"org.acme.shipping.perishable.Importer", "email":"supermarket@email.com", "address":{"$class":"org.acme.shipping.perishable.Address", "country":"UK"}, "accountBalance":0}
-#        """
-#        And I should have the following participant
-#        """
-#        {"$class":"org.acme.shipping.perishable.Shipper", "email":"shipper@email.com", "address":{"$class":"org.acme.shipping.perishable.Address", "country":"Panama"}, "accountBalance":0}
-#        """
-#        And I should have the following asset of type org.acme.shipping.perishable.Contract
-#            | contractId | grower           | shipper               | importer           | arrivalDateTime  | unitPrice | minTemperature | maxTemperature | minPenaltyFactor | maxPenaltyFactor |
-#            | CON_001    | grower@email.com | supermarket@email.com | supermarket@email.com | 10/26/2017 00:00 | 0.5       | 2              | 10             | 0.2              | 0.1              | 
-
-
-    Scenario: When the temperature range is within the agreed-upon boundaries
-        When I submit the following transactions of type org.acme.shipping.perishable.TemperatureReading
+        And I submit the following transactions of type org.acme.shipping.perishable.TemperatureReading
             | shipment | centigrade |
             | SHIP_001 | 4          |
-            | SHIP_001 | 7          |
-            | SHIP_001 | 6          |
             | SHIP_001 | 5          |
             | SHIP_001 | 10         |
 
-        And I submit the following transaction of type org.acme.shipping.perishable.ShipmentReceived
+    Scenario: When the temperature range is within the agreed-upon boundaries
+        When I submit the following transaction of type org.acme.shipping.perishable.ShipmentReceived
             | shipment |
             | SHIP_001 |
         
@@ -53,21 +31,16 @@ Feature: IoT Perishable Network
         """
         [
         {"$class":"org.acme.shipping.perishable.Grower", "email":"grower@email.com", "address":{"$class":"org.acme.shipping.perishable.Address", "country":"USA"}, "accountBalance":2500},
-        {"$class":"org.acme.shipping.perishable.Importer", "email":"supermarket@email.com", "address":{"$class":"org.acme.shipping.perishable.Address", "country":"UK"}, "accountBalance":-2500},
-        {"$class":"org.acme.shipping.perishable.Shipper", "email":"shipper@email.com", "address":{"$class":"org.acme.shipping.perishable.Address", "country":"Panama"}, "accountBalance":0}
+        {"$class":"org.acme.shipping.perishable.Importer", "email":"supermarket@email.com", "address":{"$class":"org.acme.shipping.perishable.Address", "country":"UK"}, "accountBalance":-2500}
         ]
         """
     
     Scenario: When the low/min temperature threshold is breached by 2 degrees C
-        When I submit the following transactions of type org.acme.shipping.perishable.TemperatureReading
+        Given I submit the following transaction of type org.acme.shipping.perishable.TemperatureReading
             | shipment | centigrade |
-            | SHIP_001 | 4          |
-            | SHIP_001 | 7          |
-            | SHIP_001 | 6          |
-            | SHIP_001 | 5          |
             | SHIP_001 | 0          |
 
-        And I submit the following transaction of type org.acme.shipping.perishable.ShipmentReceived
+        When I submit the following transaction of type org.acme.shipping.perishable.ShipmentReceived
             | shipment |
             | SHIP_001 |
         
@@ -75,21 +48,16 @@ Feature: IoT Perishable Network
         """
         [
         {"$class":"org.acme.shipping.perishable.Grower", "email":"grower@email.com", "address":{"$class":"org.acme.shipping.perishable.Address", "country":"USA"}, "accountBalance":500},
-        {"$class":"org.acme.shipping.perishable.Importer", "email":"supermarket@email.com", "address":{"$class":"org.acme.shipping.perishable.Address", "country":"UK"}, "accountBalance":-500},
-        {"$class":"org.acme.shipping.perishable.Shipper", "email":"shipper@email.com", "address":{"$class":"org.acme.shipping.perishable.Address", "country":"Panama"}, "accountBalance":0}
+        {"$class":"org.acme.shipping.perishable.Importer", "email":"supermarket@email.com", "address":{"$class":"org.acme.shipping.perishable.Address", "country":"UK"}, "accountBalance":-500}
         ]
         """
     
     Scenario: When the hi/max temperature threshold is breached by 2 degrees C
-        When I submit the following transactions of type org.acme.shipping.perishable.TemperatureReading
+        Given I submit the following transaction of type org.acme.shipping.perishable.TemperatureReading
             | shipment | centigrade |
             | SHIP_001 | 12          |
-            | SHIP_001 | 7          |
-            | SHIP_001 | 6          |
-            | SHIP_001 | 5          |
-            | SHIP_001 | 10          |
 
-        And I submit the following transaction of type org.acme.shipping.perishable.ShipmentReceived
+        When I submit the following transaction of type org.acme.shipping.perishable.ShipmentReceived
             | shipment |
             | SHIP_001 |
         
@@ -97,8 +65,7 @@ Feature: IoT Perishable Network
         """
         [
         {"$class":"org.acme.shipping.perishable.Grower", "email":"grower@email.com", "address":{"$class":"org.acme.shipping.perishable.Address", "country":"USA"}, "accountBalance":1500},
-        {"$class":"org.acme.shipping.perishable.Importer", "email":"supermarket@email.com", "address":{"$class":"org.acme.shipping.perishable.Address", "country":"UK"}, "accountBalance":-1500},
-        {"$class":"org.acme.shipping.perishable.Shipper", "email":"shipper@email.com", "address":{"$class":"org.acme.shipping.perishable.Address", "country":"Panama"}, "accountBalance":0}
+        {"$class":"org.acme.shipping.perishable.Importer", "email":"supermarket@email.com", "address":{"$class":"org.acme.shipping.perishable.Address", "country":"UK"}, "accountBalance":-1500}
         ]
         """
     

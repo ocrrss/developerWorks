@@ -23,8 +23,8 @@ function payOut(shipmentReceived) {
     var shipment = shipmentReceived.shipment;
     var payOut = contract.unitPrice * shipment.unitCount;
 
-    console.log('Received at: ' + shipmentReceived.timestamp);
-    console.log('Contract arrivalDateTime: ' + contract.arrivalDateTime);
+    //console.log('Received at: ' + shipmentReceived.timestamp);
+    //console.log('Contract arrivalDateTime: ' + contract.arrivalDateTime);
 
     // set the status of the shipment
     shipment.status = 'ARRIVED';
@@ -32,7 +32,7 @@ function payOut(shipmentReceived) {
     // if the shipment did not arrive on time the payout is zero
     if (shipmentReceived.timestamp > contract.arrivalDateTime) {
         payOut = 0;
-        console.log('Late shipment');
+        //console.log('Late shipment');
     } else {
         // find the lowest temperature reading
         if (shipment.temperatureReadings) {
@@ -43,19 +43,19 @@ function payOut(shipmentReceived) {
             var lowestReading = shipment.temperatureReadings[0];
             var highestReading = shipment.temperatureReadings[shipment.temperatureReadings.length - 1];
             var penalty = 0;
-            console.log('Lowest temp reading: ' + lowestReading.centigrade);
-            console.log('Highest temp reading: ' + highestReading.centigrade);
+            //console.log('Lowest temp reading: ' + lowestReading.centigrade);
+            //console.log('Highest temp reading: ' + highestReading.centigrade);
 
             // does the lowest temperature violate the contract?
             if (lowestReading.centigrade < contract.minTemperature) {
                 penalty += (contract.minTemperature - lowestReading.centigrade) * contract.minPenaltyFactor;
-                console.log('Min temp penalty: ' + penalty);
+                //console.log('Min temp penalty: ' + penalty);
             }
 
             // does the highest temperature violate the contract?
             if (highestReading.centigrade > contract.maxTemperature) {
                 penalty += (highestReading.centigrade - contract.maxTemperature) * contract.maxPenaltyFactor;
-                console.log('Max temp penalty: ' + penalty);
+                //console.log('Max temp penalty: ' + penalty);
             }
 
             // apply any penalities
@@ -67,12 +67,12 @@ function payOut(shipmentReceived) {
         }
     }
 
-    console.log('Payout: ' + payOut);
+    //console.log('Payout: ' + payOut);
     contract.grower.accountBalance += payOut;
     contract.importer.accountBalance -= payOut;
 
-    console.log('Grower: ' + contract.grower.$identifier + ' new balance: ' + contract.grower.accountBalance);
-    console.log('Importer: ' + contract.importer.$identifier + ' new balance: ' + contract.importer.accountBalance);
+    //console.log('Grower: ' + contract.grower.$identifier + ' new balance: ' + contract.grower.accountBalance);
+    //console.log('Importer: ' + contract.importer.$identifier + ' new balance: ' + contract.importer.accountBalance);
 
     return getParticipantRegistry('org.acme.shipping.perishable.Grower')
         .then(function (growerRegistry) {
@@ -103,9 +103,9 @@ function payOut(shipmentReceived) {
 function temperatureReading(temperatureReading) {
 
     var shipment = temperatureReading.shipment;
+    var NS = 'org.acme.shipping.perishable';
     var contract = shipment.contract;
     var factory = getFactory();
-    var NS = "org.acme.shipping.perishable";
 
     //console.log('Adding temperature ' + temperatureReading.centigrade + ' to shipment ' + shipment.$identifier);
 
@@ -121,7 +121,6 @@ function temperatureReading(temperatureReading) {
         temperatureEvent.shipment = shipment;
         temperatureEvent.temperature = temperatureReading.centigrade;
         temperatureEvent.message = 'Temperature threshold violated! Emitting TemperatureEvent for shipment: ' + shipment.$identifier;
-        //console.log(temperatureEvent.message);
         emit(temperatureEvent);
     }
 
@@ -144,22 +143,20 @@ function gpsReading(gpsReading) {
     var shipment = gpsReading.shipment;
     var PORT_OF_NEW_YORK = '/LAT:40.6840N/LONG:74.0062W';
     
-    var latLong = '/LAT:' + gpsReading.latitude + gpsReading.latitudeDir + '/LONG:' +
-        gpsReading.longitude + gpsReading.longitudeDir;
-    //console.log('Adding GPS reading: ' + latLong + ' to shipment ' + shipment.$identifier);
-    
     if (shipment.gpsReadings) {
         shipment.gpsReadings.push(gpsReading);
     } else {
         shipment.gpsReadings = [gpsReading];
     }
 
+    var latLong = '/LAT:' + gpsReading.latitude + gpsReading.latitudeDir + '/LONG:' +
+    gpsReading.longitude + gpsReading.longitudeDir;
+
     if (latLong == PORT_OF_NEW_YORK) {
         var shipmentInPortEvent = factory.newEvent(NS, 'ShipmentInPortEvent');
         shipmentInPortEvent.shipment = shipment;
         var message = 'Shipment has reached the destination port of ' + PORT_OF_NEW_YORK;
         shipmentInPortEvent.message = message;
-        //console.log(message);
         emit(shipmentInPortEvent);
     }
 
@@ -203,12 +200,9 @@ function setupDemo(setupDemo) {
 
     // create the contract
     var contract = factory.newResource(NS, 'Contract', 'CON_001');
-    //contract.grower = factory.newRelationship(NS, 'Grower', 'farmer@email.com');
-    contract.grower = grower;
-    //contract.importer = factory.newRelationship(NS, 'Importer', 'supermarket@email.com');
-    contract.importer = importer;
-    //contract.shipper = factory.newRelationship(NS, 'Shipper', 'shipper@email.com');
-    contract.shipper = shipper;
+    contract.grower = factory.newRelationship(NS, 'Grower', 'farmer@email.com');
+    contract.importer = factory.newRelationship(NS, 'Importer', 'supermarket@email.com');
+    contract.shipper = factory.newRelationship(NS, 'Shipper', 'shipper@email.com');
     var tomorrow = setupDemo.timestamp;
     tomorrow.setDate(tomorrow.getDate() + 1);
     contract.arrivalDateTime = tomorrow; // the shipment has to arrive tomorrow
@@ -223,8 +217,7 @@ function setupDemo(setupDemo) {
     shipment.type = 'BANANAS';
     shipment.status = 'IN_TRANSIT';
     shipment.unitCount = 5000;
-    //shipment.contract = factory.newRelationship(NS, 'Contract', 'CON_001');
-    shipment.contract = contract;
+    shipment.contract = factory.newRelationship(NS, 'Contract', 'CON_001');
     return getParticipantRegistry(NS + '.Grower')
         .then(function (growerRegistry) {
             // add the growers
