@@ -9,6 +9,7 @@ Feature: IoT Perishable Network
         {"$class":"org.acme.shipping.perishable.Importer", "email":"supermarket@email.com", "address":{"$class":"org.acme.shipping.perishable.Address", "country":"UK"}, "accountBalance":0}
         ]
         """
+        
         And I have added the following asset of type org.acme.shipping.perishable.Contract
             | contractId | grower           | shipper               | importer           | arrivalDateTime  | unitPrice | minTemperature | maxTemperature | minPenaltyFactor | maxPenaltyFactor |
             | CON_001    | grower@email.com | supermarket@email.com | supermarket@email.com | 10/26/2018 00:00 | 0.5       | 2              | 10             | 0.2              | 0.1              | 
@@ -16,6 +17,7 @@ Feature: IoT Perishable Network
         And I have added the following asset of type org.acme.shipping.perishable.Shipment
             | shipmentId | type    | status     | unitCount | contract |
             | SHIP_001   | BANANAS | IN_TRANSIT | 5000      | CON_001  |
+
         And I submit the following transactions of type org.acme.shipping.perishable.TemperatureReading
             | shipment | centigrade |
             | SHIP_001 | 4          |
