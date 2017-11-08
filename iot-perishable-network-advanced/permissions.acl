@@ -1,0 +1,102 @@
+/**
+ * System and Network Admin access rules
+ */
+rule SystemACL {
+  description:  "System ACL to permit all access"
+  participant: "org.hyperledger.composer.system.Participant"
+  operation: ALL
+  resource: "org.hyperledger.composer.system.**"
+  action: ALLOW
+}
+
+rule NetworkAdminUser {
+    description: "Grant business network administrators full access to user resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
+
+/**
+ * Rules for all Participants in the org.acme.shipping.perishable namespace
+ */
+rule ShipmentUser {
+    description: "Grant All Participants in org.acme.shipping.perishable namespace READ/UPDATE access to Shipment resources"
+    participant: "org.acme.shipping.perishable.*"
+    operation: READ,UPDATE
+    resource: "org.acme.shipping.perishable.Shipment"
+    action: ALLOW
+}
+
+/**
+ * Rules for transactions
+ */
+rule ShipmentPackedTransactionUser {
+    description: "Grant Growers access to invoke ShipmentPacked transaction"
+    participant: "org.acme.shipping.perishable.Grower"
+    operation: CREATE
+    resource: "org.acme.shipping.perishable.ShipmentPacked"
+    action: ALLOW
+}
+
+rule ShipmentPickupTransactionUser {
+    description: "Grant Shippers access to invoke ShipmentPickup transaction"
+    participant: "org.acme.shipping.perishable.Shipper"
+    operation: CREATE
+    resource: "org.acme.shipping.perishable.ShipmentPickup"
+    action: ALLOW
+}
+
+rule ShipmentLoadedTransactionUser {
+    description: "Grant Shippers access to invoke ShipmentLoaded transaction"
+    participant: "org.acme.shipping.perishable.Shipper"
+    operation: CREATE
+    resource: "org.acme.shipping.perishable.ShipmentLoaded"
+    action: ALLOW
+}
+
+/**
+ * Rules for Grower Participants
+ */
+rule GrowerUser {
+    description: "Grant Growers access to Grower resources"
+    participant: "org.acme.shipping.perishable.Grower"
+    operation: READ
+    resource: "org.acme.shipping.perishable.Grower"
+    action: ALLOW
+}
+
+/**
+ * Rules for Shipper Participants
+ */
+rule ShipperUser {
+    description: "Grant Shippers access to Shipper resources"
+    participant: "org.acme.shipping.perishable.Shipper"
+    operation: READ
+    resource: "org.acme.shipping.perishable.Shipper"
+    action: ALLOW
+}
+
+/**
+ * Rules for IoT Devices
+ */
+rule GpsSensorUser {
+    description: "Grant IoT GPS Sensor devices full access to the appropriate transactions"
+    participant: "org.acme.shipping.perishable.IoTDevice"
+    operation: READ,UPDATE,CREATE
+    resource: "org.acme.shipping.perishable.GpsReading"
+    action: ALLOW
+}
+
+/**
+ * Make sure all resources are locked down by default.
+ * If permissions need to be granted to certain resources, that should happen
+ * above this rule. Anything not explicitly specified gets locked down.
+ */
+rule Default {
+    description: "Deny all participants access to all resources"
+    participant: "ANY"
+    operation: ALL
+    resource: "org.acme.shipping.perishable.*"
+    action: DENY
+}
