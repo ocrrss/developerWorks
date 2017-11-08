@@ -19,6 +19,7 @@
  */
 function receiveShipment(shipmentReceived) {
 
+    var NS = 'org.acme.shipping.perishable';
     var contract = shipmentReceived.shipment.contract;
     var shipment = shipmentReceived.shipment;
     var payOut = contract.unitPrice * shipment.unitCount;
@@ -69,6 +70,14 @@ function receiveShipment(shipmentReceived) {
             }
         }
     }
+
+    var factory = getFactory();
+    var shipmentReceivedEvent = factory.newEvent(NS, 'ShipmentReceivedEvent');
+    var message = 'Shipment ' + shipment.$identifier + ' received';
+    //console.log(message);
+    shipmentReceivedEvent.message = message;
+    shipmentReceivedEvent.shipment = shipment;
+    emit(shipmentReceivedEvent);
 
     //console.log('Payout: ' + payOut);
     contract.grower.accountBalance += payOut;

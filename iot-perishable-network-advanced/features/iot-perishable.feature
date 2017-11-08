@@ -97,5 +97,13 @@ Feature: IoT Perishable Network Basic Test Scenarios
             | SHIP_001 | 120000      | 20171025    | 40.6840  | N           | 74.0062   | W            |
 
         Then I should have received the following event of type org.acme.shipping.perishable.ShipmentInPortEvent
-            | message                                                                           | shipment |
+            | message                                                                  | shipment |
             | Shipment has reached the destination port of /LAT:40.6840N/LONG:74.0062W | SHIP_001 |
+
+    Scenario: When shipment is received a ShipmentReceivedEvent should be broadcast
+        When I submit the following transaction of type org.acme.shipping.perishable.ShipmentReceived
+            | shipment |
+            | SHIP_001 |
+        Then I should have received the following event of type org.acme.shipping.perishable.ShipmentReceivedEvent
+            | message                    | shipment |
+            | Shipment SHIP_001 received | SHIP_001 |
