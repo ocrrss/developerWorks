@@ -48,18 +48,18 @@ abstract transaction ShipmentTransaction {
  * A Shipment has been packed and is ready for pickup
  */
 transaction ShipmentPacked extends ShipmentTransaction {
-  o DateTime packedDateTime
 }
 
 /**
  * A Shipment has been picked up
  */
 transaction ShipmentPickup extends ShipmentTransaction {
-  o DateTime pickupDateTime
 }
 
+/**
+ * A Shipment has been loaded for transport
+ */
 transaction ShipmentLoaded extends ShipmentTransaction {
-  o DateTime loadedDateTime
 }
 
 /**

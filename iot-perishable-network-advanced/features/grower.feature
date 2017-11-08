@@ -50,8 +50,8 @@ Feature: Stuff related to Growers
     Scenario: grower1 invokes the ShipmentPacked transaction
         When I use the identity grower1
         And I submit the following transaction of type org.acme.shipping.perishable.ShipmentPacked
-            | packedDateTime   | shipment |
-            | 11/08/2018 08:00 | SHIP_001 |
+            | shipment |
+            | SHIP_001 |
         Then I should have received the following event of type org.acme.shipping.perishable.ShipmentPackedEvent
             | message                               | shipment |
             | Shipment packed for shipment SHIP_001 | SHIP_001 |
@@ -59,6 +59,6 @@ Feature: Stuff related to Growers
     Scenario: shipper1 cannot invoke the ShipmentPacked transaction
         When I use the identity shipper1
         And I submit the following transaction of type org.acme.shipping.perishable.ShipmentPacked
-            | packedDateTime   | shipment |
-            | 11/08/2018 08:00 | SHIP_001 |
+            | shipment |
+            | SHIP_001 |
         Then I should get an error matching /Participant .* does not have 'CREATE' access to resource/
