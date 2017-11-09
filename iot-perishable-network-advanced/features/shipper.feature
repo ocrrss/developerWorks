@@ -40,8 +40,8 @@ Feature: Stuff related to Shippers
     Scenario: shipper1 invokes the ShipmentPickup transaction
         When I use the identity shipper1
         And I submit the following transaction of type org.acme.shipping.perishable.ShipmentPickup
-            | pickupDateTime   | shipment |
-            | 11/08/2018 12:00 | SHIP_001 |
+            | shipment |
+            | SHIP_001 |
         Then I should have received the following event of type org.acme.shipping.perishable.ShipmentPickupEvent
             | message                                  | shipment |
             | Shipment picked up for shipment SHIP_001 | SHIP_001 |

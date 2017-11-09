@@ -28,7 +28,7 @@ let grower_id = 'farmer@email.com';
 let importer_id = 'supermarket@email.com';
 let factory;
 
-describe('Perishable Shipping Network', () => {
+describe('Advanced IoT Perishable Shipping Network', () => {
 
     let businessNetworkConnection;
 
@@ -49,7 +49,7 @@ describe('Perishable Shipping Network', () => {
         })
         .then(() => {
             businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
-            return businessNetworkConnection.connect('defaultProfile', 'perishable-network', 'admin', 'Xurw3yU9zI0l');
+            return businessNetworkConnection.connect('defaultProfile', 'iot-perishable-network-advanced', 'admin', 'Xurw3yU9zI0l');
         })
         .then(() => {
             // submit the setup demo transaction

@@ -12,7 +12,14 @@
  * limitations under the License.
  */
 
+ /**
+  * JSP - Just demonstrates that you don't have to have all your chaincode in logic.js
+  * (it will get quite cluttered over time).
+  */
+
 /**
+ * ShipmentPacked transaction - invoked when the Shipment is packed and ready for pickup.
+ * 
  * @param {org.acme.shipping.perishable.ShipmentPacked} shipmentPacked - the ShipmentPacked transaction
  * @transaction
  */
@@ -46,6 +53,8 @@ function packShipment(shipmentPacked) {
 }
 
 /**
+ * ShipmentPickup - invoked when the Shipment has been picked up from the packer.
+ * 
  * @param {org.acme.shipping.perishable.ShipmentPickup} shipmentPickup - the ShipmentPickup transaction
  * @transaction
  */
@@ -79,6 +88,8 @@ function pickupShipment(shipmentPickup) {
 }
 
 /**
+ * ShipmentLoaded - invoked when the Shipment has been loaded onto the container ship.
+ * 
  * @param {org.acme.shipping.perishable.ShipmentLoaded} shipmentLoaded - the ShipmentLoaded transaction
  * @transaction
  */

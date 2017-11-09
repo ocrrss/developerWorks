@@ -168,7 +168,7 @@ participant Importer extends Business {
 /**
  * An IoTDevice is any device that is part of the network
  */
-participant IoTDevice identified by deviceId {
+abstract participant IoTDevice identified by deviceId {
   o String deviceId
 }
 

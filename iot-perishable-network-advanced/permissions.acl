@@ -18,7 +18,34 @@ rule NetworkAdminUser {
 }
 
 /**
- * Rules for Assets
+ * Rules for Participant registry access
+ */
+rule GrowerUser {
+    description: "Grant Growers access to Grower resources"
+    participant: "org.acme.shipping.perishable.Grower"
+    operation: READ
+    resource: "org.acme.shipping.perishable.Grower"
+    action: ALLOW
+}
+
+rule ShipperUser {
+    description: "Grant Shippers access to Shipper resources"
+    participant: "org.acme.shipping.perishable.Shipper"
+    operation: READ
+    resource: "org.acme.shipping.perishable.Shipper"
+    action: ALLOW
+}
+
+rule ImporterUser {
+    description: "Grant Importers access to Importer resources"
+    participant: "org.acme.shipping.perishable.Importer"
+    operation: READ
+    resource: "org.acme.shipping.perishable.Importer"
+    action: ALLOW
+}
+
+/**
+ * Rules for Asset registry access
  */
 rule ShipmentUser {
     description: "Grant All Participants in org.acme.shipping.perishable namespace READ/UPDATE access to Shipment assets"
@@ -37,7 +64,7 @@ rule ContractUser {
 }
 
 /**
- * Rules for Transactions
+ * Rules for Transaction invocations
  */
 rule ShipmentPackedTransactionUser {
     description: "Grant Growers access to invoke ShipmentPacked transaction"
@@ -79,22 +106,11 @@ rule TemperatureReadingTransactionUser {
     action: ALLOW
 }
 
-/**
- * Rules for Participants
- */
-rule GrowerUser {
-    description: "Grant Growers access to Grower resources"
-    participant: "org.acme.shipping.perishable.Grower"
-    operation: READ
-    resource: "org.acme.shipping.perishable.Grower"
-    action: ALLOW
-}
-
-rule ShipperUser {
-    description: "Grant Shippers access to Shipper resources"
-    participant: "org.acme.shipping.perishable.Shipper"
-    operation: READ
-    resource: "org.acme.shipping.perishable.Shipper"
+rule ShipmentReceivedTransactionUser {
+    description: "Grant Importers access to invoke the ShipmentReceived transaction"
+    participant: "org.acme.shipping.perishable.Importer"
+    operation: CREATE
+    resource: "org.acme.shipping.perishable.ShipmentReceived"
     action: ALLOW
 }
 
