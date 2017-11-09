@@ -18,18 +18,26 @@ rule NetworkAdminUser {
 }
 
 /**
- * Rules for all Participants in the org.acme.shipping.perishable namespace
+ * Rules for Assets
  */
 rule ShipmentUser {
-    description: "Grant All Participants in org.acme.shipping.perishable namespace READ/UPDATE access to Shipment resources"
+    description: "Grant All Participants in org.acme.shipping.perishable namespace READ/UPDATE access to Shipment assets"
     participant: "org.acme.shipping.perishable.*"
     operation: READ,UPDATE
     resource: "org.acme.shipping.perishable.Shipment"
     action: ALLOW
 }
 
+rule ContractUser {
+    description: "Grant All Participants in org.acme.shipping.perishable namespace READ/UPDATE access to Contract assets"
+    participant: "org.acme.shipping.perishable.*"
+    operation: READ,UPDATE
+    resource: "org.acme.shipping.perishable.Contract"
+    action: ALLOW
+}
+
 /**
- * Rules for transactions
+ * Rules for Transactions
  */
 rule ShipmentPackedTransactionUser {
     description: "Grant Growers access to invoke ShipmentPacked transaction"
@@ -55,8 +63,24 @@ rule ShipmentLoadedTransactionUser {
     action: ALLOW
 }
 
+rule GpsReadingTransactionUser {
+    description: "Grant IoT GPS Sensor devices full access to the appropriate transactions"
+    participant: "org.acme.shipping.perishable.GpsSensor"
+    operation: CREATE
+    resource: "org.acme.shipping.perishable.GpsReading"
+    action: ALLOW
+}
+
+rule TemperatureReadingTransactionUser {
+    description: "Grant IoT Temperature Sensor devices full access to the appropriate transactions"
+    participant: "org.acme.shipping.perishable.TemperatureSensor"
+    operation: CREATE
+    resource: "org.acme.shipping.perishable.TemperatureReading"
+    action: ALLOW
+}
+
 /**
- * Rules for Grower Participants
+ * Rules for Participants
  */
 rule GrowerUser {
     description: "Grant Growers access to Grower resources"
@@ -66,25 +90,11 @@ rule GrowerUser {
     action: ALLOW
 }
 
-/**
- * Rules for Shipper Participants
- */
 rule ShipperUser {
     description: "Grant Shippers access to Shipper resources"
     participant: "org.acme.shipping.perishable.Shipper"
     operation: READ
     resource: "org.acme.shipping.perishable.Shipper"
-    action: ALLOW
-}
-
-/**
- * Rules for IoT Devices
- */
-rule GpsSensorUser {
-    description: "Grant IoT GPS Sensor devices full access to the appropriate transactions"
-    participant: "org.acme.shipping.perishable.IoTDevice"
-    operation: READ,UPDATE,CREATE
-    resource: "org.acme.shipping.perishable.GpsReading"
     action: ALLOW
 }
 
