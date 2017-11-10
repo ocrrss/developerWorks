@@ -49,7 +49,7 @@ describe('Perishable Shipping Network', () => {
         })
         .then(() => {
             businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
-            return businessNetworkConnection.connect('defaultProfile', 'perishable-network', 'admin', 'Xurw3yU9zI0l');
+            return businessNetworkConnection.connect('defaultProfile', 'iot-perishable-network', 'admin', 'Xurw3yU9zI0l');
         })
         .then(() => {
             // submit the setup demo transaction
