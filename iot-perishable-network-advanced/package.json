@@ -1,13 +1,14 @@
 {
   "engines": {
-    "composer": "^0.14.0"
+    "composer": "^0.15.0"
   },
   "name": "iot-perishable-network-advanced",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "Advanced Perishable Goods Business Network",
   "networkImage": "https://github.com/makotogo/developerWorks/iot-perishable-network-advanced/networkimage.svg",
   "networkImageanimated": "https://github.com/makotogo/developerWorks/iot-perishable-network-advanced/networkimageanimated.svg",
   "scripts": {
+    "clean": "rm -Rf ./node_modules ./dist ./composer-logs ./out",
     "prepublish": "mkdirp ./dist && composer archive create  --sourceType dir --sourceName . -a ./dist/iot-perishable-network-advanced.bna",
     "pretest": "npm run lint",
     "lint": "eslint .",
