@@ -1,5 +1,7 @@
-# Perishable Goods Network
-The business network defines a contract between growers, shippers, and importers. The contract stipulates that: On receipt of the shipment the importer pays the grower the unit price x the number of units in the shipment. Shipments that arrive late are free. Shipments that have breached the low temperate threshold have a penalty applied proportional to the magnitude of the breach x a penalty factor. Shipments that have breached the high temperate threshold have a penalty applied proportional to the magnitude of the breach x a penalty factor.
+# IoT Perishable Goods Network
+Example business network that shows growers, shippers and importers defining contracts for the price of perishable goods, based on temperature readings from IoT sensors in the shipping containers.
+
+The business network defines a contract between growers and importers. The contract stipulates that: On receipt of the shipment the importer pays the grower the unit price x the number of units in the shipment. Shipments that arrive late are free. Shipments that have breached the low temperate threshold have a penalty applied proportional to the magnitude of the breach x a penalty factor. Shipments that have breached the high temperate threshold have a penalty applied proportional to the magnitude of the breach x a penalty factor.
 
 The order of events in this scenario is something like this:
 
@@ -82,10 +84,10 @@ Submit a `GpsReading` transaction:
   "$class": "org.acme.shipping.perishable.GpsReading",
   "readingTime": "120000",
   "readingDate": "20171024",
-  "latitude":"",
+  "latitude":"40.6840",
   "latitudeDir":"N",
-  "longitude":"",
-  "laongitudeDir":"",
+  "longitude":"74.0062",
+  "laongitudeDir":"W",
 }
 ```
 
