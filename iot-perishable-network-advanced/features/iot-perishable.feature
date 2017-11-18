@@ -9,6 +9,13 @@ Feature: IoT Perishable Network Basic Test Scenarios
         {"$class":"org.acme.shipping.perishable.Importer", "email":"supermarket@email.com", "address":{"$class":"org.acme.shipping.perishable.Address", "country":"UK"}, "accountBalance":0}
         ]
         """
+        And I have added the following participants of type org.acme.shipping.perishable.TemperatureSensor
+            | deviceId |
+            | TEMP_001 |
+
+        And I have issued the participant org.acme.shipping.perishable.Grower#grower@email.com with the identity grower1
+        And I have issued the participant org.acme.shipping.perishable.Importer#supermarket@email.com with the identity importer1
+        And I have issued the participant org.acme.shipping.perishable.TemperatureSensor#TEMP_001 with the identity sensor_temp1
         
         And I have added the following asset of type org.acme.shipping.perishable.Contract
             | contractId | grower           | shipper               | importer           | arrivalDateTime  | unitPrice | minTemperature | maxTemperature | minPenaltyFactor | maxPenaltyFactor |
@@ -25,7 +32,8 @@ Feature: IoT Perishable Network Basic Test Scenarios
             | SHIP_001 | 10         |
 
     Scenario: When the temperature range is within the agreed-upon boundaries
-        When I submit the following transaction of type org.acme.shipping.perishable.ShipmentReceived
+        When I use the identity importer1
+        And I submit the following transaction of type org.acme.shipping.perishable.ShipmentReceived
             | shipment |
             | SHIP_001 |
         
@@ -38,11 +46,14 @@ Feature: IoT Perishable Network Basic Test Scenarios
         """
     
     Scenario: When the low/min temperature threshold is breached by 2 degrees C
-        Given I submit the following transaction of type org.acme.shipping.perishable.TemperatureReading
+        When I use the identity sensor_temp1
+        And I submit the following transaction of type org.acme.shipping.perishable.TemperatureReading
             | shipment | centigrade |
             | SHIP_001 | 0          |
 
-        When I submit the following transaction of type org.acme.shipping.perishable.ShipmentReceived
+        Then I use the identity importer1
+
+        And I submit the following transaction of type org.acme.shipping.perishable.ShipmentReceived
             | shipment |
             | SHIP_001 |
         
@@ -55,9 +66,12 @@ Feature: IoT Perishable Network Basic Test Scenarios
         """
     
     Scenario: When the hi/max temperature threshold is breached by 2 degrees C
-        Given I submit the following transaction of type org.acme.shipping.perishable.TemperatureReading
+        When I use the identity sensor_temp1
+        And I submit the following transaction of type org.acme.shipping.perishable.TemperatureReading
             | shipment | centigrade |
             | SHIP_001 | 12          |
+
+        Then I use the identity importer1
 
         When I submit the following transaction of type org.acme.shipping.perishable.ShipmentReceived
             | shipment |
@@ -71,36 +85,8 @@ Feature: IoT Perishable Network Basic Test Scenarios
         ]
         """
     
-    Scenario: Test TemperatureThresholdEvent is emitted when the min temperature threshold is violated
-        When I submit the following transactions of type org.acme.shipping.perishable.TemperatureReading
-            | shipment | centigrade |
-            | SHIP_001 | 0          |
-        
-        Then I should have received the following event of type org.acme.shipping.perishable.TemperatureThresholdEvent
-            | message                                                                          | temperature | shipment |
-            | Temperature threshold violated! Emitting TemperatureEvent for shipment: SHIP_001 | 0           | SHIP_001 |
-    
-
-    Scenario: Test TemperatureThresholdEvent is emitted when the max temperature threshold is violated
-        When I submit the following transactions of type org.acme.shipping.perishable.TemperatureReading
-            | shipment | centigrade |
-            | SHIP_001 | 11         |
-        
-        Then I should have received the following event of type org.acme.shipping.perishable.TemperatureThresholdEvent
-            | message                                                                          | temperature | shipment |
-            | Temperature threshold violated! Emitting TemperatureEvent for shipment: SHIP_001 | 11          | SHIP_001 |
-    
-
-    Scenario: Test ShipmentInPortEvent is emitted when GpsReading indicates arrival at destination port
-        When I submit the following transaction of type org.acme.shipping.perishable.GpsReading
-            | shipment | readingTime | readingDate | latitude | latitudeDir | longitude | longitudeDir |
-            | SHIP_001 | 120000      | 20171025    | 40.6840  | N           | 74.0062   | W            |
-
-        Then I should have received the following event of type org.acme.shipping.perishable.ShipmentInPortEvent
-            | message                                                                  | shipment |
-            | Shipment has reached the destination port of /LAT:40.6840N/LONG:74.0062W | SHIP_001 |
-
     Scenario: When shipment is received a ShipmentReceivedEvent should be broadcast
+        When I use the identity importer1
         When I submit the following transaction of type org.acme.shipping.perishable.ShipmentReceived
             | shipment |
             | SHIP_001 |
