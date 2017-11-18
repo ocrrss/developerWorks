@@ -27,14 +27,35 @@ Feature: Tests for IoT Devices
             | shipmentId | type    | status     | unitCount | contract |
             | SHIP_001   | BANANAS | IN_TRANSIT | 5000      | CON_001  |
 
-    Scenario: Temperature Sensor sensor_temp1 can invoke TemperatureReading transaction
+    Scenario: Test TemperatureThresholdEvent is emitted when the max temperature threshold is violated
         When I use the identity sensor_temp1
         When I submit the following transactions of type org.acme.shipping.perishable.TemperatureReading
             | shipment | centigrade |
-            | SHIP_001 | 11         |        
+            | SHIP_001 | 11         |
+        
         Then I should have received the following event of type org.acme.shipping.perishable.TemperatureThresholdEvent
             | message                                                                          | temperature | shipment |
-            | Temperature threshold violated! Emitting TemperatureEvent for shipment: SHIP_001 | 11          | SHIP_001 |
+            | Temperature threshold violated! Emitting TemperatureEvent for shipment: SHIP_001 | 11          | SHIP_001 |    
+
+    Scenario: Test TemperatureThresholdEvent is emitted when the min temperature threshold is violated
+        When I use the identity sensor_temp1
+        When I submit the following transactions of type org.acme.shipping.perishable.TemperatureReading
+            | shipment | centigrade |
+            | SHIP_001 | 0          |
+        
+        Then I should have received the following event of type org.acme.shipping.perishable.TemperatureThresholdEvent
+            | message                                                                          | temperature | shipment |
+            | Temperature threshold violated! Emitting TemperatureEvent for shipment: SHIP_001 | 0           | SHIP_001 |
+    
+    Scenario: Test ShipmentInPortEvent is emitted when GpsReading indicates arrival at destination port
+        When I use the identity sensor_gps1
+        When I submit the following transaction of type org.acme.shipping.perishable.GpsReading
+            | shipment | readingTime | readingDate | latitude | latitudeDir | longitude | longitudeDir |
+            | SHIP_001 | 120000      | 20171025    | 40.6840  | N           | 74.0062   | W            |
+
+        Then I should have received the following event of type org.acme.shipping.perishable.ShipmentInPortEvent
+            | message                                                                  | shipment |
+            | Shipment has reached the destination port of /LAT:40.6840N/LONG:74.0062W | SHIP_001 |
 
     Scenario: GpsSensor sensor_gps1 can invoke GpsReading transaction
         When I use the identity sensor_gps1
