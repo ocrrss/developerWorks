@@ -1,4 +1,4 @@
-Feature: Tests for IoT Devices
+Feature: Tests related to IoT Devices
 
     Background:
         Given I have deployed the business network definition ..

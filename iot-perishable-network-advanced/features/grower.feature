@@ -1,4 +1,4 @@
-Feature: Stuff related to Growers
+Feature: Tests related to Growers
 
     Background:
         Given I have deployed the business network definition ..
@@ -17,9 +17,9 @@ Feature: Stuff related to Growers
         And I have added the following asset of type org.acme.shipping.perishable.Shipment
             | shipmentId | type    | status     | unitCount | contract |
             | SHIP_001   | BANANAS | IN_TRANSIT | 5000      | CON_001  |
+        When I use the identity grower1
 
     Scenario: grower1 can read Grower assets
-        When I use the identity grower1
         Then I should have the following participants
         """
         [
@@ -27,6 +27,14 @@ Feature: Stuff related to Growers
         ]
         """
     
+    Scenario: grower1 invokes the ShipmentPacked transaction
+        And I submit the following transaction of type org.acme.shipping.perishable.ShipmentPacked
+            | shipment |
+            | SHIP_001 |
+        Then I should have received the following event of type org.acme.shipping.perishable.ShipmentPackedEvent
+            | message                               | shipment |
+            | Shipment packed for shipment SHIP_001 | SHIP_001 |
+
     Scenario: shipper1 cannot read Grower assets
         When I use the identity shipper1
         And I should have the following participants
@@ -37,25 +45,6 @@ Feature: Stuff related to Growers
         """
         Then I should get an error matching /Object with ID .* does not exist/
     
-    Scenario: grower1 cannot read Shipper assets
-        When I use the identity grower1
-        And I should have the following participants
-        """
-        [
-        {"$class":"org.acme.shipping.perishable.Shipper", "email":"shipper@email.com", "address":{"$class":"org.acme.shipping.perishable.Address", "country":"Paname"}, "accountBalance":0}
-        ]
-        """
-        Then I should get an error matching /Object with ID .* does not exist/
-
-    Scenario: grower1 invokes the ShipmentPacked transaction
-        When I use the identity grower1
-        And I submit the following transaction of type org.acme.shipping.perishable.ShipmentPacked
-            | shipment |
-            | SHIP_001 |
-        Then I should have received the following event of type org.acme.shipping.perishable.ShipmentPackedEvent
-            | message                               | shipment |
-            | Shipment packed for shipment SHIP_001 | SHIP_001 |
-
     Scenario: shipper1 cannot invoke the ShipmentPacked transaction
         When I use the identity shipper1
         And I submit the following transaction of type org.acme.shipping.perishable.ShipmentPacked

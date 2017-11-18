@@ -1,4 +1,4 @@
-Feature: IoT Perishable Network Basic Test Scenarios
+Feature: Basic Test Scenarios
 
     Background:
         Given I have deployed the business network definition ..
@@ -31,8 +31,9 @@ Feature: IoT Perishable Network Basic Test Scenarios
             | SHIP_001 | 5          |
             | SHIP_001 | 10         |
 
-    Scenario: When the temperature range is within the agreed-upon boundaries
         When I use the identity importer1
+
+    Scenario: When the temperature range is within the agreed-upon boundaries
         And I submit the following transaction of type org.acme.shipping.perishable.ShipmentReceived
             | shipment |
             | SHIP_001 |
@@ -50,13 +51,10 @@ Feature: IoT Perishable Network Basic Test Scenarios
         And I submit the following transaction of type org.acme.shipping.perishable.TemperatureReading
             | shipment | centigrade |
             | SHIP_001 | 0          |
-
         Then I use the identity importer1
-
         And I submit the following transaction of type org.acme.shipping.perishable.ShipmentReceived
             | shipment |
             | SHIP_001 |
-        
         Then I should have the following participants
         """
         [
@@ -70,13 +68,10 @@ Feature: IoT Perishable Network Basic Test Scenarios
         And I submit the following transaction of type org.acme.shipping.perishable.TemperatureReading
             | shipment | centigrade |
             | SHIP_001 | 12          |
-
         Then I use the identity importer1
-
         When I submit the following transaction of type org.acme.shipping.perishable.ShipmentReceived
             | shipment |
             | SHIP_001 |
-        
         Then I should have the following participants
         """
         [
@@ -86,7 +81,6 @@ Feature: IoT Perishable Network Basic Test Scenarios
         """
     
     Scenario: When shipment is received a ShipmentReceivedEvent should be broadcast
-        When I use the identity importer1
         When I submit the following transaction of type org.acme.shipping.perishable.ShipmentReceived
             | shipment |
             | SHIP_001 |

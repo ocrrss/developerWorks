@@ -1,4 +1,4 @@
-Feature: Stuff related to Shippers
+Feature: Tests related to Shippers
 
     Background:
         Given I have deployed the business network definition ..
@@ -17,9 +17,9 @@ Feature: Stuff related to Shippers
         And I have added the following asset of type org.acme.shipping.perishable.Shipment
             | shipmentId | type    | status     | unitCount | contract |
             | SHIP_001   | BANANAS | IN_TRANSIT | 5000      | CON_001  |
+        When I use the identity shipper1
 
     Scenario: shipper1 can read Shipper assets
-        When I use the identity shipper1
         Then I should have the following participants
         """
         [
@@ -27,18 +27,7 @@ Feature: Stuff related to Shippers
         ]
         """
     
-    Scenario: shipper1 cannot read Grower assets
-        When I use the identity shipper1
-        And I should have the following participants
-        """
-        [
-        {"$class":"org.acme.shipping.perishable.Grower", "email":"grower@email.com", "address":{"$class":"org.acme.shipping.perishable.Address", "country":"USA"}, "accountBalance":0}
-        ]
-        """
-        Then I should get an error matching /Object with ID .* does not exist/
-    
     Scenario: shipper1 invokes the ShipmentPickup transaction
-        When I use the identity shipper1
         And I submit the following transaction of type org.acme.shipping.perishable.ShipmentPickup
             | shipment |
             | SHIP_001 |
@@ -46,21 +35,20 @@ Feature: Stuff related to Shippers
             | message                                  | shipment |
             | Shipment picked up for shipment SHIP_001 | SHIP_001 |
 
-    Scenario: grower1 cannot invoke the ShipmentPickup transaction
-        When I use the identity grower1
-        And I submit the following transaction of type org.acme.shipping.perishable.ShipmentPickup
-            | shipment |
-            | SHIP_001 |
-        Then I should get an error matching /Participant .* does not have 'CREATE' access to resource/
-
     Scenario: shipper1 invokes the ShipmentLoaded transaction
-        When I use the identity shipper1
         And I submit the following transaction of type org.acme.shipping.perishable.ShipmentLoaded
             | shipment |
             | SHIP_001 |
         Then I should have received the following event of type org.acme.shipping.perishable.ShipmentLoadedEvent
             | message                               | shipment |
             | Shipment loaded for shipment SHIP_001 | SHIP_001 |
+
+    Scenario: grower1 cannot invoke the ShipmentPickup transaction
+        When I use the identity grower1
+        And I submit the following transaction of type org.acme.shipping.perishable.ShipmentPickup
+            | shipment |
+            | SHIP_001 |
+        Then I should get an error matching /Participant .* does not have 'CREATE' access to resource/
 
     Scenario: grower1 cannot invoke the ShipmentPickup transaction
         When I use the identity grower1
