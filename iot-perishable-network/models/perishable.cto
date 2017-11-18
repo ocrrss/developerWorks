@@ -81,9 +81,9 @@ asset Shipment identified by shipmentId {
   o ProductType type
   o ShipmentStatus status
   o Long unitCount
+  --> Contract contract
   o TemperatureReading[] temperatureReadings optional
   o GpsReading[] gpsReadings optional
-  --> Contract contract
 }
 
 /**
