@@ -1,4 +1,4 @@
-Feature: IoT Perishable Network
+Feature: IoT Perishable Network Basic Test Scenarios
 
     Background:
         Given I have deployed the business network definition ..
