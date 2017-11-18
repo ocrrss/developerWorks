@@ -45,24 +45,6 @@ abstract transaction ShipmentTransaction {
 }
 
 /**
- * A Shipment has been packed and is ready for pickup
- */
-transaction ShipmentPacked extends ShipmentTransaction {
-}
-
-/**
- * A Shipment has been picked up
- */
-transaction ShipmentPickup extends ShipmentTransaction {
-}
-
-/**
- * A Shipment has been loaded for transport
- */
-transaction ShipmentLoaded extends ShipmentTransaction {
-}
-
-/**
  * An temperature reading for a shipment. E.g. received from a
  * device within a temperature controlled shipping container
  */
@@ -93,6 +75,24 @@ transaction ShipmentReceived extends ShipmentTransaction {
 }
 
 /**
+ * A Shipment has been packed and is ready for pickup
+ */
+transaction ShipmentPacked extends ShipmentTransaction {
+}
+
+/**
+ * A Shipment has been picked up
+ */
+transaction ShipmentPickup extends ShipmentTransaction {
+}
+
+/**
+ * A Shipment has been loaded for transport
+ */
+transaction ShipmentLoaded extends ShipmentTransaction {
+}
+
+/**
  * A shipment being tracked as an asset on the ledger
  */
 asset Shipment identified by shipmentId {
@@ -101,11 +101,11 @@ asset Shipment identified by shipmentId {
   o ShipmentStatus status
   o Long unitCount
   --> Contract contract
+  o TemperatureReading[] temperatureReadings optional
+  o GpsReading[] gpsReadings optional
   o ShipmentPacked shipmentPacked optional
   o ShipmentPickup shipmentPickup optional
   o ShipmentLoaded shipmentLoaded optional
-  o TemperatureReading[] temperatureReadings optional
-  o GpsReading[] gpsReadings optional
   o ShipmentReceived shipmentReceived optional
 }
 
@@ -191,6 +191,23 @@ transaction SetupDemo {
 }
 
 /**
+ * An event - when the temperature goes outside the agreed-upon boundaries
+ */
+event TemperatureThresholdEvent {
+  o String message
+  o Double temperature
+  --> Shipment shipment
+}
+
+/**
+ * Event - when the ship arrives at the port
+ */
+event ShipmentInPortEvent {
+  o String message
+  --> Shipment shipment
+}
+
+/**
  * Event - when the shipment has been packed and is ready for pickup
  */
 event ShipmentPackedEvent {
@@ -210,23 +227,6 @@ event ShipmentPickupEvent {
  * Event - when the shipment has been loaded onto the cargo ship
  */
 event ShipmentLoadedEvent {
-  o String message
-  --> Shipment shipment
-}
-
-/**
- * An event - when the temperature goes outside the agreed-upon boundaries
- */
-event TemperatureThresholdEvent {
-  o String message
-  o Double temperature
-  --> Shipment shipment
-}
-
-/**
- * Event - when the ship arrives at the port
- */
-event ShipmentInPortEvent {
   o String message
   --> Shipment shipment
 }

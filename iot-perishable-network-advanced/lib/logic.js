@@ -20,7 +20,6 @@
  */
 function receiveShipment(shipmentReceived) {
 
-    var NS = 'org.acme.shipping.perishable';
     var contract = shipmentReceived.shipment.contract;
     var shipment = shipmentReceived.shipment;
     var payOut = contract.unitPrice * shipment.unitCount;
@@ -30,9 +29,6 @@ function receiveShipment(shipmentReceived) {
 
     // set the status of the shipment
     shipment.status = 'ARRIVED';
-
-    // Store the ShipmentReceived transaction with the Shipment asset it belongs to
-    shipment.shipmentReceived = shipmentReceived;
 
     // if the shipment did not arrive on time the payout is zero
     if (shipmentReceived.timestamp > contract.arrivalDateTime) {
@@ -72,6 +68,17 @@ function receiveShipment(shipmentReceived) {
         }
     }
 
+    //console.log('Payout: ' + payOut);
+    contract.grower.accountBalance += payOut;
+    contract.importer.accountBalance -= payOut;
+
+    //console.log('Grower: ' + contract.grower.$identifier + ' new balance: ' + contract.grower.accountBalance);
+    //console.log('Importer: ' + contract.importer.$identifier + ' new balance: ' + contract.importer.accountBalance);
+
+    var NS = 'org.acme.shipping.perishable';
+    // Store the ShipmentReceived transaction with the Shipment asset it belongs to
+    shipment.shipmentReceived = shipmentReceived;
+
     var factory = getFactory();
     var shipmentReceivedEvent = factory.newEvent(NS, 'ShipmentReceivedEvent');
     var message = 'Shipment ' + shipment.$identifier + ' received';
@@ -79,13 +86,6 @@ function receiveShipment(shipmentReceived) {
     shipmentReceivedEvent.message = message;
     shipmentReceivedEvent.shipment = shipment;
     emit(shipmentReceivedEvent);
-
-    //console.log('Payout: ' + payOut);
-    contract.grower.accountBalance += payOut;
-    contract.importer.accountBalance -= payOut;
-
-    //console.log('Grower: ' + contract.grower.$identifier + ' new balance: ' + contract.grower.accountBalance);
-    //console.log('Importer: ' + contract.importer.$identifier + ' new balance: ' + contract.importer.accountBalance);
 
     return getParticipantRegistry('org.acme.shipping.perishable.Grower')
         .then(function (growerRegistry) {
