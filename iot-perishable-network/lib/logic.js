@@ -162,7 +162,7 @@ function gpsReading(gpsReading) {
 
     return getAssetRegistry(NS + '.Shipment')
     .then(function (shipmentRegistry) {
-        // add the temp reading to the shipment
+        // add the gps reading to the shipment
         return shipmentRegistry.update(shipment);
     });
 }
