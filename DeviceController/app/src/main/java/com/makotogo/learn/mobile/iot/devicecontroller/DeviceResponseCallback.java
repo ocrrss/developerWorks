@@ -19,9 +19,11 @@ package com.makotogo.learn.mobile.iot.devicecontroller;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 /**
- * Created by sperry on 3/3/18.
+ * Callback interface used when a response event from the controller
+ * device is received. Allows the main Context (most likely the owning
+ * Activity but not necessarily) to communicate with the fragment in a
+ * way that doesn't block the UI thread.
  */
-
 public interface DeviceResponseCallback {
 
     /**

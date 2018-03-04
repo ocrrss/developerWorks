@@ -17,10 +17,6 @@
 package com.makotogo.learn.mobile.iot.devicecontroller;
 
 /**
- * Created by sperry on 3/3/18.
- */
-
-/**
  * Constrain the possible Events for which subscribers can be registered
  * for the system
  */
@@ -49,7 +45,7 @@ enum ControllerEvent {
      * Convenience method. Used to return a friendly value for this enum
      * member.
      *
-     * @return String - a human-friendly representation of this enum member.
+     * @return String - a human-friendly representation of this enum member
      */
     public String toString() {
         return mStringRepresentation;

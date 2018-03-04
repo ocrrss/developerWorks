@@ -24,9 +24,9 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 
 /**
- * Created by sperry on 3/3/18.
+ * DialogFragment for allowing the user to select which action they
+ * want to invoke on the selected device. Nothing fancy.
  */
-
 public class ActionDialogFragment extends DialogFragment {
 
     private static final String TAG = ActionDialogFragment.class.getSimpleName();
@@ -41,6 +41,15 @@ public class ActionDialogFragment extends DialogFragment {
 
     private OnActionDialogFragmentInteractionListener mListener;
 
+    /**
+     * This is how you create a Fragment. Yep.
+     *
+     * @param deviceId The Device ID on which the action is to be invoked.
+     *
+     * @param choiceItems The list of choices of actions that can be invoked.
+     *
+     * @return The DialogFragment, ready to rumble.
+     */
     public static ActionDialogFragment newInstance(String deviceId, String[] choiceItems) {
 
         Bundle args = new Bundle();
@@ -52,6 +61,13 @@ public class ActionDialogFragment extends DialogFragment {
         return fragment;
     }
 
+    /**
+     * Creates the Dialog itself.
+     *
+     * @param savedInstanceState Any previously saved state.
+     *
+     * @return Dialog - the fully initialized dialog.
+     */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         //
@@ -86,6 +102,13 @@ public class ActionDialogFragment extends DialogFragment {
         return builder.create();
     }
 
+    /**
+     * Fragment is attaching. Make sure the Context implements the correct
+     * interface(s).
+     *
+     * @param context The Context, most likely the owning Activity, but not
+     *                necessarily.
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

@@ -24,24 +24,42 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Properties;
 
 /**
- * Created by sperry on 3/1/18.
+ * A twist on the familiar Properties object.
+ * Wraps an abstraction of the SharedPreferences API.
+ * Provides named methods for accessing properties.
+ * Does not allow direct access to setProperty() method.
+ *
+ // TODO: Support other property types than String?
+ *
  */
-
 public class ApplicationProperties extends Properties {
+    /**
+     * The SharedPreferences file name. Fully-qualified name of this class,
+     * so it should be unique to this application.
+     */
+    private static final String SHARED_PREFERENCES_FILE_NAME = ApplicationProperties.class.getName();
+
     // The first-class properties supported by this class
-    public static final String MQTT_SERVER_HOST_NAME = "mqtt.server.host.name";
-    public static final String MQTT_SERVER_PROTOCOL = "mqtt.server.protocol";
-    public static final String MQTT_SERVER_PORT = "mqtt.server.port";
-    public static final String ORG_ID = "org.id";
-    public static final String API_KEY = "api.key";
-    public static final String AUTH_TOKEN = "auth.token";
-    public static final String CONTROLLER_DEVICE_TYPE = "controller.device.type";
-    public static final String CONTROLLER_DEVICE_ID = "controller.device.id";
-    public static final String CONTROLLER_ACTION = "controller.action";
+    // Each has a getter and setter.
+    private static final String MQTT_SERVER_HOST_NAME = "mqtt.server.host.name";
+    private static final String MQTT_SERVER_PROTOCOL = "mqtt.server.protocol";
+    private static final String MQTT_SERVER_PORT = "mqtt.server.port";
+    private static final String ORG_ID = "org.id";
+    private static final String API_KEY = "api.key";
+    private static final String AUTH_TOKEN = "auth.token";
+    private static final String CONTROLLER_DEVICE_TYPE = "controller.device.type";
+    private static final String CONTROLLER_DEVICE_ID = "controller.device.id";
 
-
+    /**
+     * The application context. Needed by SharedPreferences.
+     */
     private Context mContext;
 
+    /**
+     * The one and only way to create an instance of this class.
+     *
+     * @param context The application context. Needed by SharedPreferences.
+     */
     public ApplicationProperties(Context context) {
         super();
         if (context == null) {
@@ -49,6 +67,17 @@ public class ApplicationProperties extends Properties {
         }
         mContext = context;
     }
+
+    //********************************************
+    // Getters and Setters for first-class properties:
+    // MqttServerHostName
+    // MqttServerProtocol
+    // MqttServerPort
+    // OrgId
+    // ApiKey
+    // AuthToken
+    // ControllerDeviceType
+    // ControllerDeviceId
 
     public String getMqttServerHostName() {
         return fetchStringProperty(MQTT_SERVER_HOST_NAME);
@@ -114,25 +143,24 @@ public class ApplicationProperties extends Properties {
         storeProperty(CONTROLLER_DEVICE_ID, controllerDeviceId);
     }
 
-    public String getControllerAction() {
-        return fetchStringProperty(CONTROLLER_ACTION);
-    }
-
-    public void setControllerAction(String controllerAction) {
-        storeProperty(CONTROLLER_ACTION, controllerAction);
-    }
-
-    public void saveAll() {
-
+    /**
+     * The setProperty method from Properties.
+     * Do not allow the application code to call this.
+     * It circumvents the approach to store everything in SharedPreferences
+     */
+    @Override
+    public synchronized Object setProperty(String key, String value) {
+        throw new RuntimeException("DO NOT INVOKE THIS METHOD. CALL THE UNDERLYING setMyProperty() METHOD INSTEAD (OR CREATE ONE IF IT DOES NOT EXIST)!!!!");
     }
 
     /**
      * Helper method. Attempts to locate the specified property
-     * in the "cache" (the super class' Properties store).
+     * in the "cache" (the super class' Properties internal store).
      * If that fails, the property will be loaded from SharedPreferences.
      *
-     * @param propertyName
-     * @return
+     * @param propertyName The property name to fetch.
+     *
+     * @return String - the property value
      */
     private String fetchStringProperty(String propertyName) {
         String ret;
@@ -141,12 +169,12 @@ public class ApplicationProperties extends Properties {
         ret = getProperty(propertyName);
         if (ret == null) {
             // Not there. Try SharedPreferences.
-            SharedPreferences sharedPreferences = mContext.getSharedPreferences(ApplicationProperties.class.getName(), Context.MODE_PRIVATE);
+            SharedPreferences sharedPreferences = mContext.getSharedPreferences(SHARED_PREFERENCES_FILE_NAME, Context.MODE_PRIVATE);
             ret = sharedPreferences.getString(propertyName, null);
             //
             // Property hit in SharedPreferences, store it in the cache
             if (ret != null) {
-                setProperty(propertyName, ret);
+                super.setProperty(propertyName, ret);
             }
         }
         // Set the return value to Empty string (instead of null)
@@ -156,16 +184,21 @@ public class ApplicationProperties extends Properties {
         return ret;
     }
 
-    // TODO: Support other property types than String
-
+    /**
+     * Helper method. Stores the property value in SharedPreferences, as
+     * well as the "cache" (the internals of the parent Properties object).
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     */
     private void storeProperty(String propertyName, String propertyValue) {
         // Store the property in the cache
-        setProperty(propertyName, propertyValue);
+        super.setProperty(propertyName, propertyValue);
         // Now store it in SharedPreferences
-        SharedPreferences sharedPreferences = mContext.getSharedPreferences(ApplicationProperties.class.getName(), Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(SHARED_PREFERENCES_FILE_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(propertyName, propertyValue);
+        editor.commit();
     }
 
-    // TODO: Support other property types than String
 }

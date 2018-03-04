@@ -24,6 +24,11 @@ package com.makotogo.learn.mobile.iot.devicecontroller;
  * Enum for dealing with the Device Response from the MQTT server.
  * It's handy to constrain the values that are allowed, and also
  * there is just one place to go if the names change.
+ *
+ * There's just something about hardcoded literal strings that
+ * goes with JSON processing that I don't like. This is my way of
+ * dealing with it. There are probably better ways. Open an issue.
+ * Let's talk about it.
  */
 public enum JSONDiscoveryDeviceResponse {
 

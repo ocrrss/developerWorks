@@ -16,12 +16,10 @@
 
 package com.makotogo.learn.mobile.iot.devicecontroller;
 
-import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
-import android.drm.DrmStore;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -59,13 +57,21 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
+/**
+ * The MainActivity for the application.
+ *
+ * TODO: Portrait mode forced. The views just look weird (some controls aren't even accessible). Look into this.
+ * TODO: Connection state gets weird upon device configuration changes (e.g., rotation). Portrait mode forced. Look into this.
+ * TODO: The number of lines of code in this class is TOO DAMN HIGH! (Erm, I mean, refactor this class into smaller, more tightly-focused classes)
+ */
 public class MainActivity extends AppCompatActivity implements HomeFragment.OnHomeFragmentInteractionListener, DashboardFragment.OnDashboardFragmentInteractionListener, ActionDialogFragment.OnActionDialogFragmentInteractionListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int NUMBER_OF_DASHBOARD_COLUMNS_TO_DISPLAY = 1;
 
     /**
-     * Hokey? Probably. But effective.
+     * Keep this little bread crumb around to drive what is displayed
+     * in the FloatingActionButton
      */
     private TextView mFragmentTitle;
 
@@ -225,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
         setActiveFragmentId(R.id.navigation_dashboard);
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frameLayout, DashboardFragment.newInstance(getApplicationProperties(), NUMBER_OF_DASHBOARD_COLUMNS_TO_DISPLAY), DashboardFragment.FRAGMENT_TAG);
+        fragmentTransaction.replace(R.id.frameLayout, DashboardFragment.newInstance(NUMBER_OF_DASHBOARD_COLUMNS_TO_DISPLAY), DashboardFragment.FRAGMENT_TAG);
         fragmentTransaction.commit();
     }
 
@@ -242,14 +248,6 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
     private void loadSettingsFragment() {
         setActiveFragmentId(R.id.navigation_settings);
     }
-
-    //***********************************************
-    // Want to avoid state problems? This is how you avoid state problems.
-    // Does it clutter the code to have two methods that *almost* do the same
-    // thing? Maybe. But they'll be so much easier to track down this way.
-    // Go ahead, refactor this into a single method with a boolean parameter
-    // to enable (true) or disable (false). Good luck with that.
-    //***********************************************
 
     /**
      * Disable the specified BottomNavigationView menu item
@@ -284,6 +282,33 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
     }
 
     /**
+     * Updates the state of the application view when the app is connected
+     * to the MQTT server.
+     */
+    private void updateViewStateForConnected() {
+        // Update the ConnectionStatus view
+        updateConnectionStatusTextView();
+        // Enable the Dashboard Fragment
+        enableBottomNavigationMenuItem(R.id.navigation_dashboard);
+    }
+
+    /**
+     * Updates the state of the application view when the app is disconnected
+     * to the MQTT server.
+     */
+    private void updateViewstateForDisconnected() {
+        // Update the ConnectionStatus view
+        updateConnectionStatusTextView();
+        // Disable the Dashboard Fragment
+        disableBottomNavigationMenuItem(R.id.navigation_dashboard);
+    }
+
+    //***************************************************************************************
+    //* Below this line is logic specific to the application, not Android-y "stuff"
+    //***************************************************************************************
+
+
+    /**
      * Normal Getter method. Just a personal preference. I don't like touching
      * member variables directly. Makes the code much harder to refactor later.
      *
@@ -293,6 +318,11 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
         return mApplicationClient;
     }
 
+    /**
+     * Setter for the ApplicationClient property.
+     *
+     * @param applicationClient The ApplicationClient to set. May not be null.
+     */
     private void setApplicationClient(ApplicationClient applicationClient) {
         if (applicationClient != null) {
             mApplicationClient = applicationClient;
@@ -301,6 +331,11 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
         }
     }
 
+    /**
+     * Setter for the ApplicationProperties property.
+     *
+     * @param applicationProperties The ApplicationProperties to set. May not be null.
+     */
     public void setApplicationProperties(ApplicationProperties applicationProperties) {
         if (applicationProperties != null) {
             mApplicationProperties = applicationProperties;
@@ -309,7 +344,16 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
         }
     }
 
+    /**
+     * Getter for the ApplicationProperties property. The ApplicationProperties object
+     * will be created if it does not exist.
+     *
+     * @return ApplicationProperties
+     */
     public ApplicationProperties getApplicationProperties() {
+        if (mApplicationProperties == null) {
+            mApplicationProperties = new ApplicationProperties(getApplicationContext());
+        }
         return mApplicationProperties;
     }
 
@@ -348,7 +392,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
     /**
      * Connect the ApplicationClient to MQTT Server
      */
-    public void connectApplicationClient() {
+    public void connectApplicationClient(final ConnectionMonitorCallback connectionMonitorCallback) {
         final String METHOD = "connectApplicationClient(): ";
         try {
             Context context = getApplicationContext();
@@ -372,106 +416,27 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
                     Log.d(TAG, METHOD + "Connect SUCCESS!");
                     Toast.makeText(getApplication(), "Connect SUCCESS!", Toast.LENGTH_LONG).show();
                     subscribeToDeviceEventsForController(ControllerEvent.REQUEST, ControllerEvent.RESPONSE);
-                    // Update the ConnectionStatus view
-                    updateConnectionStatusTextView();
-                    // Enable the Dashboard Fragment
-                    enableBottomNavigationMenuItem(R.id.navigation_dashboard);
+                    // Update the state of the view for when connected to the MQTT server
+                    updateViewStateForConnected();
+
+                    // Notify the originator that the connection was successful
+                    connectionMonitorCallback.onConnectSuccess(asyncActionToken);
                 }
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                     Log.e(TAG, METHOD + "Connect FAIL!", exception);
                     Toast.makeText(getApplication(), "Connect FAIL", Toast.LENGTH_LONG).show();
-                    // Update the ConnectionStatus view
-                    updateConnectionStatusTextView();
+                    updateViewstateForDisconnected();
+
+                    // Notify the originator that the connection failed
+                    connectionMonitorCallback.onConnectFailure(asyncActionToken, exception);
                 }
             });
             Log.d(TAG, "Got back token: " + token.toString());
         } catch (Exception e) {
             Log.e(TAG, "Exception thrown while connecting application client: ", e);
         }
-    }
-
-    /**
-     * Publish a "discovery" event, the intent of which is that it will be picked
-     * up by the Home Automation Controller (which will be subscribed to all events
-     * for itself), and repsonds with a "discovery response" that contains a list
-     * of all of its managed devices, and the actions that may be performed on them
-     * by an authenticated application.
-     */
-    public void publishDiscoveryEvent() {
-        final String METHOD = "publishDiscoveryEvent(): ";
-
-        publishEvent(getApplicationProperties().getControllerDeviceId(), "discovery");
-    }
-
-    /**
-     * Broadcasts an event to the specified controlled
-     * @param deviceId
-     * @param deviceAction
-     */
-    public void publishEvent(String deviceId, String deviceAction) {
-        publishEvent(deviceId, deviceAction, null);
-    }
-
-    /**
-     * Broadcasts an event to the specified controlled device on behalf of the
-     * controller device.
-     *
-     * @param controlledDeviceId The controlled device Id (e.g., Outlet-1)
-     * @param controlledDeviceAction The action to perform on the controlled device (e.g., on)
-     */
-    public void publishEvent(String controlledDeviceId, String controlledDeviceAction, IMqttActionListener broadcastListener) {
-        final String METHOD = "publishEvent(): ";
-        MqttMessage mqttMessage = createJsonMessage(controlledDeviceId, controlledDeviceAction);
-        try {
-            String topic = createEventTopicString(ControllerEvent.REQUEST);
-            // Use the specified IMqttActionListener if one provided, otherwise create a default one to use.
-            IMqttActionListener mqttActionListener = (broadcastListener != null) ? broadcastListener :
-                    new IMqttActionListener() {
-                        @Override
-                        public void onSuccess(IMqttToken asyncActionToken) {
-                            Log.d(TAG, "Publish SUCCESS!");
-                            //Toast.makeText(getApplication(), "Publish SUCCESS!", Toast.LENGTH_LONG).show();
-                        }
-
-                        @Override
-                        public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                            Log.d(TAG, "Publish FAIL!");
-                            Toast.makeText(getApplication(), "Publish FAIL!", Toast.LENGTH_LONG).show();
-                        }
-                    };
-            // Publish the message
-            getApplicationClient().publish(topic, mqttMessage, getApplicationContext(), mqttActionListener);
-        } catch (MqttException e) {
-            Log.e(TAG, METHOD + "Exception thrown while broadcasting event: ", e);
-        }
-    }
-
-    /**
-     * Creates a device message in JSON format.
-     * TODO: Move to helper class?
-     * @param deviceId The deviceID of the controlled device (NOT the controller device)
-     * @param deviceAction The device action (e.g., ON/OFF, etc)
-     * @return MqttMessage - The MqttMessage containing the JSON string
-     */
-    private MqttMessage createJsonMessage(String deviceId, String deviceAction) {
-        String jsonMessage =  "{ \"d\": { \"deviceRequest\" : { \"deviceId\" : \"" + deviceId + "\", \"action\" : \"" + deviceAction + "\" } } }";
-        return new MqttMessage(jsonMessage.getBytes());
-    }
-
-    /**
-     * Create the Topic name to use for the specified Event ID. The topic string is the
-     * name of the topic (which is the URI specific to the topic) to which a message is to
-     * be published. It's very specific to the MQTT broker in use.
-     *
-     * TODO: Move to helper class?
-     * TODO: Make more generic (not specific to the Controller)?
-     *
-     * @return String - the Topic String
-     */
-    private String createEventTopicString(ControllerEvent eventId) {
-        return "iot-2/type/" + getApplicationProperties().getControllerDeviceType() + "/id/" + getApplicationProperties().getControllerDeviceId() + "/evt/" + eventId.toString() + "/fmt/json";
     }
 
     /**
@@ -511,25 +476,6 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
     }
 
     /**
-     * A component registers their interest in receiving a callback when a
-     * device response message comes in.
-     *
-     * @param callback
-     */
-    public void subscribeToDeviceResponse(String deviceResponse, DeviceResponseCallback callback) {
-        getDeviceResponseCallbacks().put(deviceResponse, callback);
-    }
-
-    private Map<String, DeviceResponseCallback> mDeviceResponseCallbacks;
-
-    private Map<String, DeviceResponseCallback> getDeviceResponseCallbacks() {
-        if (mDeviceResponseCallbacks == null) {
-            mDeviceResponseCallbacks = new HashMap<>();
-        }
-        return mDeviceResponseCallbacks;
-    }
-
-    /**
      * This MqttCallback implementation that acts as "monitor" for the
      * application. When connection is lost, a message has arrived, or delivery is
      * complete, this callback is invoked.
@@ -551,6 +497,9 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
                 public void connectionLost(Throwable cause) {
                     Log.e(TAG, METHOD + "Connection lost!");
                     Toast.makeText(getApplicationContext(), "Connection Lost", Toast.LENGTH_LONG).show();
+                    // Update the connection status view
+                    updateViewstateForDisconnected();// TODO: Figure out why this doesn't work
+                    loadHomeFragment();// TODO: This is a stopgap to get the page state to look right
                 }
 
                 /**
@@ -700,6 +649,111 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
     }
 
     /**
+     * A component registers their interest in receiving a callback when a
+     * device response message comes in.
+     *
+     * @param callback
+     */
+    public void subscribeToDeviceResponse(String deviceResponse, DeviceResponseCallback callback) {
+        getDeviceResponseCallbacks().put(deviceResponse, callback);
+    }
+
+    private Map<String, DeviceResponseCallback> mDeviceResponseCallbacks;
+
+    private Map<String, DeviceResponseCallback> getDeviceResponseCallbacks() {
+        if (mDeviceResponseCallbacks == null) {
+            mDeviceResponseCallbacks = new HashMap<>();
+        }
+        return mDeviceResponseCallbacks;
+    }
+
+    /**
+     * Publish a "discovery" event, the intent of which is that it will be picked
+     * up by the Home Automation Controller (which will be subscribed to all events
+     * for itself), and repsonds with a "discovery response" that contains a list
+     * of all of its managed devices, and the actions that may be performed on them
+     * by an authenticated application.
+     */
+    public void publishDiscoveryEvent() {
+        final String METHOD = "publishDiscoveryEvent(): ";
+
+        publishEvent(getApplicationProperties().getControllerDeviceId(), "discovery");
+    }
+
+    /**
+     * Broadcasts an event to the specified controlled
+     * @param deviceId
+     * @param deviceAction
+     */
+    public void publishEvent(String deviceId, String deviceAction) {
+        publishEvent(deviceId, deviceAction, null);
+    }
+
+    /**
+     * Broadcasts an event to the specified controlled device on behalf of the
+     * controller device.
+     *
+     * @param controlledDeviceId The controlled device Id (e.g., Outlet-1)
+     * @param controlledDeviceAction The action to perform on the controlled device (e.g., on)
+     */
+    public void publishEvent(String controlledDeviceId, String controlledDeviceAction, IMqttActionListener broadcastListener) {
+        final String METHOD = "publishEvent(): ";
+        MqttMessage mqttMessage = createJsonMessage(controlledDeviceId, controlledDeviceAction);
+        try {
+            String topic = createEventTopicString(ControllerEvent.REQUEST);
+            // Use the specified IMqttActionListener if one provided, otherwise create a default one to use.
+            IMqttActionListener mqttActionListener = (broadcastListener != null) ? broadcastListener :
+                    new IMqttActionListener() {
+                        @Override
+                        public void onSuccess(IMqttToken asyncActionToken) {
+                            Log.d(TAG, "Publish SUCCESS!");
+                            //Toast.makeText(getApplication(), "Publish SUCCESS!", Toast.LENGTH_LONG).show();
+                        }
+
+                        @Override
+                        public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                            Log.d(TAG, "Publish FAIL!");
+                            Toast.makeText(getApplication(), "Publish FAIL!", Toast.LENGTH_LONG).show();
+                        }
+                    };
+            // Publish the message
+            if (getApplicationClient() != null && getApplicationClient().isConnected()) {
+                getApplicationClient().publish(topic, mqttMessage, getApplicationContext(), mqttActionListener);
+            } else {
+                Toast.makeText(getApplicationContext(), "Not connected! Unable to publish message. Please reconnect.", Toast.LENGTH_LONG).show();
+            }
+        } catch (MqttException e) {
+            Log.e(TAG, METHOD + "Exception thrown while broadcasting event: ", e);
+        }
+    }
+
+    /**
+     * Creates a device message in JSON format.
+     * TODO: Move to helper class?
+     * @param deviceId The deviceID of the controlled device (NOT the controller device)
+     * @param deviceAction The device action (e.g., ON/OFF, etc)
+     * @return MqttMessage - The MqttMessage containing the JSON string
+     */
+    private MqttMessage createJsonMessage(String deviceId, String deviceAction) {
+        String jsonMessage =  "{ \"d\": { \"deviceRequest\" : { \"deviceId\" : \"" + deviceId + "\", \"action\" : \"" + deviceAction + "\" } } }";
+        return new MqttMessage(jsonMessage.getBytes());
+    }
+
+    /**
+     * Create the Topic name to use for the specified Event ID. The topic string is the
+     * name of the topic (which is the URI specific to the topic) to which a message is to
+     * be published. It's very specific to the MQTT broker in use.
+     *
+     * TODO: Move to helper class?
+     * TODO: Make more generic (not specific to the Controller)?
+     *
+     * @return String - the Topic String
+     */
+    private String createEventTopicString(ControllerEvent eventId) {
+        return "iot-2/type/" + getApplicationProperties().getControllerDeviceType() + "/id/" + getApplicationProperties().getControllerDeviceId() + "/evt/" + eventId.toString() + "/fmt/json";
+    }
+
+    /**
      * Subscribes to all events. Seemed like a good idea at the time.
      */
     private void subscribeToDeviceEventsForController(ControllerEvent... controllerEvents) {
@@ -732,6 +786,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
     }
 
     /**
+     * REMOVE THIS BEFORE GOING INTO PRODUCTION!
      * PROTOTYPE: Load the application properties as which we will connect.
      * This saves me having to type these into the Connect settings a million
      * times while I debug until I get it right.
@@ -739,23 +794,15 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
      * @return Properties - the properties specific to the application
      */
     private ApplicationProperties loadApplicationPropertiesForDebug() {
+        // TODO: Move this functionality to Settings fragment
         ApplicationProperties properties = new ApplicationProperties(getApplicationContext());
-        properties.setProperty(ApplicationProperties.MQTT_SERVER_PROTOCOL, "ssl");
-        properties.setProperty(ApplicationProperties.MQTT_SERVER_HOST_NAME, "messaging.internetofthings.ibmcloud.com");
-        properties.setProperty(ApplicationProperties.MQTT_SERVER_PORT, "8883");
-        properties.setProperty(ApplicationProperties.ORG_ID, "5liweu");
-        properties.setProperty(ApplicationProperties.API_KEY, "a-5liweu-byn1wzgd7t");
-        properties.setProperty(ApplicationProperties.AUTH_TOKEN, "opz3(Lh2VxZcCRY*Q6");
-        properties.setProperty(ApplicationProperties.CONTROLLER_DEVICE_TYPE, "HomeAutomationController");
-        properties.setProperty(ApplicationProperties.CONTROLLER_DEVICE_ID, "Controller-1");
-        properties.setProperty(ApplicationProperties.CONTROLLER_ACTION, "request");// Maybe not externalize this?
+        properties.setMqttServerProtocol("ssl");
+        properties.setMqttServerHostName("messaging.internetofthings.ibmcloud.com");
+        properties.setMqttServerPort("8883");
         return properties;
     }
 
     /**
-     * Specialized Getter method. Only call if you want the returned
-     * ApplicationClient to be connected!
-     *
      * Return the ApplicationClient in use. If it is not connected,
      * then an attempt is made to connect before returning the object.
      *
@@ -763,16 +810,41 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
      * can be used to communicate with the MQTT server.
      */
     @Override
-    public ApplicationClient getApplicationClientAndConnectIfNecessary() {
+    public ApplicationClient getApplicationClientAndConnectIfNecessary(ConnectionMonitorCallback connectionMonitorCallback) {
         // If ApplicationClient is null, create it.
         if (getApplicationClient() == null) {
             setApplicationClient(createApplicationClient());
         }
         // If ApplicationClient is not connected, connect it.
         if (!getApplicationClient().isConnected()) {
-            connectApplicationClient();
+            connectApplicationClient(connectionMonitorCallback);
         }
         return getApplicationClient();
+    }
+
+    /**
+     * Invalidates the current connection. Something most likely changed in the
+     * connection settings (at the user's request), so it's best to disconnect
+     * and start fresh.
+     */
+    @Override
+    public void invalidateConnection() {
+        disconnect();
+    }
+
+    @Override
+    public boolean isConnected() {
+        return getApplicationClient() != null &&
+                getApplicationClient().isConnected();
+    }
+
+    @Override
+    public void disconnect() {
+        try {
+            getApplicationClient().disconnect();
+        } catch (MqttException e) {
+            Log.e(TAG, "Exception occurred while disconnecting: ", e);
+        }
     }
 
     /**

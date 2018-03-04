@@ -22,8 +22,9 @@ import org.eclipse.paho.android.service.MqttAndroidClient;
 
 /**
  * Client abstraction for connecting to MQTT server.
+ * Completely unnecessary? Probably.
+ * TODO: Get rid of this and just use MqttAndroidClient natively in MainActivity? There doesn't seem to be a whole lot of point in this class now.
  */
-
 public class ApplicationClient extends MqttAndroidClient {
 
     public ApplicationClient(Context context, String serverURI, String clientId) {

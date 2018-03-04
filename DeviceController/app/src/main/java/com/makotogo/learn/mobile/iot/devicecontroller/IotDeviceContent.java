@@ -62,6 +62,7 @@ public class IotDeviceContent {
      * An IoT Device. Nothing fancy.
      * For the record, I do not like this public attribute thing Android is so fond of.
      * But this is generated code and it works, so I'm sticking with it. Under protest.
+     * TODO: Fix this. Encapsulate these properties. This is just embarrassing.
      */
     public static class IotDeviceItem {
         public final String id;
