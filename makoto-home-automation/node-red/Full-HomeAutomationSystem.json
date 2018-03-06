@@ -575,6 +575,100 @@
         ]
     },
     {
+        "id": "6277a3c6.47f76c",
+        "type": "wiotp out",
+        "z": "870d7022.6ddef",
+        "authType": "d",
+        "qs": "false",
+        "qsDeviceId": "",
+        "deviceKey": "22b26b8c.9ebc34",
+        "deviceType": "",
+        "deviceId": "",
+        "event": "request",
+        "format": "json",
+        "qos": "",
+        "name": "Requester",
+        "x": 413.7500057220459,
+        "y": 842.5000257492065,
+        "wires": []
+    },
+    {
+        "id": "ab85c885.93c6d8",
+        "type": "inject",
+        "z": "870d7022.6ddef",
+        "name": "Alarm-1 arm-away",
+        "topic": "",
+        "payload": "{\"deviceRequest\":{\"deviceId\":\"Alarm-1\",\"action\":\"arm-away\"}}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 138.75,
+        "y": 771.2500123977661,
+        "wires": [
+            [
+                "6277a3c6.47f76c"
+            ]
+        ]
+    },
+    {
+        "id": "70d4ee15.8953e",
+        "type": "inject",
+        "z": "870d7022.6ddef",
+        "name": "Alarm-1 arm-stay",
+        "topic": "",
+        "payload": "{\"deviceRequest\":{\"deviceId\":\"Alarm-1\",\"action\":\"arm-stay\"}}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 126.25,
+        "y": 815.0000123977661,
+        "wires": [
+            [
+                "6277a3c6.47f76c"
+            ]
+        ]
+    },
+    {
+        "id": "d76d1d17.a9b2a",
+        "type": "inject",
+        "z": "870d7022.6ddef",
+        "name": "Alarm-1 off",
+        "topic": "",
+        "payload": "{\"deviceRequest\":{\"deviceId\":\"Alarm-1\",\"action\":\"off\"}}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 105,
+        "y": 860.0000123977661,
+        "wires": [
+            [
+                "6277a3c6.47f76c"
+            ]
+        ]
+    },
+    {
+        "id": "13230fb9.773c7",
+        "type": "inject",
+        "z": "870d7022.6ddef",
+        "name": "Alarm-1 panic",
+        "topic": "",
+        "payload": "{\"deviceRequest\":{\"deviceId\":\"Alarm-1\",\"action\":\"panic\"}}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 123.75,
+        "y": 910.0000123977661,
+        "wires": [
+            [
+                "6277a3c6.47f76c"
+            ]
+        ]
+    },
+    {
         "id": "dcbae9cb.f27d8",
         "type": "ibmiot",
         "z": "",
