@@ -75,7 +75,7 @@
         "type": "function",
         "z": "95c77631.347698",
         "name": "DeviceInfo",
-        "func": "var discoveries = {\n    \"deviceResponse\" : \"discovery\",\n    \"devices\" : [\n        { \"deviceId\" : \"Outlet-1\",\n            description : \"433MHz RF Outlet\",\n            \"actions\" : [\n                {\n                    action : \"on\", description : \"Turns the outlet on\"\n                },\n                {                \n                    action : \"off\", description : \"Turns the outlet off\"\n                }\n            ]\n        },\n        { \"deviceId\" : \"Outlet-2\",\n            description : \"433MHz RF Outlet\",\n            \"actions\" : [\n                {\n                    action : \"on\", description : \"Turns the outlet on\"\n                },\n                {\n                    action : \"off\", description : \"Turns the outlet off\"\n                }\n            ]\n        },\n        {\n            \"deviceId\" : \"Alarm-1\",\n            description : \"433MHz DIY Home Alarm System\",\n            \"actions\" : [\n                {\n                    action : \"arm_stay\", description : \"Arms the system, motion detectors ignored\"\n                },\n                {\n                    action : \"arm_away\", description : \"Arms the system, motion sensors active\"\n                },\n                {\n                    action : \"off\", description : \"Turns the system off\"\n                },\n                {\n                    action : \"panic\", description : \"Triggers the alarm (panic button)\"\n                }\n            ]\n        }\n    ]\n};\nmsg.payload = discoveries;\nreturn msg;",
+        "func": "var discoveries = {\n    \"deviceResponse\" : \"discovery\",\n    \"devices\" : [\n        { \"deviceId\" : \"Outlet-1\",\n            description : \"433MHz RF Outlet\",\n            \"actions\" : [\n                {\n                    action : \"on\", description : \"Turns the outlet on\"\n                },\n                {                \n                    action : \"off\", description : \"Turns the outlet off\"\n                }\n            ]\n        },\n        { \"deviceId\" : \"Outlet-2\",\n            description : \"433MHz RF Outlet\",\n            \"actions\" : [\n                {\n                    action : \"on\", description : \"Turns the outlet on\"\n                },\n                {\n                    action : \"off\", description : \"Turns the outlet off\"\n                }\n            ]\n        }\n    ]\n};\nmsg.payload = discoveries;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "x": 855.7777519226074,
@@ -120,7 +120,7 @@
         "y": 509.22221088409424,
         "wires": [
             [
-                "4b3475c2.03e5b4"
+                "4d36ea5b.dadd24"
             ]
         ]
     },
@@ -138,8 +138,8 @@
         "format": "json",
         "qos": "",
         "name": "Requester",
-        "x": 428.8888854980469,
-        "y": 609.5555639266968,
+        "x": 433.8888931274414,
+        "y": 578.3055515289307,
         "wires": []
     },
     {
@@ -157,7 +157,7 @@
         "y": 661.8888864517212,
         "wires": [
             [
-                "4b3475c2.03e5b4"
+                "75135501.80777c"
             ]
         ]
     },
@@ -179,7 +179,7 @@
         "z": "95c77631.347698",
         "command": "/usr/local/bin/codesend",
         "addpay": false,
-        "append": "1119683 0 170",
+        "append": "1119683 170",
         "useSpawn": "false",
         "timer": "",
         "oldrc": false,
@@ -198,7 +198,7 @@
         "z": "95c77631.347698",
         "command": "/usr/local/bin/codesend",
         "addpay": false,
-        "append": "1119692 0 170",
+        "append": "1119692 170",
         "useSpawn": "false",
         "timer": "",
         "oldrc": false,
@@ -226,7 +226,7 @@
         "y": 705.8888864517212,
         "wires": [
             [
-                "4b3475c2.03e5b4"
+                "75135501.80777c"
             ]
         ]
     },
@@ -236,7 +236,7 @@
         "z": "95c77631.347698",
         "command": "/usr/local/bin/codesend",
         "addpay": false,
-        "append": "1119539 0 170",
+        "append": "1119539 170",
         "useSpawn": "false",
         "timer": "",
         "oldrc": false,
@@ -279,7 +279,7 @@
         "z": "95c77631.347698",
         "command": "/usr/local/bin/codesend",
         "addpay": false,
-        "append": "1119548 0 173",
+        "append": "1119548 173",
         "useSpawn": "false",
         "timer": "",
         "oldrc": false,
@@ -407,6 +407,42 @@
         ]
     },
     {
+        "id": "4d36ea5b.dadd24",
+        "type": "wiotp out",
+        "z": "95c77631.347698",
+        "authType": "d",
+        "qs": "false",
+        "qsDeviceId": "",
+        "deviceKey": "22b26b8c.9ebc34",
+        "deviceType": "",
+        "deviceId": "",
+        "event": "request",
+        "format": "json",
+        "qos": "",
+        "name": "Requester",
+        "x": 432.5,
+        "y": 508.75,
+        "wires": []
+    },
+    {
+        "id": "75135501.80777c",
+        "type": "wiotp out",
+        "z": "95c77631.347698",
+        "authType": "d",
+        "qs": "false",
+        "qsDeviceId": "",
+        "deviceKey": "22b26b8c.9ebc34",
+        "deviceType": "",
+        "deviceId": "",
+        "event": "request",
+        "format": "json",
+        "qos": "",
+        "name": "Requester",
+        "x": 435.00000762939453,
+        "y": 682.5000100135803,
+        "wires": []
+    },
+    {
         "id": "dcbae9cb.f27d8",
         "type": "ibmiot",
         "z": "",
@@ -428,7 +464,20 @@
         "devId": "Controller-1",
         "keepalive": "60",
         "cleansession": true,
-        "tls": "",
+        "tls": "54af0bd3.adbd04",
         "usetls": false
+    },
+    {
+        "id": "54af0bd3.adbd04",
+        "type": "tls-config",
+        "z": "",
+        "name": "",
+        "cert": "",
+        "key": "",
+        "ca": "",
+        "certname": "",
+        "keyname": "",
+        "caname": "",
+        "verifyservercert": false
     }
 ]

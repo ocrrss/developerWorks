@@ -1,0 +1,615 @@
+[
+    {
+        "id": "870d7022.6ddef",
+        "type": "tab",
+        "label": "Full Home Automation System",
+        "disabled": false,
+        "info": "This is the full Home Automation system, complete with dual RF outlets and Home Alarm (okay, it's not much, but it's a start!)"
+    },
+    {
+        "id": "8d334ad7.e02e18",
+        "type": "ibmiot in",
+        "z": "870d7022.6ddef",
+        "authentication": "apiKey",
+        "apiKey": "dcbae9cb.f27d8",
+        "inputType": "evt",
+        "deviceId": "Controller-1",
+        "applicationId": "",
+        "deviceType": "HomeAutomationController",
+        "eventType": "request",
+        "commandType": "",
+        "format": "json",
+        "name": "App Request Listener",
+        "service": "registered",
+        "allDevices": false,
+        "allApplications": "",
+        "allDeviceTypes": false,
+        "allEvents": false,
+        "allCommands": true,
+        "allFormats": true,
+        "qos": 0,
+        "x": 121.25,
+        "y": 285.1666717529297,
+        "wires": [
+            [
+                "e1c30f42.c71bb",
+                "b637b76.4b5abc8",
+                "29277d0d.ce6962"
+            ]
+        ]
+    },
+    {
+        "id": "e1c30f42.c71bb",
+        "type": "switch",
+        "z": "870d7022.6ddef",
+        "name": "DeviceRouter",
+        "property": "payload.d.deviceRequest.deviceId",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Outlet-1",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Outlet-2",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Alarm-1",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 3,
+        "x": 396.3611145019531,
+        "y": 298.27777671813965,
+        "wires": [
+            [
+                "448de970.fc13e8"
+            ],
+            [
+                "92fed19b.e6b3a8"
+            ],
+            [
+                "8541e03e.90aa28"
+            ]
+        ]
+    },
+    {
+        "id": "f7a5c0ef.d09db",
+        "type": "function",
+        "z": "870d7022.6ddef",
+        "name": "DeviceInfo",
+        "func": "var discoveries = {\n    \"deviceResponse\" : \"discovery\",\n    \"devices\" : [\n        { \"deviceId\" : \"Outlet-1\",\n            description : \"433MHz RF Outlet\",\n            \"actions\" : [\n                {\n                    action : \"on\", description : \"Turns the outlet on\"\n                },\n                {                \n                    action : \"off\", description : \"Turns the outlet off\"\n                }\n            ]\n        },\n        { \"deviceId\" : \"Outlet-2\",\n            description : \"433MHz RF Outlet\",\n            \"actions\" : [\n                {\n                    action : \"on\", description : \"Turns the outlet on\"\n                },\n                {\n                    action : \"off\", description : \"Turns the outlet off\"\n                }\n            ]\n        }\n    ]\n};\nmsg.payload = discoveries;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 664.2777824401855,
+        "y": 140.88890266418457,
+        "wires": [
+            [
+                "b75d77d9.61ca1",
+                "a146ed0c.d1e6b8"
+            ]
+        ]
+    },
+    {
+        "id": "b75d77d9.61ca1",
+        "type": "wiotp out",
+        "z": "870d7022.6ddef",
+        "authType": "d",
+        "qs": "false",
+        "qsDeviceId": "",
+        "deviceKey": "22b26b8c.9ebc34",
+        "deviceType": "",
+        "deviceId": "",
+        "event": "response",
+        "format": "json",
+        "qos": "",
+        "name": "",
+        "x": 884.3055534362793,
+        "y": 135.00000190734863,
+        "wires": []
+    },
+    {
+        "id": "2901a5f4.fbb8ba",
+        "type": "inject",
+        "z": "870d7022.6ddef",
+        "name": "System - discovery",
+        "topic": "",
+        "payload": "{\"deviceRequest\":{\"action\":\"discovery\"}}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 139.4444580078125,
+        "y": 520.4722499847412,
+        "wires": [
+            [
+                "8c191088.f373a8"
+            ]
+        ]
+    },
+    {
+        "id": "8ae1c9f0.83f6b8",
+        "type": "wiotp out",
+        "z": "870d7022.6ddef",
+        "authType": "d",
+        "qs": "false",
+        "qsDeviceId": "",
+        "deviceKey": "22b26b8c.9ebc34",
+        "deviceType": "",
+        "deviceId": "",
+        "event": "request",
+        "format": "json",
+        "qos": "",
+        "name": "Requester",
+        "x": 419.8888969421387,
+        "y": 589.5555906295776,
+        "wires": []
+    },
+    {
+        "id": "63617ae3.5fd58c",
+        "type": "inject",
+        "z": "870d7022.6ddef",
+        "name": "Outlet-2 ON",
+        "topic": "",
+        "payload": "{ \"deviceRequest\" : {\"deviceId\":\"Outlet-2\",\"action\":\"on\"}}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 128.44444274902344,
+        "y": 673.1389255523682,
+        "wires": [
+            [
+                "3a5bead3.6f0766"
+            ]
+        ]
+    },
+    {
+        "id": "a146ed0c.d1e6b8",
+        "type": "debug",
+        "z": "870d7022.6ddef",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 837.0277862548828,
+        "y": 55.388893127441406,
+        "wires": []
+    },
+    {
+        "id": "8f708e69.882ad8",
+        "type": "exec",
+        "z": "870d7022.6ddef",
+        "command": "/usr/local/bin/codesend",
+        "addpay": false,
+        "append": "1119683 170",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Outlet-2 ON",
+        "x": 831.5000114440918,
+        "y": 317.1110887527466,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "871c7884.ddfe",
+        "type": "exec",
+        "z": "870d7022.6ddef",
+        "command": "/usr/local/bin/codesend",
+        "addpay": false,
+        "append": "1119692 170",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Outlet-2 OFF",
+        "x": 834.0555534362793,
+        "y": 373.02777671813965,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "c5987d1f.2f6bd8",
+        "type": "inject",
+        "z": "870d7022.6ddef",
+        "name": "Outlet-2 OFF",
+        "topic": "",
+        "payload": "{ \"deviceRequest\" : { \"deviceId\" : \"Outlet-2\" , \"action\" : \"off\" } }",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 126.44444274902344,
+        "y": 717.1389255523682,
+        "wires": [
+            [
+                "3a5bead3.6f0766"
+            ]
+        ]
+    },
+    {
+        "id": "7e25b3a2.06e5ec",
+        "type": "exec",
+        "z": "870d7022.6ddef",
+        "command": "/usr/local/bin/codesend",
+        "addpay": false,
+        "append": "1119539 170",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Outlet-1 ON",
+        "x": 831.9166717529297,
+        "y": 201.3888864517212,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "29277d0d.ce6962",
+        "type": "switch",
+        "z": "870d7022.6ddef",
+        "name": "DiscoveryRouter",
+        "property": "payload.d.deviceRequest.action",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "discovery",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 1,
+        "x": 424.55554962158203,
+        "y": 188.86111640930176,
+        "wires": [
+            [
+                "f7a5c0ef.d09db"
+            ]
+        ]
+    },
+    {
+        "id": "edf85a78.ef33e8",
+        "type": "exec",
+        "z": "870d7022.6ddef",
+        "command": "/usr/local/bin/codesend",
+        "addpay": false,
+        "append": "1119548 173",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Outlet-1 OFF",
+        "x": 832.1666374206543,
+        "y": 258.30554580688477,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "448de970.fc13e8",
+        "type": "switch",
+        "z": "870d7022.6ddef",
+        "name": "Outlet-1 Router",
+        "property": "payload.d.deviceRequest.action",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "on",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "off",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 635.8055839538574,
+        "y": 232.94445514678955,
+        "wires": [
+            [
+                "7e25b3a2.06e5ec"
+            ],
+            [
+                "edf85a78.ef33e8"
+            ]
+        ]
+    },
+    {
+        "id": "92fed19b.e6b3a8",
+        "type": "switch",
+        "z": "870d7022.6ddef",
+        "name": "Outlet-2 Router",
+        "property": "payload.d.deviceRequest.action",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "on",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "off",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 631.1388626098633,
+        "y": 334.4166622161865,
+        "wires": [
+            [
+                "8f708e69.882ad8"
+            ],
+            [
+                "871c7884.ddfe"
+            ]
+        ]
+    },
+    {
+        "id": "b637b76.4b5abc8",
+        "type": "debug",
+        "z": "870d7022.6ddef",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 350.25,
+        "y": 110.27776908874512,
+        "wires": []
+    },
+    {
+        "id": "46ffdab9.ec080c",
+        "type": "inject",
+        "z": "870d7022.6ddef",
+        "name": "Outlet-1 ON",
+        "topic": "",
+        "payload": "{\"deviceRequest\":{\"deviceId\":\"Outlet-1\",\"action\":\"on\"}}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 123.44444274902344,
+        "y": 569.1389255523682,
+        "wires": [
+            [
+                "8ae1c9f0.83f6b8"
+            ]
+        ]
+    },
+    {
+        "id": "6ef14506.d899ec",
+        "type": "inject",
+        "z": "870d7022.6ddef",
+        "name": "Outlet-1 OFF",
+        "topic": "",
+        "payload": "{\"deviceRequest\":{\"deviceId\":\"Outlet-1\",\"action\":\"off\"}}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 125.44444274902344,
+        "y": 615.1389255523682,
+        "wires": [
+            [
+                "8ae1c9f0.83f6b8"
+            ]
+        ]
+    },
+    {
+        "id": "8c191088.f373a8",
+        "type": "wiotp out",
+        "z": "870d7022.6ddef",
+        "authType": "d",
+        "qs": "false",
+        "qsDeviceId": "",
+        "deviceKey": "22b26b8c.9ebc34",
+        "deviceType": "",
+        "deviceId": "",
+        "event": "request",
+        "format": "json",
+        "qos": "",
+        "name": "Requester",
+        "x": 418.50000381469727,
+        "y": 520.000039100647,
+        "wires": []
+    },
+    {
+        "id": "3a5bead3.6f0766",
+        "type": "wiotp out",
+        "z": "870d7022.6ddef",
+        "authType": "d",
+        "qs": "false",
+        "qsDeviceId": "",
+        "deviceKey": "22b26b8c.9ebc34",
+        "deviceType": "",
+        "deviceId": "",
+        "event": "request",
+        "format": "json",
+        "qos": "",
+        "name": "Requester",
+        "x": 421.0000114440918,
+        "y": 693.7500491142273,
+        "wires": []
+    },
+    {
+        "id": "8541e03e.90aa28",
+        "type": "switch",
+        "z": "870d7022.6ddef",
+        "name": "Alarm-1 Router",
+        "property": "payload.d.deviceRequest.action",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "arm-away",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "arm-stay",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "off",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "panic",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 4,
+        "x": 646.2500076293945,
+        "y": 526.2500076293945,
+        "wires": [
+            [
+                "786f7a1d.3da404"
+            ],
+            [
+                "330859ad.3286f6"
+            ],
+            [
+                "c2818d2c.9250b8"
+            ],
+            [
+                "4d00c55c.02fe9c"
+            ]
+        ]
+    },
+    {
+        "id": "786f7a1d.3da404",
+        "type": "exec",
+        "z": "870d7022.6ddef",
+        "command": "/usr/local/bin/codesend",
+        "addpay": false,
+        "append": "12935170 432",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Alarm-1 Arm Away",
+        "x": 883.7500114440918,
+        "y": 443.75000762939453,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "330859ad.3286f6",
+        "type": "exec",
+        "z": "870d7022.6ddef",
+        "command": "/usr/local/bin/codesend",
+        "addpay": false,
+        "append": "12935170 432",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Alarm-1 Arm Stay",
+        "x": 881.2500152587891,
+        "y": 495.00000762939453,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "c2818d2c.9250b8",
+        "type": "exec",
+        "z": "870d7022.6ddef",
+        "command": "/usr/local/bin/codesend",
+        "addpay": false,
+        "append": "12935169 432",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Alarm-1 Off",
+        "x": 862.5,
+        "y": 546.25,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "4d00c55c.02fe9c",
+        "type": "exec",
+        "z": "870d7022.6ddef",
+        "command": "/usr/local/bin/codesend",
+        "addpay": false,
+        "append": "12935176 432",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Alarm-1 Panic",
+        "x": 872.5,
+        "y": 600,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "dcbae9cb.f27d8",
+        "type": "ibmiot",
+        "z": "",
+        "name": "apikey-controller",
+        "keepalive": "60",
+        "serverName": "5liweu.messaging.internetofthings.ibmcloud.com",
+        "cleansession": true,
+        "appId": "",
+        "shared": false
+    },
+    {
+        "id": "22b26b8c.9ebc34",
+        "type": "wiotp-credentials",
+        "z": "",
+        "name": "",
+        "org": "5liweu",
+        "serverName": "",
+        "devType": "HomeAutomationController",
+        "devId": "Controller-1",
+        "keepalive": "60",
+        "cleansession": true,
+        "tls": "54af0bd3.adbd04",
+        "usetls": false
+    },
+    {
+        "id": "54af0bd3.adbd04",
+        "type": "tls-config",
+        "z": "",
+        "name": "",
+        "cert": "",
+        "key": "",
+        "ca": "",
+        "certname": "",
+        "keyname": "",
+        "caname": "",
+        "verifyservercert": false
+    }
+]

@@ -28,8 +28,8 @@
         "allCommands": true,
         "allFormats": true,
         "qos": 0,
-        "x": 152.77779006958008,
-        "y": 260.8888940811157,
+        "x": 152.77779388427734,
+        "y": 205.8889045715332,
         "wires": [
             [
                 "a473e0a2.5fcfa",
@@ -59,8 +59,8 @@
         ],
         "checkall": "true",
         "outputs": 2,
-        "x": 412.888916015625,
-        "y": 273,
+        "x": 399.13892364501953,
+        "y": 338.00000381469727,
         "wires": [
             [
                 "76051073.828cf"
@@ -76,8 +76,8 @@
         "func": "var discoveries = {\n    \"deviceResponse\" : \"discovery\",\n    \"devices\" : [\n        { \"deviceId\" : \"Outlet-1\",\n            description : \"433MHz RF Outlet\",\n            \"actions\" : [\n                {\n                    action : \"on\", description : \"Turns the outlet on\"\n                },\n                {                \n                    action : \"off\", description : \"Turns the outlet off\"\n                }\n            ]\n        }\n    ]\n};\nmsg.payload = discoveries;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 723.5555419921875,
-        "y": 127.11112213134766,
+        "x": 673.555549621582,
+        "y": 199.61113262176514,
         "wires": [
             [
                 "bd723f69.91d4d",
@@ -99,8 +99,8 @@
         "format": "json",
         "qos": "",
         "name": "",
-        "x": 953.3333129882812,
-        "y": 128.22222900390625,
+        "x": 882.0833263397217,
+        "y": 196.97223091125488,
         "wires": []
     },
     {
@@ -148,8 +148,8 @@
         "active": true,
         "console": "false",
         "complete": "false",
-        "x": 893.5555419921875,
-        "y": 48.111114501953125,
+        "x": 883.5555534362793,
+        "y": 136.86111450195312,
         "wires": []
     },
     {
@@ -158,13 +158,13 @@
         "z": "ec5a22b2.c4e198",
         "command": "/usr/local/bin/codesend",
         "addpay": false,
-        "append": "1119539 0 170",
+        "append": "1119539 170",
         "useSpawn": "false",
         "timer": "",
         "oldrc": false,
         "name": "Outlet-1 ON",
-        "x": 863.4444580078125,
-        "y": 217.11111450195312,
+        "x": 849.694465637207,
+        "y": 282.1111183166504,
         "wires": [
             [
                 "60e8bcaf.16d264"
@@ -193,8 +193,8 @@
         ],
         "checkall": "true",
         "outputs": 1,
-        "x": 491.33331298828125,
-        "y": 156.33333587646484,
+        "x": 446.3333206176758,
+        "y": 202.58334732055664,
         "wires": [
             [
                 "4293de90.3927b"
@@ -207,13 +207,13 @@
         "z": "ec5a22b2.c4e198",
         "command": "/usr/local/bin/codesend",
         "addpay": false,
-        "append": "1119548 0 173",
+        "append": "1119548 173",
         "useSpawn": "false",
         "timer": "",
         "oldrc": false,
         "name": "Outlet-1 OFF",
-        "x": 864.4443969726562,
-        "y": 296.77777099609375,
+        "x": 850.6944046020508,
+        "y": 361.777774810791,
         "wires": [
             [
                 "e727f8c8.8a4fb8"
@@ -247,8 +247,8 @@
         ],
         "checkall": "true",
         "outputs": 2,
-        "x": 648.3333740234375,
-        "y": 257.6666717529297,
+        "x": 634.583381652832,
+        "y": 322.66667556762695,
         "wires": [
             [
                 "10593efc.1c6781"
@@ -266,8 +266,8 @@
         "active": true,
         "console": "false",
         "complete": "false",
-        "x": 340.7778015136719,
-        "y": 78.99999237060547,
+        "x": 434.5278091430664,
+        "y": 131.4999942779541,
         "wires": []
     },
     {
@@ -326,8 +326,8 @@
         "active": true,
         "console": "false",
         "complete": "false",
-        "x": 1060,
-        "y": 220,
+        "x": 1046.2500076293945,
+        "y": 285.00000381469727,
         "wires": []
     },
     {
@@ -338,8 +338,8 @@
         "active": true,
         "console": "false",
         "complete": "false",
-        "x": 1060,
-        "y": 289,
+        "x": 1046.2500076293945,
+        "y": 354.00000381469727,
         "wires": []
     },
     {
@@ -364,7 +364,20 @@
         "devId": "Controller-1",
         "keepalive": "60",
         "cleansession": true,
-        "tls": "",
+        "tls": "54af0bd3.adbd04",
         "usetls": false
+    },
+    {
+        "id": "54af0bd3.adbd04",
+        "type": "tls-config",
+        "z": "",
+        "name": "",
+        "cert": "",
+        "key": "",
+        "ca": "",
+        "certname": "",
+        "keyname": "",
+        "caname": "",
+        "verifyservercert": false
     }
 ]
