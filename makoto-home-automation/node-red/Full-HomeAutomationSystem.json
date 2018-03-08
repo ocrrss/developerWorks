@@ -1,18 +1,20 @@
 [
     {
-        "id": "870d7022.6ddef",
+        "id": "ba1e234b.277a1",
         "type": "tab",
-        "label": "Full Home Automation System",
+        "label": "Full-Home-Automation",
         "disabled": false,
-        "info": "This is the full Home Automation system, complete with dual RF outlets and Home Alarm (okay, it's not much, but it's a start!)"
+        "info": "A full home automation system with 2 RF Outlets and Home Alarm, and test injection nodes to test all functions."
     },
     {
-        "id": "8d334ad7.e02e18",
+        "id": "c8bc85de.9545d8",
         "type": "ibmiot in",
-        "z": "870d7022.6ddef",
+        "z": "ba1e234b.277a1",
         "authentication": "apiKey",
-        "apiKey": "dcbae9cb.f27d8",
+        "apiKey": "c765db14.ac2b58",
         "inputType": "evt",
+        "logicalInterfaceId": "",
+        "ruleId": "",
         "deviceId": "Controller-1",
         "applicationId": "",
         "deviceType": "HomeAutomationController",
@@ -21,28 +23,27 @@
         "format": "json",
         "name": "App Request Listener",
         "service": "registered",
-        "allDevices": false,
+        "allDevices": "",
         "allApplications": "",
-        "allDeviceTypes": false,
-        "allEvents": false,
-        "allCommands": true,
-        "allFormats": true,
+        "allDeviceTypes": "",
+        "allEvents": "",
+        "allCommands": "",
+        "allFormats": "",
         "qos": 0,
-        "x": 121.25,
-        "y": 285.1666717529297,
+        "x": 133.33333333333331,
+        "y": 200,
         "wires": [
             [
-                "e1c30f42.c71bb",
-                "b637b76.4b5abc8",
-                "29277d0d.ce6962"
+                "eda2075d.6d2d28",
+                "a73f58da.3c11d8"
             ]
         ]
     },
     {
-        "id": "e1c30f42.c71bb",
+        "id": "eda2075d.6d2d28",
         "type": "switch",
-        "z": "870d7022.6ddef",
-        "name": "DeviceRouter",
+        "z": "ba1e234b.277a1",
+        "name": "Device Router",
         "property": "payload.d.deviceRequest.deviceId",
         "propertyType": "msg",
         "rules": [
@@ -64,322 +65,106 @@
         ],
         "checkall": "true",
         "outputs": 3,
-        "x": 396.3611145019531,
-        "y": 298.27777671813965,
+        "x": 382.5,
+        "y": 201.25,
         "wires": [
             [
-                "448de970.fc13e8"
+                "a392176c.175418"
             ],
             [
-                "92fed19b.e6b3a8"
+                "bfd2afdc.bce1a"
             ],
             [
-                "8541e03e.90aa28"
+                "d82b4911.31f418"
             ]
         ]
     },
     {
-        "id": "f7a5c0ef.d09db",
-        "type": "function",
-        "z": "870d7022.6ddef",
-        "name": "DeviceInfo",
-        "func": "var discoveries = {\n    \"deviceResponse\" : \"discovery\",\n    \"devices\" : [\n        { \"deviceId\" : \"Outlet-1\",\n            description : \"433MHz RF Outlet\",\n            \"actions\" : [\n                {\n                    action : \"on\", description : \"Turns the outlet on\"\n                },\n                {                \n                    action : \"off\", description : \"Turns the outlet off\"\n                }\n            ]\n        },\n        { \"deviceId\" : \"Outlet-2\",\n            description : \"433MHz RF Outlet\",\n            \"actions\" : [\n                {\n                    action : \"on\", description : \"Turns the outlet on\"\n                },\n                {\n                    action : \"off\", description : \"Turns the outlet off\"\n                }\n            ]\n        }\n    ]\n};\nmsg.payload = discoveries;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 664.2777824401855,
-        "y": 140.88890266418457,
+        "id": "a392176c.175418",
+        "type": "switch",
+        "z": "ba1e234b.277a1",
+        "name": "Outlet-1-Router",
+        "property": "payload.d.deviceRequest.action",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "on",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "off",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 618.25,
+        "y": 124,
         "wires": [
             [
-                "b75d77d9.61ca1",
-                "a146ed0c.d1e6b8"
-            ]
-        ]
-    },
-    {
-        "id": "b75d77d9.61ca1",
-        "type": "wiotp out",
-        "z": "870d7022.6ddef",
-        "authType": "d",
-        "qs": "false",
-        "qsDeviceId": "",
-        "deviceKey": "22b26b8c.9ebc34",
-        "deviceType": "",
-        "deviceId": "",
-        "event": "response",
-        "format": "json",
-        "qos": "",
-        "name": "",
-        "x": 884.3055534362793,
-        "y": 135.00000190734863,
-        "wires": []
-    },
-    {
-        "id": "2901a5f4.fbb8ba",
-        "type": "inject",
-        "z": "870d7022.6ddef",
-        "name": "System - discovery",
-        "topic": "",
-        "payload": "{\"deviceRequest\":{\"action\":\"discovery\"}}",
-        "payloadType": "json",
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "x": 139.4444580078125,
-        "y": 520.4722499847412,
-        "wires": [
+                "5fee435a.4eb68c"
+            ],
             [
-                "8c191088.f373a8"
+                "1c54a4a3.8122cb"
             ]
         ]
     },
     {
-        "id": "8ae1c9f0.83f6b8",
-        "type": "wiotp out",
-        "z": "870d7022.6ddef",
-        "authType": "d",
-        "qs": "false",
-        "qsDeviceId": "",
-        "deviceKey": "22b26b8c.9ebc34",
-        "deviceType": "",
-        "deviceId": "",
-        "event": "request",
-        "format": "json",
-        "qos": "",
-        "name": "Requester",
-        "x": 419.8888969421387,
-        "y": 589.5555906295776,
-        "wires": []
-    },
-    {
-        "id": "63617ae3.5fd58c",
-        "type": "inject",
-        "z": "870d7022.6ddef",
-        "name": "Outlet-2 ON",
-        "topic": "",
-        "payload": "{ \"deviceRequest\" : {\"deviceId\":\"Outlet-2\",\"action\":\"on\"}}",
-        "payloadType": "json",
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "x": 128.44444274902344,
-        "y": 673.1389255523682,
-        "wires": [
-            [
-                "3a5bead3.6f0766"
-            ]
-        ]
-    },
-    {
-        "id": "a146ed0c.d1e6b8",
-        "type": "debug",
-        "z": "870d7022.6ddef",
-        "name": "",
-        "active": true,
-        "console": "false",
-        "complete": "false",
-        "x": 837.0277862548828,
-        "y": 55.388893127441406,
-        "wires": []
-    },
-    {
-        "id": "8f708e69.882ad8",
+        "id": "5fee435a.4eb68c",
         "type": "exec",
-        "z": "870d7022.6ddef",
-        "command": "/usr/local/bin/codesend",
+        "z": "ba1e234b.277a1",
+        "command": "/usr/local/bin/codesend 1119539 170",
         "addpay": false,
-        "append": "1119683 170",
-        "useSpawn": "false",
-        "timer": "",
-        "oldrc": false,
-        "name": "Outlet-2 ON",
-        "x": 831.5000114440918,
-        "y": 317.1110887527466,
-        "wires": [
-            [],
-            [],
-            []
-        ]
-    },
-    {
-        "id": "871c7884.ddfe",
-        "type": "exec",
-        "z": "870d7022.6ddef",
-        "command": "/usr/local/bin/codesend",
-        "addpay": false,
-        "append": "1119692 170",
-        "useSpawn": "false",
-        "timer": "",
-        "oldrc": false,
-        "name": "Outlet-2 OFF",
-        "x": 834.0555534362793,
-        "y": 373.02777671813965,
-        "wires": [
-            [],
-            [],
-            []
-        ]
-    },
-    {
-        "id": "c5987d1f.2f6bd8",
-        "type": "inject",
-        "z": "870d7022.6ddef",
-        "name": "Outlet-2 OFF",
-        "topic": "",
-        "payload": "{ \"deviceRequest\" : { \"deviceId\" : \"Outlet-2\" , \"action\" : \"off\" } }",
-        "payloadType": "json",
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "x": 126.44444274902344,
-        "y": 717.1389255523682,
-        "wires": [
-            [
-                "3a5bead3.6f0766"
-            ]
-        ]
-    },
-    {
-        "id": "7e25b3a2.06e5ec",
-        "type": "exec",
-        "z": "870d7022.6ddef",
-        "command": "/usr/local/bin/codesend",
-        "addpay": false,
-        "append": "1119539 170",
+        "append": "",
         "useSpawn": "false",
         "timer": "",
         "oldrc": false,
         "name": "Outlet-1 ON",
-        "x": 831.9166717529297,
-        "y": 201.3888864517212,
-        "wires": [
-            [],
-            [],
-            []
-        ]
-    },
-    {
-        "id": "29277d0d.ce6962",
-        "type": "switch",
-        "z": "870d7022.6ddef",
-        "name": "DiscoveryRouter",
-        "property": "payload.d.deviceRequest.action",
-        "propertyType": "msg",
-        "rules": [
-            {
-                "t": "eq",
-                "v": "discovery",
-                "vt": "str"
-            }
-        ],
-        "checkall": "true",
-        "outputs": 1,
-        "x": 424.55554962158203,
-        "y": 188.86111640930176,
+        "x": 825,
+        "y": 43,
         "wires": [
             [
-                "f7a5c0ef.d09db"
+                "2309c464.6682fc"
+            ],
+            [
+                "2309c464.6682fc"
+            ],
+            [
+                "2309c464.6682fc"
             ]
         ]
     },
     {
-        "id": "edf85a78.ef33e8",
+        "id": "1c54a4a3.8122cb",
         "type": "exec",
-        "z": "870d7022.6ddef",
-        "command": "/usr/local/bin/codesend",
+        "z": "ba1e234b.277a1",
+        "command": "/usr/local/bin/codesend 1119548 170",
         "addpay": false,
-        "append": "1119548 173",
+        "append": "",
         "useSpawn": "false",
         "timer": "",
         "oldrc": false,
         "name": "Outlet-1 OFF",
-        "x": 832.1666374206543,
-        "y": 258.30554580688477,
-        "wires": [
-            [],
-            [],
-            []
-        ]
-    },
-    {
-        "id": "448de970.fc13e8",
-        "type": "switch",
-        "z": "870d7022.6ddef",
-        "name": "Outlet-1 Router",
-        "property": "payload.d.deviceRequest.action",
-        "propertyType": "msg",
-        "rules": [
-            {
-                "t": "eq",
-                "v": "on",
-                "vt": "str"
-            },
-            {
-                "t": "eq",
-                "v": "off",
-                "vt": "str"
-            }
-        ],
-        "checkall": "true",
-        "outputs": 2,
-        "x": 635.8055839538574,
-        "y": 232.94445514678955,
+        "x": 837,
+        "y": 106,
         "wires": [
             [
-                "7e25b3a2.06e5ec"
+                "ec1046ea.7307b8"
             ],
             [
-                "edf85a78.ef33e8"
+                "ec1046ea.7307b8"
+            ],
+            [
+                "ec1046ea.7307b8"
             ]
         ]
     },
     {
-        "id": "92fed19b.e6b3a8",
-        "type": "switch",
-        "z": "870d7022.6ddef",
-        "name": "Outlet-2 Router",
-        "property": "payload.d.deviceRequest.action",
-        "propertyType": "msg",
-        "rules": [
-            {
-                "t": "eq",
-                "v": "on",
-                "vt": "str"
-            },
-            {
-                "t": "eq",
-                "v": "off",
-                "vt": "str"
-            }
-        ],
-        "checkall": "true",
-        "outputs": 2,
-        "x": 631.1388626098633,
-        "y": 334.4166622161865,
-        "wires": [
-            [
-                "8f708e69.882ad8"
-            ],
-            [
-                "871c7884.ddfe"
-            ]
-        ]
-    },
-    {
-        "id": "b637b76.4b5abc8",
-        "type": "debug",
-        "z": "870d7022.6ddef",
-        "name": "",
-        "active": true,
-        "console": "false",
-        "complete": "false",
-        "x": 350.25,
-        "y": 110.27776908874512,
-        "wires": []
-    },
-    {
-        "id": "46ffdab9.ec080c",
+        "id": "6d805bba.920b54",
         "type": "inject",
-        "z": "870d7022.6ddef",
+        "z": "ba1e234b.277a1",
         "name": "Outlet-1 ON",
         "topic": "",
         "payload": "{\"deviceRequest\":{\"deviceId\":\"Outlet-1\",\"action\":\"on\"}}",
@@ -387,18 +172,61 @@
         "repeat": "",
         "crontab": "",
         "once": false,
-        "x": 123.44444274902344,
-        "y": 569.1389255523682,
+        "x": 135.25,
+        "y": 484,
         "wires": [
             [
-                "8ae1c9f0.83f6b8"
+                "b1d57066.a4e6f",
+                "f5a8a6bd.acacf8"
             ]
         ]
     },
     {
-        "id": "6ef14506.d899ec",
+        "id": "b1d57066.a4e6f",
+        "type": "wiotp out",
+        "z": "ba1e234b.277a1",
+        "authType": "d",
+        "qs": "false",
+        "qsDeviceId": "",
+        "deviceKey": "72c3da93.757714",
+        "deviceType": "",
+        "deviceId": "",
+        "event": "request",
+        "format": "json",
+        "qos": "",
+        "name": "Requester",
+        "x": 382,
+        "y": 506,
+        "wires": []
+    },
+    {
+        "id": "a73f58da.3c11d8",
+        "type": "debug",
+        "z": "ba1e234b.277a1",
+        "name": "Incoming Request",
+        "active": true,
+        "console": "false",
+        "complete": "payload",
+        "x": 369,
+        "y": 116,
+        "wires": []
+    },
+    {
+        "id": "f5a8a6bd.acacf8",
+        "type": "debug",
+        "z": "ba1e234b.277a1",
+        "name": "Outlet-1 Debug",
+        "active": true,
+        "console": "false",
+        "complete": "payload",
+        "x": 377,
+        "y": 461,
+        "wires": []
+    },
+    {
+        "id": "b182a493.0eaae8",
         "type": "inject",
-        "z": "870d7022.6ddef",
+        "z": "ba1e234b.277a1",
         "name": "Outlet-1 OFF",
         "topic": "",
         "payload": "{\"deviceRequest\":{\"deviceId\":\"Outlet-1\",\"action\":\"off\"}}",
@@ -406,55 +234,196 @@
         "repeat": "",
         "crontab": "",
         "once": false,
-        "x": 125.44444274902344,
-        "y": 615.1389255523682,
+        "x": 140,
+        "y": 527,
         "wires": [
             [
-                "8ae1c9f0.83f6b8"
+                "b1d57066.a4e6f",
+                "f5a8a6bd.acacf8"
             ]
         ]
     },
     {
-        "id": "8c191088.f373a8",
-        "type": "wiotp out",
-        "z": "870d7022.6ddef",
-        "authType": "d",
-        "qs": "false",
-        "qsDeviceId": "",
-        "deviceKey": "22b26b8c.9ebc34",
-        "deviceType": "",
-        "deviceId": "",
-        "event": "request",
-        "format": "json",
-        "qos": "",
-        "name": "Requester",
-        "x": 418.50000381469727,
-        "y": 520.000039100647,
-        "wires": []
-    },
-    {
-        "id": "3a5bead3.6f0766",
-        "type": "wiotp out",
-        "z": "870d7022.6ddef",
-        "authType": "d",
-        "qs": "false",
-        "qsDeviceId": "",
-        "deviceKey": "22b26b8c.9ebc34",
-        "deviceType": "",
-        "deviceId": "",
-        "event": "request",
-        "format": "json",
-        "qos": "",
-        "name": "Requester",
-        "x": 421.0000114440918,
-        "y": 693.7500491142273,
-        "wires": []
-    },
-    {
-        "id": "8541e03e.90aa28",
+        "id": "bfd2afdc.bce1a",
         "type": "switch",
-        "z": "870d7022.6ddef",
-        "name": "Alarm-1 Router",
+        "z": "ba1e234b.277a1",
+        "name": "Outlet-2-Router",
+        "property": "payload.d.deviceRequest.action",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "on",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "off",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 613,
+        "y": 231,
+        "wires": [
+            [
+                "9dc5a2cc.9e068"
+            ],
+            [
+                "cba64411.d3a4a8"
+            ]
+        ]
+    },
+    {
+        "id": "9dc5a2cc.9e068",
+        "type": "exec",
+        "z": "ba1e234b.277a1",
+        "command": "/usr/local/bin/codesend 1119683 170",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Outlet-2 ON",
+        "x": 831.75,
+        "y": 204,
+        "wires": [
+            [
+                "70a65c0c.89e0b4"
+            ],
+            [
+                "70a65c0c.89e0b4"
+            ],
+            [
+                "70a65c0c.89e0b4"
+            ]
+        ]
+    },
+    {
+        "id": "cba64411.d3a4a8",
+        "type": "exec",
+        "z": "ba1e234b.277a1",
+        "command": "/usr/local/bin/codesend 1119692 170",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Outlet-2 OFF",
+        "x": 836.75,
+        "y": 262,
+        "wires": [
+            [
+                "b13a5b69.7c56d8"
+            ],
+            [
+                "b13a5b69.7c56d8"
+            ],
+            [
+                "b13a5b69.7c56d8"
+            ]
+        ]
+    },
+    {
+        "id": "ca8dfe92.9e762",
+        "type": "inject",
+        "z": "ba1e234b.277a1",
+        "name": "Outlet-2 ON",
+        "topic": "",
+        "payload": "{\"deviceRequest\":{\"deviceId\":\"Outlet-2\",\"action\":\"on\"}}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 130,
+        "y": 597,
+        "wires": [
+            [
+                "979e3652.4a9948",
+                "1dd754e4.28fa9b"
+            ]
+        ]
+    },
+    {
+        "id": "979e3652.4a9948",
+        "type": "wiotp out",
+        "z": "ba1e234b.277a1",
+        "authType": "d",
+        "qs": "false",
+        "qsDeviceId": "",
+        "deviceKey": "72c3da93.757714",
+        "deviceType": "",
+        "deviceId": "",
+        "event": "request",
+        "format": "json",
+        "qos": "",
+        "name": "Requester",
+        "x": 376.75,
+        "y": 619,
+        "wires": []
+    },
+    {
+        "id": "1dd754e4.28fa9b",
+        "type": "debug",
+        "z": "ba1e234b.277a1",
+        "name": "Outlet-2 Debug",
+        "active": true,
+        "console": "false",
+        "complete": "payload",
+        "x": 371.75,
+        "y": 574,
+        "wires": []
+    },
+    {
+        "id": "fa2c2323.26a7d",
+        "type": "inject",
+        "z": "ba1e234b.277a1",
+        "name": "Outlet-2 OFF",
+        "topic": "",
+        "payload": "{\"deviceRequest\":{\"deviceId\":\"Outlet-2\",\"action\":\"off\"}}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 134.75,
+        "y": 640,
+        "wires": [
+            [
+                "979e3652.4a9948",
+                "1dd754e4.28fa9b"
+            ]
+        ]
+    },
+    {
+        "id": "2309c464.6682fc",
+        "type": "debug",
+        "z": "ba1e234b.277a1",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 1057.5555953979492,
+        "y": 43.7777795791626,
+        "wires": []
+    },
+    {
+        "id": "70a65c0c.89e0b4",
+        "type": "debug",
+        "z": "ba1e234b.277a1",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 1046.5555419921875,
+        "y": 202.3333282470703,
+        "wires": []
+    },
+    {
+        "id": "d82b4911.31f418",
+        "type": "switch",
+        "z": "ba1e234b.277a1",
+        "name": "Alarm-1-Router",
         "property": "payload.d.deviceRequest.action",
         "propertyType": "msg",
         "rules": [
@@ -481,229 +450,328 @@
         ],
         "checkall": "true",
         "outputs": 4,
-        "x": 646.2500076293945,
-        "y": 526.2500076293945,
+        "x": 624,
+        "y": 438,
         "wires": [
             [
-                "786f7a1d.3da404"
+                "71cc4c7.b5a81b4"
             ],
             [
-                "330859ad.3286f6"
+                "5edd036e.36128c"
             ],
             [
-                "c2818d2c.9250b8"
+                "65464fd7.6b928"
             ],
             [
-                "4d00c55c.02fe9c"
+                "b6e6020e.ab203"
             ]
         ]
     },
     {
-        "id": "786f7a1d.3da404",
+        "id": "71cc4c7.b5a81b4",
         "type": "exec",
-        "z": "870d7022.6ddef",
-        "command": "/usr/local/bin/codesend",
+        "z": "ba1e234b.277a1",
+        "command": "/usr/local/bin/codesend 12935172 432",
         "addpay": false,
-        "append": "12935170 432",
+        "append": "",
         "useSpawn": "false",
         "timer": "",
         "oldrc": false,
         "name": "Alarm-1 Arm Away",
-        "x": 883.7500114440918,
-        "y": 443.75000762939453,
+        "x": 851,
+        "y": 339,
         "wires": [
-            [],
-            [],
-            []
+            [
+                "c2909253.25e71"
+            ],
+            [
+                "c2909253.25e71"
+            ],
+            [
+                "c2909253.25e71"
+            ]
         ]
     },
     {
-        "id": "330859ad.3286f6",
+        "id": "5edd036e.36128c",
         "type": "exec",
-        "z": "870d7022.6ddef",
-        "command": "/usr/local/bin/codesend",
+        "z": "ba1e234b.277a1",
+        "command": "/usr/local/bin/codesend 12935170 432",
         "addpay": false,
-        "append": "12935170 432",
+        "append": "",
         "useSpawn": "false",
         "timer": "",
         "oldrc": false,
         "name": "Alarm-1 Arm Stay",
-        "x": 881.2500152587891,
-        "y": 495.00000762939453,
+        "x": 853,
+        "y": 399,
         "wires": [
-            [],
-            [],
-            []
+            [
+                "14a41dbb.1367b2"
+            ],
+            [
+                "14a41dbb.1367b2"
+            ],
+            [
+                "14a41dbb.1367b2"
+            ]
         ]
     },
     {
-        "id": "c2818d2c.9250b8",
+        "id": "65464fd7.6b928",
         "type": "exec",
-        "z": "870d7022.6ddef",
-        "command": "/usr/local/bin/codesend",
+        "z": "ba1e234b.277a1",
+        "command": "/usr/local/bin/codesend 12935169 432",
         "addpay": false,
-        "append": "12935169 432",
+        "append": "",
         "useSpawn": "false",
         "timer": "",
         "oldrc": false,
         "name": "Alarm-1 Off",
-        "x": 862.5,
-        "y": 546.25,
+        "x": 833,
+        "y": 459,
         "wires": [
-            [],
-            [],
-            []
+            [
+                "172e0291.a287ed"
+            ],
+            [
+                "172e0291.a287ed"
+            ],
+            [
+                "172e0291.a287ed"
+            ]
         ]
     },
     {
-        "id": "4d00c55c.02fe9c",
+        "id": "b6e6020e.ab203",
         "type": "exec",
-        "z": "870d7022.6ddef",
-        "command": "/usr/local/bin/codesend",
+        "z": "ba1e234b.277a1",
+        "command": "/usr/local/bin/codesend 12935176 432",
         "addpay": false,
-        "append": "12935176 432",
+        "append": "",
         "useSpawn": "false",
         "timer": "",
         "oldrc": false,
         "name": "Alarm-1 Panic",
-        "x": 872.5,
-        "y": 600,
+        "x": 846,
+        "y": 520,
         "wires": [
-            [],
-            [],
-            []
+            [
+                "b18e6d97.c5b9"
+            ],
+            [
+                "b18e6d97.c5b9"
+            ],
+            [
+                "b18e6d97.c5b9"
+            ]
         ]
     },
     {
-        "id": "6277a3c6.47f76c",
-        "type": "wiotp out",
-        "z": "870d7022.6ddef",
-        "authType": "d",
-        "qs": "false",
-        "qsDeviceId": "",
-        "deviceKey": "22b26b8c.9ebc34",
-        "deviceType": "",
-        "deviceId": "",
-        "event": "request",
-        "format": "json",
-        "qos": "",
-        "name": "Requester",
-        "x": 413.7500057220459,
-        "y": 842.5000257492065,
+        "id": "c2909253.25e71",
+        "type": "debug",
+        "z": "ba1e234b.277a1",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 1088.8889198303223,
+        "y": 334.6666498184204,
         "wires": []
     },
     {
-        "id": "ab85c885.93c6d8",
+        "id": "14a41dbb.1367b2",
+        "type": "debug",
+        "z": "ba1e234b.277a1",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 1085.5555419921875,
+        "y": 399.9999694824219,
+        "wires": []
+    },
+    {
+        "id": "172e0291.a287ed",
+        "type": "debug",
+        "z": "ba1e234b.277a1",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 1084.4444580078125,
+        "y": 457.77777099609375,
+        "wires": []
+    },
+    {
+        "id": "b18e6d97.c5b9",
+        "type": "debug",
+        "z": "ba1e234b.277a1",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 1088.8887939453125,
+        "y": 522.2222290039062,
+        "wires": []
+    },
+    {
+        "id": "ec1046ea.7307b8",
+        "type": "debug",
+        "z": "ba1e234b.277a1",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 1053.333251953125,
+        "y": 101.1111068725586,
+        "wires": []
+    },
+    {
+        "id": "b13a5b69.7c56d8",
+        "type": "debug",
+        "z": "ba1e234b.277a1",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 1061.111083984375,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "56e48479.cb368c",
         "type": "inject",
-        "z": "870d7022.6ddef",
-        "name": "Alarm-1 arm-away",
+        "z": "ba1e234b.277a1",
+        "name": "Alarm-1 Arm Away",
         "topic": "",
         "payload": "{\"deviceRequest\":{\"deviceId\":\"Alarm-1\",\"action\":\"arm-away\"}}",
         "payloadType": "json",
         "repeat": "",
         "crontab": "",
         "once": false,
-        "x": 138.75,
-        "y": 771.2500123977661,
+        "x": 156.66665649414062,
+        "y": 718.8888549804688,
         "wires": [
             [
-                "6277a3c6.47f76c"
+                "57473651.c75558",
+                "faea626.a24eca"
             ]
         ]
     },
     {
-        "id": "70d4ee15.8953e",
+        "id": "57473651.c75558",
+        "type": "wiotp out",
+        "z": "ba1e234b.277a1",
+        "authType": "d",
+        "qs": "false",
+        "qsDeviceId": "",
+        "deviceKey": "72c3da93.757714",
+        "deviceType": "",
+        "deviceId": "",
+        "event": "request",
+        "format": "json",
+        "qos": "",
+        "name": "Requester",
+        "x": 450.0833282470703,
+        "y": 799.7777681350708,
+        "wires": []
+    },
+    {
+        "id": "faea626.a24eca",
+        "type": "debug",
+        "z": "ba1e234b.277a1",
+        "name": "Alarm-1 Debug",
+        "active": true,
+        "console": "false",
+        "complete": "payload",
+        "x": 443.9721984863281,
+        "y": 754.7777729034424,
+        "wires": []
+    },
+    {
+        "id": "aae3d25e.19d4f",
         "type": "inject",
-        "z": "870d7022.6ddef",
-        "name": "Alarm-1 arm-stay",
+        "z": "ba1e234b.277a1",
+        "name": "Alarm-1 Arm Stay",
         "topic": "",
         "payload": "{\"deviceRequest\":{\"deviceId\":\"Alarm-1\",\"action\":\"arm-stay\"}}",
         "payloadType": "json",
         "repeat": "",
         "crontab": "",
         "once": false,
-        "x": 126.25,
-        "y": 815.0000123977661,
+        "x": 161.41665649414062,
+        "y": 761.8888549804688,
         "wires": [
             [
-                "6277a3c6.47f76c"
+                "57473651.c75558",
+                "faea626.a24eca"
             ]
         ]
     },
     {
-        "id": "d76d1d17.a9b2a",
+        "id": "40d8c966.d8f258",
         "type": "inject",
-        "z": "870d7022.6ddef",
-        "name": "Alarm-1 off",
+        "z": "ba1e234b.277a1",
+        "name": "Alarm-1 OFF",
         "topic": "",
         "payload": "{\"deviceRequest\":{\"deviceId\":\"Alarm-1\",\"action\":\"off\"}}",
         "payloadType": "json",
         "repeat": "",
         "crontab": "",
         "once": false,
-        "x": 105,
-        "y": 860.0000123977661,
+        "x": 147.77777099609375,
+        "y": 808.8888397216797,
         "wires": [
             [
-                "6277a3c6.47f76c"
+                "faea626.a24eca",
+                "57473651.c75558"
             ]
         ]
     },
     {
-        "id": "13230fb9.773c7",
+        "id": "633082e5.3300ac",
         "type": "inject",
-        "z": "870d7022.6ddef",
-        "name": "Alarm-1 panic",
+        "z": "ba1e234b.277a1",
+        "name": "Alarm-1 Panic",
         "topic": "",
         "payload": "{\"deviceRequest\":{\"deviceId\":\"Alarm-1\",\"action\":\"panic\"}}",
         "payloadType": "json",
         "repeat": "",
         "crontab": "",
         "once": false,
-        "x": 123.75,
-        "y": 910.0000123977661,
+        "x": 143.3333282470703,
+        "y": 856.6666259765625,
         "wires": [
             [
-                "6277a3c6.47f76c"
+                "faea626.a24eca",
+                "57473651.c75558"
             ]
         ]
     },
     {
-        "id": "dcbae9cb.f27d8",
+        "id": "c765db14.ac2b58",
         "type": "ibmiot",
         "z": "",
-        "name": "apikey-controller",
+        "name": "My-API-Key",
         "keepalive": "60",
-        "serverName": "5liweu.messaging.internetofthings.ibmcloud.com",
+        "serverName": "",
         "cleansession": true,
         "appId": "",
         "shared": false
     },
     {
-        "id": "22b26b8c.9ebc34",
+        "id": "72c3da93.757714",
         "type": "wiotp-credentials",
         "z": "",
-        "name": "",
+        "name": "Requester",
         "org": "5liweu",
         "serverName": "",
         "devType": "HomeAutomationController",
         "devId": "Controller-1",
         "keepalive": "60",
         "cleansession": true,
-        "tls": "54af0bd3.adbd04",
+        "tls": "",
         "usetls": false
-    },
-    {
-        "id": "54af0bd3.adbd04",
-        "type": "tls-config",
-        "z": "",
-        "name": "",
-        "cert": "",
-        "key": "",
-        "ca": "",
-        "certname": "",
-        "keyname": "",
-        "caname": "",
-        "verifyservercert": false
     }
 ]
