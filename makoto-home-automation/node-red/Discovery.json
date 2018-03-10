@@ -1,18 +1,19 @@
 [
     {
-        "id": "4d152de.c6353d4",
+        "id": "d7c72cc2.489d4",
         "type": "tab",
         "label": "Discovery",
         "disabled": false,
-        "info": "The flow for \"discovery\" mode, where the system broadcasts an event describing the system's full capabilities."
+        "info": "The flow for *discovery* mode, where the system broadcasts an event describing the system's full capabilities"
     },
     {
-        "id": "44ecde1.964dd2",
+        "id": "d6d65132.f0e95",
         "type": "ibmiot in",
-        "z": "4d152de.c6353d4",
+        "z": "d7c72cc2.489d4",
         "authentication": "apiKey",
-        "apiKey": "c765db14.ac2b58",
+        "apiKey": "60a60aaa.b07084",
         "inputType": "evt",
+        "logicalInterface": "",
         "ruleId": "",
         "deviceId": "Controller-1",
         "applicationId": "",
@@ -22,74 +23,68 @@
         "format": "json",
         "name": "App Request Listener",
         "service": "registered",
-        "allDevices": false,
+        "allDevices": "",
         "allApplications": "",
-        "allDeviceTypes": false,
-        "allEvents": false,
-        "allCommands": true,
-        "allFormats": true,
+        "allDeviceTypes": "",
+        "allLogicalInterfaces": "",
+        "allEvents": "",
+        "allCommands": "",
+        "allFormats": "",
         "qos": 0,
-        "x": 178.74999237060547,
-        "y": 228.13891983032227,
+        "x": 120,
+        "y": 160,
         "wires": [
             [
-                "8ddd726a.d9894",
-                "fe0a46c2.6ac488"
+                "692b06ed.5998b8",
+                "7559090d.b3d8d8"
             ]
         ]
     },
     {
-        "id": "56c9b5e6.ec070c",
+        "id": "692b06ed.5998b8",
+        "type": "switch",
+        "z": "d7c72cc2.489d4",
+        "name": "Device Router",
+        "property": "payload.d.deviceRequest.deviceId",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Controller-1",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 1,
+        "x": 340,
+        "y": 160,
+        "wires": [
+            [
+                "f6782c08.9aa51"
+            ]
+        ]
+    },
+    {
+        "id": "35b3fdb1.ee0bf2",
         "type": "function",
-        "z": "4d152de.c6353d4",
+        "z": "d7c72cc2.489d4",
         "name": "DeviceInfo",
-        "func": "var discoveries = {\n    deviceResponse : \"discovery\",\n    devices : [\n        { \n            deviceId : \"Outlet-1\",\n            description : \"433MHz RF Outlet\",\n            actions : [\n                {\n                    action : \"on\", description : \"Turns the outlet on\"\n                },\n                {\n                    action : \"off\", description : \"Turns the outlet off\"\n                }\n            ]\n        },\n        {\n            deviceId : \"Outlet-2\",\n            description : \"433MHz RF Outlet\",\n            actions : [\n                {\n                    action : \"on\", description : \"Turns the outlet on\"\n                },\n                {\n                    action : \"off\", description : \"Turns the outlet off\"\n                }\n            ]\n        },\n        {\n            deviceId : \"Alarm-1\",\n            description : \"433MHz Home Alarm System\",\n            actions : [\n                {\n                    action : \"arm-away\",\n                    description : \"Arms the system in away mode (motion sensors active)\"\n                },\n                {\n                    action : \"arm-stay\",\n                    description : \"Arms the system in stay mode (motion sensors inactive)\"\n                },\n                {\n                    action : \"off\",\n                    description : \"Disarms the system\"\n                },\n                {\n                    action : \"panic\",\n                    description : \"Triggers the alarm siren (SOS)\"\n                }\n            ]\n        }\n    ]\n};\nmsg.payload = discoveries;\nreturn msg;",
+        "func": "var discoveries = {\n  deviceId : \"Controller-1\",\n  deviceResponse : \"discovery\",    \n  devices : [\n    {             \n      deviceId : \"Outlet-1\",            \n      description : \"433MHz RF Outlet\",            \n      actions : [                \n        {                    \n          action : \"on\", \n          description : \"Turns the outlet on\"                \n          \n        },                \n        {                    \n          action : \"off\", \n          description : \"Turns the outlet off\"\n        }            \n      ]        \n    },        \n    {            \n      deviceId : \"Outlet-2\",            \n      description : \"433MHz RF Outlet\",            \n      actions : [                \n        {                    \n          action : \"on\", \n          description : \"Turns the outlet on\"                \n          \n        },                \n        {                    \n          action : \"off\", \n          description : \"Turns the outlet off\"              \n        }            \n      ]        \n    },        \n    {            \n      deviceId : \"Alarm-1\",            \n      description : \"433MHz Home Alarm System\",       \n      actions : [                \n        {                    \n          action : \"arm-away\",                    \n          description : \"Arms the system in away mode (motion sensors active)\"\n        },                \n        {                    \n          action : \"arm-stay\",\n          description : \"Arms the system in stay mode (motion sensors inactive)\"                \n        },                \n        {                    \n          action : \"off\",\n          description : \"Disarms the system\"                \n        },\n        {                    \n          action : \"panic\",                    \n          description : \"Triggers the alarm siren (SOS)\"\n        }\n      ]\n    }\n  ]\n};\nmsg.payload = discoveries;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 685.7777805328369,
-        "y": 224.3611478805542,
+        "x": 750,
+        "y": 160,
         "wires": [
             [
-                "9033f87c.be3a18",
-                "2d212461.e81a1c"
+                "486b4534.77e37c"
             ]
         ]
     },
     {
-        "id": "9033f87c.be3a18",
-        "type": "wiotp out",
-        "z": "4d152de.c6353d4",
-        "authType": "d",
-        "qs": "false",
-        "qsDeviceId": "",
-        "deviceKey": "72c3da93.757714",
-        "deviceType": "",
-        "deviceId": "",
-        "event": "response",
-        "format": "json",
-        "qos": "",
-        "name": "IoT Controller",
-        "x": 923.0555534362793,
-        "y": 220.47224807739258,
-        "wires": []
-    },
-    {
-        "id": "2d212461.e81a1c",
-        "type": "debug",
-        "z": "4d152de.c6353d4",
-        "name": "",
-        "active": true,
-        "console": "false",
-        "complete": "false",
-        "x": 909.5277519226074,
-        "y": 159.1111297607422,
-        "wires": []
-    },
-    {
-        "id": "fe0a46c2.6ac488",
+        "id": "f6782c08.9aa51",
         "type": "switch",
-        "z": "4d152de.c6353d4",
-        "name": "DiscoveryRouter",
+        "z": "d7c72cc2.489d4",
+        "name": "Controller-1 Router",
         "property": "payload.d.deviceRequest.action",
         "propertyType": "msg",
         "rules": [
@@ -101,30 +96,36 @@
         ],
         "checkall": "true",
         "outputs": 1,
-        "x": 461.0555191040039,
-        "y": 226.0833616256714,
+        "x": 550,
+        "y": 160,
         "wires": [
             [
-                "56c9b5e6.ec070c"
+                "35b3fdb1.ee0bf2"
             ]
         ]
     },
     {
-        "id": "8ddd726a.d9894",
-        "type": "debug",
-        "z": "4d152de.c6353d4",
-        "name": "",
-        "active": true,
-        "console": "false",
-        "complete": "false",
-        "x": 460.50000762939453,
-        "y": 153.75000953674316,
+        "id": "486b4534.77e37c",
+        "type": "wiotp out",
+        "z": "d7c72cc2.489d4",
+        "authType": "d",
+        "qs": "false",
+        "qsDeviceId": "",
+        "deviceKey": "74877ec7.98292",
+        "deviceType": "",
+        "deviceId": "",
+        "event": "response",
+        "format": "json",
+        "qos": "",
+        "name": "Requester",
+        "x": 930,
+        "y": 160,
         "wires": []
     },
     {
-        "id": "478ff39.03b790c",
+        "id": "1183d192.78d25e",
         "type": "inject",
-        "z": "4d152de.c6353d4",
+        "z": "d7c72cc2.489d4",
         "name": "Discovery",
         "topic": "",
         "payload": "{\"deviceRequest\":{\"deviceId\":\"Controller-1\",\"action\":\"discovery\"}}",
@@ -132,37 +133,107 @@
         "repeat": "",
         "crontab": "",
         "once": false,
-        "x": 171.11111111111111,
-        "y": 411.1111111111111,
+        "x": 100,
+        "y": 360,
         "wires": [
             [
-                "3fcd99fe.bf5d66"
+                "28d6494a.7febe6",
+                "5ff6fc54.1ae864"
             ]
         ]
     },
     {
-        "id": "3fcd99fe.bf5d66",
+        "id": "5ff6fc54.1ae864",
         "type": "wiotp out",
-        "z": "4d152de.c6353d4",
+        "z": "d7c72cc2.489d4",
         "authType": "d",
         "qs": "false",
         "qsDeviceId": "",
-        "deviceKey": "72c3da93.757714",
+        "deviceKey": "74877ec7.98292",
         "deviceType": "",
         "deviceId": "",
         "event": "request",
         "format": "json",
         "qos": "",
         "name": "Requester",
-        "x": 392.22222222222223,
-        "y": 408.88888888888886,
+        "x": 310,
+        "y": 360,
         "wires": []
     },
     {
-        "id": "c765db14.ac2b58",
+        "id": "28d6494a.7febe6",
+        "type": "debug",
+        "z": "d7c72cc2.489d4",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 293.3333333333333,
+        "y": 285.55555555555554,
+        "wires": []
+    },
+    {
+        "id": "7559090d.b3d8d8",
+        "type": "debug",
+        "z": "d7c72cc2.489d4",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 330,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "3f811bd.1d134e4",
+        "type": "ibmiot in",
+        "z": "d7c72cc2.489d4",
+        "authentication": "apiKey",
+        "apiKey": "60a60aaa.b07084",
+        "inputType": "evt",
+        "logicalInterface": "",
+        "ruleId": "",
+        "deviceId": "Controller-1",
+        "applicationId": "",
+        "deviceType": "HomeAutomationController",
+        "eventType": "response",
+        "commandType": "",
+        "format": "json",
+        "name": "App Response Listener",
+        "service": "registered",
+        "allDevices": "",
+        "allApplications": "",
+        "allDeviceTypes": "",
+        "allLogicalInterfaces": "",
+        "allEvents": "",
+        "allCommands": "",
+        "allFormats": "",
+        "qos": 0,
+        "x": 120,
+        "y": 480,
+        "wires": [
+            [
+                "1f27d052.5cd67"
+            ]
+        ]
+    },
+    {
+        "id": "1f27d052.5cd67",
+        "type": "debug",
+        "z": "d7c72cc2.489d4",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 340,
+        "y": 482.22222222222223,
+        "wires": []
+    },
+    {
+        "id": "60a60aaa.b07084",
         "type": "ibmiot",
         "z": "",
-        "name": "My-API-Key",
+        "name": "HomeAutomationControllerAPIKey",
         "keepalive": "60",
         "serverName": "",
         "cleansession": true,
@@ -170,11 +241,11 @@
         "shared": false
     },
     {
-        "id": "72c3da93.757714",
+        "id": "74877ec7.98292",
         "type": "wiotp-credentials",
         "z": "",
-        "name": "Requester",
-        "org": "5liweu",
+        "name": "Controller-1",
+        "org": "qsj4yy",
         "serverName": "",
         "devType": "HomeAutomationController",
         "devId": "Controller-1",
