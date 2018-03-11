@@ -21,6 +21,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 
 /**
@@ -99,6 +100,16 @@ public class ActionDialogFragment extends DialogFragment {
                 dialog.dismiss();
             }
         });
+        // If running on version < Marshmallow, then the listener has to be initialized this way
+        if (Build.VERSION.SDK_INT < 23) {
+            Context context = getActivity();
+            if (context instanceof ActionDialogFragment.OnActionDialogFragmentInteractionListener) {
+                mListener = (ActionDialogFragment.OnActionDialogFragmentInteractionListener) context;
+            } else {
+                throw new RuntimeException(context.toString()
+                        + " must implement OnFragmentInteractionListener");
+            }
+        }
         return builder.create();
     }
 

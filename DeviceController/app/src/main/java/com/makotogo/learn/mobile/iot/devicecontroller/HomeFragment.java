@@ -17,6 +17,7 @@
 package com.makotogo.learn.mobile.iot.devicecontroller;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.text.Editable;
@@ -111,6 +112,16 @@ public class HomeFragment extends Fragment {
         if (getArguments() != null) {
             mProperties = (ApplicationProperties)getArguments().getSerializable(ARG_PROPERTIES);
         }
+        // If running on version < Marshmallow, then the listener has to be initialized this way
+        if (Build.VERSION.SDK_INT < 23) {
+            Context context = getActivity();
+            if (context instanceof OnHomeFragmentInteractionListener) {
+                mListener = (OnHomeFragmentInteractionListener) context;
+            } else {
+                throw new RuntimeException(context.toString()
+                        + " must implement OnFragmentInteractionListener");
+            }
+        }
     }
 
     /**
@@ -151,6 +162,10 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Note: this only works for API > 23
+     * @param context The application context
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

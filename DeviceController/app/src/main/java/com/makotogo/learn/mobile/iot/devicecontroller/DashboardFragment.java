@@ -18,6 +18,7 @@ package com.makotogo.learn.mobile.iot.devicecontroller;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -94,6 +95,17 @@ public class DashboardFragment extends Fragment {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
+        // If running on version < Marshmallow, then the listener has to be initialized this way
+        if (Build.VERSION.SDK_INT < 23) {
+            Context context = getActivity();
+            if (context instanceof DashboardFragment.OnDashboardFragmentInteractionListener) {
+                mListener = (DashboardFragment.OnDashboardFragmentInteractionListener) context;
+            } else {
+                throw new RuntimeException(context.toString()
+                        + " must implement OnFragmentInteractionListener");
+            }
+        }
+
     }
 
     /**
