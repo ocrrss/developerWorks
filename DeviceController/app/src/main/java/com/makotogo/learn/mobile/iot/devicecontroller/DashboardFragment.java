@@ -53,7 +53,6 @@ public class DashboardFragment extends Fragment {
 
     // Parameter argument names (for access within the Bundle)
     private static final String ARG_COLUMN_COUNT = "arg-column-count";
-    private static final String ARG_PROPERTIES = "arg-properties";
 
     // Parameter variables
     private int mColumnCount;
@@ -144,7 +143,10 @@ public class DashboardFragment extends Fragment {
                         recyclerView.setAdapter(new DashboardRecyclerViewAdapter(IotDeviceContent.ITEMS, mListener));
                     }
                 } catch (JSONException e) {
-                    Log.e(TAG, METHOD + "JSONException occurred while creating JSONObject from String: '" + messageAsString + "'", e);
+                    // TODO: Store this in Notifications deque
+                    String notification = METHOD + "JSONException occurred while creating JSONObject from String: '" + messageAsString + "'";
+                    mListener.pushNotification(notification);
+                    Log.e(TAG, notification, e);
                 }
             }
         });
@@ -170,7 +172,6 @@ public class DashboardFragment extends Fragment {
     private void createItemsFromJsonMessage(String messageAsString) throws JSONException {
         JSONObject jsonObject = new JSONObject(messageAsString);
         jsonObject = jsonObject.getJSONObject(JSONDiscoveryDeviceResponse.D.toString());
-        String deviceResponse = jsonObject.getString(JSONDiscoveryDeviceResponse.DEVICE_RESPONSE.toString());
         JSONArray devices = jsonObject.getJSONArray(JSONDiscoveryDeviceResponse.DEVICES.toString());
         // Clear out the current collection of IotDeviceItems
         IotDeviceContent.clearAll();
@@ -265,6 +266,13 @@ public class DashboardFragment extends Fragment {
          *                               nasty Android hobgobblins).
          */
         void subscribeToDeviceResponse(String deviceResponse, DeviceResponseCallback deviceResponseCallback);
+
+        /**
+         * Pushes the specified notification message onto the Notifications deque
+         *
+         * @param notificationMessage Duh
+         */
+        void pushNotification(String notificationMessage);
 
     }
 }

@@ -16,9 +16,10 @@
 
 <resources>
     <string name="app_name">IoT Device Controller</string>
-    <string name="title_home">Device Settings</string>
+    <string name="title_home">Settings</string>
     <string name="title_dashboard">Device Dashboard</string>
-    <string name="title_notifications">Device Messages:</string>
+    <string name="title_notifications">Messages</string>
+    <string name="title_notifications_long">Device Notification Messages (newest first):</string>
     <string name="title_settings">App Settings</string>
     <string name="home_id">Home ID</string>
     <string name="your_assigned_system_id">Your assigned system ID</string>
@@ -30,7 +31,8 @@
     <string name="api_key">API Key</string>
     <string name="auth_token">Auth Token</string>
     <string name="connect">Connect</string>
-    <string name="error_application_client_not_connected">ApplicationClient is not connected. Check your settings and try again.
+    <string name="error_application_client_not_connected">ApplicationClient is not connected. Check
+        your settings and try again.
     </string>
     <string name="connection_status">Connection Status:</string>
     <string name="title_message_log">Message Log</string>
@@ -38,4 +40,7 @@
     <string name="connection_status_connected">Connection Status: Connected</string>
     <string name="title_select_action">Select Action</string>
     <string name="disconnect">Disconnect</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
