@@ -197,7 +197,7 @@ public class MainActivity extends AppCompatActivity
         });
 
         // Load application properties from SharedPreferences
-        setApplicationProperties(loadApplicationPropertiesUntilSettingsFragmentIsCoded());
+        setApplicationProperties(new ApplicationProperties(getApplicationContext()));
 
         // Create the BottomNavigationView
         mFragmentTitle = findViewById(R.id.message);
@@ -300,6 +300,10 @@ public class MainActivity extends AppCompatActivity
      */
     private void loadSettingsFragment() {
         setActiveFragmentId(R.id.navigation_settings);
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frameLayout, SettingsFragment.newInstance(), SettingsFragment.FRAGMENT_TAG);
+        fragmentTransaction.commit();
     }
 
     /**
@@ -912,20 +916,21 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /**
-     * Load the application properties as which we will connect.
-     * This will eventually be replaced by the Settings fragment.
-     * @return Properties - the properties specific to the application
-     */
-    private ApplicationProperties loadApplicationPropertiesUntilSettingsFragmentIsCoded() {
-        // TODO: Move this functionality to Settings fragment
-        ApplicationProperties properties = new ApplicationProperties(getApplicationContext());
-        properties.setMqttServerProtocol("ssl");
-        properties.setMqttServerHostName("messaging.internetofthings.ibmcloud.com");
-        properties.setMqttServerPort("8883");
-        properties.setMaxNotificationCount(100);
-        return properties;
-    }
+    // TODO: REMOVE THIS COMMENTED OUT METHOD
+//    /**
+//     * Load the application properties as which we will connect.
+//     * This will eventually be replaced by the Settings fragment.
+//     * @return Properties - the properties specific to the application
+//     */
+//    private ApplicationProperties loadApplicationPropertiesUntilSettingsFragmentIsCoded() {
+//        // TODO: Move this functionality to Settings fragment
+//        ApplicationProperties properties = new ApplicationProperties(getApplicationContext());
+//        properties.setMqttServerProtocol("ssl");
+//        properties.setMqttServerHostName("messaging.internetofthings.ibmcloud.com");
+//        properties.setMqttServerPort("8883");
+//        properties.setMaxNotificationCount(100);
+//        return properties;
+//    }
 
     /**
      * Return the ApplicationClient in use. If it is not connected,
