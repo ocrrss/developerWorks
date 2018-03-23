@@ -16,10 +16,10 @@
 
 package com.makotogo.learn.mobile.iot.devicecontroller;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -60,7 +60,9 @@ public class HomeFragment extends Fragment {
      */
     private ApplicationProperties getProperties() {
         if (mProperties == null) {
-            Log.w(TAG, "ApplicationProperties is null. This may be fine, or it may indicate a configuration or other code issue.");
+            String notification = "ApplicationProperties is null. This may be fine, or it may indicate a configuration or other code issue.";
+            Log.w(TAG, notification);
+            getListener().pushNotification(notification);
         }
         return mProperties;
     }
@@ -79,7 +81,9 @@ public class HomeFragment extends Fragment {
      */
     private OnHomeFragmentInteractionListener getListener() {
         if (mListener == null) {
-            Log.w(TAG, "OnHomeFragmentInteractionListener is null. This may be fine, or it may indicate a configuration or other code issue.");
+            String notification = "OnHomeFragmentInteractionListener is null. This may be fine, or it may indicate a configuration or other code issue.";
+            Log.e(TAG, notification);
+            throw new IllegalStateException(notification);
         }
         return mListener;
     }
@@ -95,8 +99,9 @@ public class HomeFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param applicationProperties
-     * @return
+     * @param applicationProperties The ApplicationProperties object to use for settings and whatnot
+     *
+     * @return HomeFragment - ready to roll
      */
     public static HomeFragment newInstance(ApplicationProperties applicationProperties) {
         HomeFragment fragment = new HomeFragment();
@@ -208,7 +213,8 @@ public class HomeFragment extends Fragment {
                     //
                     // Notify the context that the connection is no longer valid.
                     // The user has changed something about it.
-                    Log.w(TAG, "OrgId field changed from '" + before + "' to '" + after + "'. Connection is no longer valid.");
+                    String notification = "OrgId field changed from '" + before + "' to '" + after + "'. Connection is no longer valid.";
+                    Log.w(TAG, notification);
                     getListener().invalidateConnection();
                 }
             }
@@ -237,7 +243,9 @@ public class HomeFragment extends Fragment {
                     //
                     // Notify the context that the connection is no longer valid.
                     // The user has changed something about it.
-                    Log.w(TAG, "Device Type field changed from '" + before + "' to '" + after + "'. Connection is no longer valid.");
+                    String notification = "Device Type field changed from '" + before + "' to '" + after + "'. Connection is no longer valid.";
+                    Log.w(TAG, notification);
+                    getListener().pushNotification(notification);
                     getListener().invalidateConnection();
                 }
             }
@@ -330,6 +338,7 @@ public class HomeFragment extends Fragment {
          * @return ApplicationClient - a connected ApplicationClient that
          * can be used to communicate with the MQTT server.
          */
+        @SuppressWarnings("UnusedReturnValue")
         ApplicationClient getApplicationClientAndConnectIfNecessary(ConnectionMonitorCallback connectionMonitorCallback);
 
         /**
@@ -344,7 +353,7 @@ public class HomeFragment extends Fragment {
          * Returns a boolean from the owning activity indicating whether or not
          * the application is connected.
          *
-         * @return
+         * @return true if connected, false otherwise.
          */
         boolean isConnected();
 
@@ -352,6 +361,13 @@ public class HomeFragment extends Fragment {
          * Disconnects the application
          */
         void disconnect();
+
+        /**
+         * Pushes the specified notification message onto the Notifications deque
+         *
+         * @param notificationMessage Duh
+         */
+        void pushNotification(String notificationMessage);
 
     }
 

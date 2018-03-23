@@ -49,6 +49,7 @@ public class ApplicationProperties extends Properties {
     private static final String AUTH_TOKEN = "auth.token";
     private static final String CONTROLLER_DEVICE_TYPE = "controller.device.type";
     private static final String CONTROLLER_DEVICE_ID = "controller.device.id";
+    private static final String MAX_NOTIFICATION_COUNT = "max.notification.count";
 
     /**
      * The application context. Needed by SharedPreferences.
@@ -143,6 +144,14 @@ public class ApplicationProperties extends Properties {
         storeProperty(CONTROLLER_DEVICE_ID, controllerDeviceId);
     }
 
+    public Integer getMaxNotificationCount() {
+        return fetchIntegerProperty(MAX_NOTIFICATION_COUNT);
+    }
+
+    public void setMaxNotificationCount(Integer maxNotificationCount) {
+        storeProperty(MAX_NOTIFICATION_COUNT, maxNotificationCount);
+    }
+
     /**
      * The setProperty method from Properties.
      * Do not allow the application code to call this.
@@ -172,7 +181,7 @@ public class ApplicationProperties extends Properties {
             SharedPreferences sharedPreferences = mContext.getSharedPreferences(SHARED_PREFERENCES_FILE_NAME, Context.MODE_PRIVATE);
             ret = sharedPreferences.getString(propertyName, null);
             //
-            // Property hit in SharedPreferences, store it in the cache
+            // Property hit in SharedPreferences, store it in the "cache"
             if (ret != null) {
                 super.setProperty(propertyName, ret);
             }
@@ -185,19 +194,50 @@ public class ApplicationProperties extends Properties {
     }
 
     /**
+     * Helper method. Attempts to locate the specified property
+     * in the "cache" (the super class' Properties internal store).
+     * If that fails, the property will be loaded from SharedPreferences.
+     *
+     * @param propertyName The property name to fetch.
+     * @return Integer - the property value
+     */
+    private Integer fetchIntegerProperty(String propertyName) {
+        Integer ret = null;
+        //
+        // First see if the property is in the "cache"
+        String propertyValueAsString = getProperty(propertyName);
+        if (propertyValueAsString == null) {
+            // Not there. Try SharedPreferences.
+            SharedPreferences sharedPreferences = mContext.getSharedPreferences(SHARED_PREFERENCES_FILE_NAME, Context.MODE_PRIVATE);
+            // Use String values with SharedPreferences to be consistent with java.util.Properties
+            propertyValueAsString = sharedPreferences.getString(propertyName, null);
+            //
+            // Property hit in SharedPreferences, store it in the "cache"
+            if (propertyValueAsString != null) {
+                super.setProperty(propertyName, propertyValueAsString);
+            }
+        }
+        // Set the return value to Empty string (instead of null)
+        if (propertyValueAsString != null) {
+            ret = Integer.valueOf(propertyValueAsString);
+        }
+        return ret;
+    }
+
+    /**
      * Helper method. Stores the property value in SharedPreferences, as
      * well as the "cache" (the internals of the parent Properties object).
      *
      * @param propertyName The property name
      * @param propertyValue The property value
      */
-    private void storeProperty(String propertyName, String propertyValue) {
+    private void storeProperty(String propertyName, Object propertyValue) {
         // Store the property in the cache
-        super.setProperty(propertyName, propertyValue);
+        super.setProperty(propertyName, propertyValue.toString());
         // Now store it in SharedPreferences
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(SHARED_PREFERENCES_FILE_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(propertyName, propertyValue);
+        editor.putString(propertyName, propertyValue.toString());
         editor.commit();
     }
 

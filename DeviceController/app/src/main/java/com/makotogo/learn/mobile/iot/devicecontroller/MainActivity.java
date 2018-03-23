@@ -21,6 +21,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
@@ -45,7 +46,9 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.security.KeyStore;
+import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,14 +63,24 @@ import javax.net.ssl.TrustManagerFactory;
 /**
  * The MainActivity for the application.
  *
- * TODO: Portrait mode forced. The views just look weird (some controls aren't even accessible). Look into this.
+ * TODO: Portrait mode forced in the manifest. The views just look weird (some controls aren't even accessible). Look into this.
  * TODO: Connection state gets weird upon device configuration changes (e.g., rotation). Portrait mode forced. Look into this.
  * TODO: The number of lines of code in this class is TOO DAMN HIGH! (Erm, I mean, refactor this class into smaller, more tightly-focused classes)
  */
-public class MainActivity extends AppCompatActivity implements HomeFragment.OnHomeFragmentInteractionListener, DashboardFragment.OnDashboardFragmentInteractionListener, ActionDialogFragment.OnActionDialogFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity
+        implements HomeFragment.OnHomeFragmentInteractionListener,
+        DashboardFragment.OnDashboardFragmentInteractionListener,
+        ActionDialogFragment.OnActionDialogFragmentInteractionListener,
+        NotificationFragment.OnNotificationFragmentInteractionListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final int NUMBER_OF_DASHBOARD_COLUMNS_TO_DISPLAY = 1;
+
+    // Fragment arguments
+    private static final int FRAG_ARG_NUMBER_OF_DASHBOARD_COLUMNS_TO_DISPLAY = 1;
+    private static final int FRAG_ARG_NUMBER_OF_NOTIFICATION_COLUMNS_TO_DISPLAY = 1;
+
+    // Instance state tags
+    private static final String INSTANCE_STATE_NOTIFICATIONS = TAG + ".instance.state.notifications";
 
     /**
      * Keep this little bread crumb around to drive what is displayed
@@ -91,10 +104,20 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
     private int mActiveFragmentId;
 
     /**
-     * The messages that have been generated for the current session.
-     * TODO: Use some kind of circular buffer or limited space stack to keep this from getting too full
+     * The notifications that have been generated for the current session
      */
-    private List<String> messages;
+    private ArrayDeque<NotificationContent.NotificationItem> notifications;
+
+    /**
+     * Private getter/NPE preventer
+     */
+    private ArrayDeque<NotificationContent.NotificationItem> getNotifications() {
+        // No NPEs
+        if (notifications == null) {
+            notifications = new ArrayDeque<>();
+        }
+        return notifications;
+    }
 
     /**
      * Create a message destined for the message store.
@@ -120,6 +143,19 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Create the Deque that holds notifications
+        // Try to retrieve it from saved instance state first
+        if (savedInstanceState != null) {
+            Serializable savedInstanceStateSerializable = savedInstanceState.getSerializable(INSTANCE_STATE_NOTIFICATIONS);
+            if (savedInstanceStateSerializable != null) {
+                // This unchecked cast is okay
+                //noinspection unchecked
+                notifications = (ArrayDeque<NotificationContent.NotificationItem>) savedInstanceStateSerializable;
+            } else {
+                notifications = null; // force recreate of the Deque
+            }
+        }
+
         // Create the FloatingActionBar, this provides information about each fragment
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -135,17 +171,17 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
                         // TODO: Toast is temporary, replace with Dialog
                         toast = Toast.makeText(getApplicationContext(), "This (" + activeFragmentId + ") is the Home fragment", Toast.LENGTH_LONG);
                         break;
-                        // Navigation Fragment
+                    // Navigation Fragment
                     case R.id.navigation_dashboard:
                         // TODO: Toast is temporary, replace with Dialog
                         toast = Toast.makeText(getApplicationContext(), "This (" + activeFragmentId + ") is the Dashboard fragment", Toast.LENGTH_LONG);
                         break;
-                        // Notifications Fragment
+                    // Notifications Fragment
                     case R.id.navigation_notifications:
                         // TODO: Toast is temporary, replace with Dialog
                         toast = Toast.makeText(getApplicationContext(), "This (" + activeFragmentId + ") is the Notifications fragment", Toast.LENGTH_LONG);
                         break;
-                        // Settings Fragment
+                    // Settings Fragment
                     case R.id.navigation_settings:
                         // TODO: Toast is temporary, replace with Dialog
                         toast = Toast.makeText(getApplicationContext(), "This (" + activeFragmentId + ") is the Settings fragment", Toast.LENGTH_LONG);
@@ -161,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
         });
 
         // Load application properties from SharedPreferences
-        setApplicationProperties(loadApplicationPropertiesForDebug());
+        setApplicationProperties(new ApplicationProperties(getApplicationContext()));
 
         // Create the BottomNavigationView
         mFragmentTitle = findViewById(R.id.message);
@@ -173,6 +209,19 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
 
         // Disable the Dashboard until connected
         disableBottomNavigationMenuItem(R.id.navigation_dashboard);
+    }
+
+    /**
+     * Store instance state to survive things like device config changes.
+     *
+     * @param outState           The Bundle in which to store instance state
+     * @param outPersistentState Not really sure wtf this is for
+     */
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        // Store the notifications deque
+        outState.putSerializable(INSTANCE_STATE_NOTIFICATIONS, getNotifications());
     }
 
     /**
@@ -196,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
                     ret = true;
                     break;
                 case R.id.navigation_notifications:
-                    mFragmentTitle.setText(R.string.title_notifications);
+                    mFragmentTitle.setText(R.string.title_notifications_long);
                     loadNotificationsFragment();
                     ret = true;
                     break;
@@ -231,15 +280,19 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
         setActiveFragmentId(R.id.navigation_dashboard);
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frameLayout, DashboardFragment.newInstance(NUMBER_OF_DASHBOARD_COLUMNS_TO_DISPLAY), DashboardFragment.FRAGMENT_TAG);
+        fragmentTransaction.replace(R.id.frameLayout, DashboardFragment.newInstance(FRAG_ARG_NUMBER_OF_DASHBOARD_COLUMNS_TO_DISPLAY), DashboardFragment.FRAGMENT_TAG);
         fragmentTransaction.commit();
     }
 
     /**
-     * Load the Notifications (messages) fragment. Replaces whatever Fragment was there.
+     * Load the Notifications (notifications) fragment. Replaces whatever Fragment was there.
      */
     private void loadNotificationsFragment() {
         setActiveFragmentId(R.id.navigation_notifications);
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frameLayout, NotificationFragment.newInstance(FRAG_ARG_NUMBER_OF_NOTIFICATION_COLUMNS_TO_DISPLAY, getNotifications()), NotificationFragment.FRAGMENT_TAG);
+        fragmentTransaction.commit();
     }
 
     /**
@@ -247,12 +300,16 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
      */
     private void loadSettingsFragment() {
         setActiveFragmentId(R.id.navigation_settings);
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frameLayout, SettingsFragment.newInstance(), SettingsFragment.FRAGMENT_TAG);
+        fragmentTransaction.commit();
     }
 
     /**
      * Disable the specified BottomNavigationView menu item
      *
-     * @param menuResourceIdToDisable
+     * @param menuResourceIdToDisable Duh
      */
     private void disableBottomNavigationMenuItem(int menuResourceIdToDisable) {
         BottomNavigationView navigationView = findViewById(R.id.navigation);
@@ -262,7 +319,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
     /**
      * Enable the specified BottomNavigationView menu item
      *
-     * @param menuResourceIdToDisable
+     * @param menuResourceIdToDisable Duh
      */
     private void enableBottomNavigationMenuItem(int menuResourceIdToDisable) {
         BottomNavigationView navigationView = findViewById(R.id.navigation);
@@ -412,9 +469,12 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
             IMqttToken token = getApplicationClient().connect(options, context, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-                    // TODO: Subscribe to all events
-                    Log.d(TAG, METHOD + "Connect SUCCESS!");
-                    Toast.makeText(getApplication(), "Connect SUCCESS!", Toast.LENGTH_LONG).show();
+                    String notificationMessage = "Connect SUCCESS!";
+                    Log.d(TAG, METHOD + notificationMessage);
+                    // Store this in the Notifications deque
+                    pushNotification(notificationMessage);
+                    // TODO: Check application properties to see if we display this Toast or not
+                    Toast.makeText(getApplication(), notificationMessage, Toast.LENGTH_LONG).show();
                     subscribeToDeviceEventsForController(ControllerEvent.REQUEST, ControllerEvent.RESPONSE);
                     // Update the state of the view for when connected to the MQTT server
                     updateViewStateForConnected();
@@ -426,7 +486,11 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                     Log.e(TAG, METHOD + "Connect FAIL!", exception);
-                    Toast.makeText(getApplication(), "Connect FAIL", Toast.LENGTH_LONG).show();
+                    String notificationMessage = "Connect FAIL";
+                    // Store this in the Notifications deque
+                    pushNotification(notificationMessage);
+                    // Always show error Toasts
+                    Toast.makeText(getApplication(), notificationMessage, Toast.LENGTH_LONG).show();
                     updateViewstateForDisconnected();
 
                     // Notify the originator that the connection failed
@@ -435,7 +499,10 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
             });
             Log.d(TAG, "Got back token: " + token.toString());
         } catch (Exception e) {
-            Log.e(TAG, "Exception thrown while connecting application client: ", e);
+            String notificationMessage = "Exception thrown while connecting application client: ";
+            Log.e(TAG, notificationMessage, e);
+            // Store this in the Notification deque
+            pushNotification(notificationMessage);
         }
     }
 
@@ -459,7 +526,10 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
             sslContext.init(null, tm, null);
             factory = sslContext.getSocketFactory();
         } catch (Exception e) {
-            Log.e(TAG, "Exception thrown trying to get SSLSocketFactory: ", e);
+            String notificationMessage = "Exception thrown trying to get SSLSocketFactory: ";
+            Log.e(TAG, notificationMessage, e);
+            // Store this in the Notification deque
+            pushNotification(notificationMessage);
         }
         return factory;
     }
@@ -496,15 +566,19 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
                 @Override
                 public void connectionLost(Throwable cause) {
                     Log.e(TAG, METHOD + "Connection lost!");
-                    Toast.makeText(getApplicationContext(), "Connection Lost", Toast.LENGTH_LONG).show();
+                    // Always display error Toasts
+                    String notificationMessage = "Connection Lost";
+                    pushNotification(notificationMessage);
+                    // TODO: Store this in the Notification deque
+                    Toast.makeText(getApplicationContext(), notificationMessage, Toast.LENGTH_LONG).show();
                     // Update the connection status view
-                    updateViewstateForDisconnected();// TODO: Figure out why this doesn't work
+                    updateViewstateForDisconnected();
                     loadHomeFragment();// TODO: This is a stopgap to get the page state to look right
                 }
 
                 /**
-                 * All subscribed-to messages end up here. This method is hub for all
-                 * messages that we have subscribed to. From here, we'll just route them
+                 * All subscribed-to notifications end up here. This method is hub for all
+                 * notifications that we have subscribed to. From here, we'll just route them
                  * where they need to go.
                  *
                  * @param topic The topic String for the incoming message
@@ -516,7 +590,9 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
                 @Override
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
                     String payload = new String(message.getPayload());
+                    // Store this in the Notification deque
                     Log.d(TAG, METHOD + "Message arrived from topic: " + topic + ", message: " + payload);
+                    pushNotification(createStoreMessage(topic, message.getPayload()));
                     //
                     // Route the message to where it should go
                     routeMessage(topic, message);
@@ -524,7 +600,8 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
 
                 @Override
                 public void deliveryComplete(IMqttDeliveryToken token) {
-                    Log.i(TAG, METHOD + "Message delivery complete.");
+                    // TODO: Store this in the Notification deque?
+                    Log.d(TAG, METHOD + "Message delivery complete.");
                 }
             };
         }
@@ -535,21 +612,22 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
      * Handles message routing, keeps the Monitor callback from getting
      * cluttered.
      *
-     * @param topicString
-     * @param message
+     * @param topicString Duh
+     * @param message Duh
      */
     private void routeMessage(String topicString, MqttMessage message) {
         //
         // Q: Is this a request message? If so, we can probably ignore it
-        /// since the job of this application is to send messages (events) to
+        /// since the job of this application is to send notifications (events) to
         /// the Device Controller and then process its responses.
         if (isRequest(topicString)) {
             handleRequestMessage(topicString, message);
         } else if (isResponse(topicString)) {
             handleResponseMessage(topicString, message);
         } else {
-            Log.e(TAG, "Unknown message type. Topic is: '" + topicString + "'. Was a new message type added without the corresponding logic in this method?");
-            // TODO: Handle whatever else needs to happen when this situation occurs.
+            String notificationMessage = "Unknown message type. Topic is: '" + topicString + "'. Was a new message type added without the corresponding logic in this method?";
+            Log.e(TAG, notificationMessage);
+            pushNotification(notificationMessage);
         }
     }
 
@@ -576,13 +654,15 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
 
     /**
      * Handle processing of the specified request message
-     * @param topicString
-     * @param message
+     * @param topicString Duh
+     * @param message Duh
      */
     private void handleRequestMessage(String topicString, MqttMessage message) {
         //
         // Store the message in the message store
-        messages.add(createStoreMessage(topicString, message.getPayload()));
+        getNotifications().add(new NotificationContent.NotificationItem(
+                Long.toString(System.currentTimeMillis()),
+                createStoreMessage(topicString, message.getPayload())));
     }
 
     /**
@@ -608,15 +688,18 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
 
     /**
      * Handle processing of the specified response message.
-     * @param topicString
+     * @param topicString Duh
      * @param message The response message.
      */
     private void handleResponseMessage(String topicString, MqttMessage message) {
         final String METHOD = "handleResponseMessage(): ";
+        // Store the message in the message store
+        getNotifications().add(new NotificationContent.NotificationItem(
+                Long.toString(System.currentTimeMillis()), createStoreMessage(topicString, message.getPayload())));
         //
         // Handle the payload of the message. If this method gets
         /// too cluttered it may make sense to create a class to
-        /// handle it. Right now the set of response messages is
+        /// handle it. Right now the set of response notifications is
         /// pretty small:
         //
         // - deviceResponse
@@ -625,26 +708,32 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
         // Create a JSON object
         try {
             JSONObject jsonObject = new JSONObject(messageAsString);
-            // TODO: Clean up these string literals. They offend me.
+            // Create the Device Response JSON
             String deviceResponse = jsonObject.getJSONObject(JSONDiscoveryDeviceResponse.D.toString()).getString(JSONDiscoveryDeviceResponse.DEVICE_RESPONSE.toString());
             // If we got this far, the mapping exists
             handleDeviceResponseCallbacks(deviceResponse, message);
         } catch (JSONException e) {
-            Log.e(TAG, METHOD+"JSONException occurred while creating JSONObject from String: '" + messageAsString + "'", e);
+            String notificationMessage = "JSONException occurred while creating JSONObject from String: '" + messageAsString + "'";
+            Log.e(TAG, METHOD + notificationMessage, e);
+            // Store this in the Notification deque
+            pushNotification(notificationMessage);
         }
     }
 
     /**
      * Handles delivery of the specified device response message.
      *
-     * @param deviceResponseMessage
+     * @param deviceResponseMessage Duh
      */
     private void handleDeviceResponseCallbacks(String deviceResponse, MqttMessage deviceResponseMessage) {
         DeviceResponseCallback callback = getDeviceResponseCallbacks().get(deviceResponse);
         if (callback != null) {
             callback.onDeviceResponse(deviceResponseMessage);
         } else {
-            Log.e(TAG, "DeviceResponseCallback for deviceResponse '" + deviceResponse + "' is not registered. Does not compute.");
+            String notificationMessage = "DeviceResponseCallback for deviceResponse '" + deviceResponse + "' is not registered. Does not compute.";
+            Log.e(TAG, notificationMessage);
+            // Store this in the Notification deque
+            pushNotification(notificationMessage);
         }
     }
 
@@ -652,10 +741,29 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
      * A component registers their interest in receiving a callback when a
      * device response message comes in.
      *
-     * @param callback
+     * @param callback The callback to invoke once the device response has been received. Allows
+     *                 us to touch the Fragment in an appropriate way.
      */
     public void subscribeToDeviceResponse(String deviceResponse, DeviceResponseCallback callback) {
         getDeviceResponseCallbacks().put(deviceResponse, callback);
+    }
+
+    @Override
+    public void onNotificationFragmentInteraction(NotificationContent.NotificationItem item) {
+        // Nothing to do
+    }
+
+    @Override
+    public void pushNotification(String notificationMessage) {
+        // If the current size is at the limit, then remove the oldest message
+        /// before adding a new one
+        int notificationsSize = getNotifications().size();
+        if (notificationsSize >= getApplicationProperties().getMaxNotificationCount()) {
+            getNotifications().removeLast();
+        }
+        // Add this message to the deque
+        getNotifications().add(new NotificationContent.NotificationItem(
+                Long.toString(System.currentTimeMillis()), notificationMessage));
     }
 
     private Map<String, DeviceResponseCallback> mDeviceResponseCallbacks;
@@ -675,15 +783,13 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
      * by an authenticated application.
      */
     public void publishDiscoveryEvent() {
-        final String METHOD = "publishDiscoveryEvent(): ";
-
         publishEvent(getApplicationProperties().getControllerDeviceId(), "discovery");
     }
 
     /**
      * Broadcasts an event to the specified controlled
-     * @param deviceId
-     * @param deviceAction
+     * @param deviceId The Device identity
+     * @param deviceAction The action to perform on the specified device whose identity is deviceId
      */
     public void publishEvent(String deviceId, String deviceAction) {
         publishEvent(deviceId, deviceAction, null);
@@ -695,6 +801,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
      *
      * @param controlledDeviceId The controlled device Id (e.g., Outlet-1)
      * @param controlledDeviceAction The action to perform on the controlled device (e.g., on)
+     * @param broadcastListener The optional broadcast listener provided by the caller. If null, this method will supply one.
      */
     public void publishEvent(String controlledDeviceId, String controlledDeviceAction, IMqttActionListener broadcastListener) {
         final String METHOD = "publishEvent(): ";
@@ -706,24 +813,37 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
                     new IMqttActionListener() {
                         @Override
                         public void onSuccess(IMqttToken asyncActionToken) {
-                            Log.d(TAG, "Publish SUCCESS!");
-                            //Toast.makeText(getApplication(), "Publish SUCCESS!", Toast.LENGTH_LONG).show();
+                            String notificationMessage = "Publish SUCCESS: " + asyncActionToken.getUserContext();
+                            Log.d(TAG, notificationMessage);
+                            // Store this in the Notification deque
+                            pushNotification(notificationMessage);
                         }
 
                         @Override
                         public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                            Log.d(TAG, "Publish FAIL!");
-                            Toast.makeText(getApplication(), "Publish FAIL!", Toast.LENGTH_LONG).show();
+                            String notificationMessage = "Publish FAIL: " + asyncActionToken.getUserContext();
+                            Log.e(TAG, notificationMessage);
+                            // Store this in the Notification deque
+                            pushNotification(notificationMessage);
+                            // Always display error Toasts
+                            Toast.makeText(getApplication(), notificationMessage, Toast.LENGTH_LONG).show();
                         }
                     };
             // Publish the message
             if (getApplicationClient() != null && getApplicationClient().isConnected()) {
-                getApplicationClient().publish(topic, mqttMessage, getApplicationContext(), mqttActionListener);
+                getApplicationClient().publish(topic, mqttMessage, topic, mqttActionListener);
             } else {
-                Toast.makeText(getApplicationContext(), "Not connected! Unable to publish message. Please reconnect.", Toast.LENGTH_LONG).show();
+                // Store this in the Notification deque
+                String notificationMessage = "Not connected! Unable to publish message to topic '" + topic + "'. Please reconnect.";
+                pushNotification(notificationMessage);
+                // Always display error Toasts
+                Toast.makeText(getApplicationContext(), notificationMessage, Toast.LENGTH_LONG).show();
             }
         } catch (MqttException e) {
-            Log.e(TAG, METHOD + "Exception thrown while broadcasting event: ", e);
+            String notificationMessage = "Exception thrown while broadcasting event: ";
+            Log.e(TAG, METHOD + notificationMessage, e);
+            // Store this in the Notification deque
+            pushNotification(notificationMessage);
         }
     }
 
@@ -764,43 +884,53 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
                 String deviceType = getApplicationProperties().getControllerDeviceType();
                 String deviceId = "+"; // All device IDs for the specified Device Type
                 String eventId = controllerEvent.toString();
-                getApplicationClient().subscribe("iot-2/type/" + getApplicationProperties().getControllerDeviceType() + "/id/+/evt/" + controllerEvent.toString() + "/fmt/json",
+                String userContext = "SUBSCRIBE:" + deviceType + "/" + deviceId + "/" + eventId;
+                getApplicationClient().subscribe("iot-2/type/" + deviceType + "/id/" + deviceId + "/evt/" + eventId + "/fmt/json",
                         1,
-                        "SUBSCRIBE", // Not sure this really matters, but here goes...
+                        userContext, // Not sure this really matters, but here goes...
                         new IMqttActionListener() {
                     @Override
                     public void onSuccess(IMqttToken asyncActionToken) {
-                        Log.d(TAG, METHOD + "Subscribe SUCCESS!");
+                        String notificationMessage = "Subscribe SUCCESS: " + asyncActionToken.getUserContext();
+                        Log.d(TAG, METHOD + notificationMessage);
+                        // Store this in the Notification deque
+                        pushNotification(notificationMessage);
                     }
 
                     @Override
                     public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                        Log.d(TAG, METHOD + "Subscribe FAIL!", exception);
+                        String notificationMessage = "Subscribe FAIL: " + asyncActionToken.getUserContext();
+                        Log.e(TAG, METHOD + notificationMessage, exception);
+                        // Store this in the Notification deque
+                        pushNotification(notificationMessage);
+                        // Always show error Toasts
                         Toast.makeText(getApplication(), "Subscribe FAIL!", Toast.LENGTH_LONG).show();
                     }
                 });
             } catch (MqttException e) {
-                Log.e(TAG, METHOD + "Exception thrown while subscribing to all device events: ", e);
+                String notificationMessage = "Exception thrown while subscribing to all device events: ";
+                Log.e(TAG, METHOD + notificationMessage, e);
+                // Store this in the Notification deque
+                pushNotification(notificationMessage);
             }
         }
     }
 
-    /**
-     * REMOVE THIS BEFORE GOING INTO PRODUCTION!
-     * PROTOTYPE: Load the application properties as which we will connect.
-     * This saves me having to type these into the Connect settings a million
-     * times while I debug until I get it right.
-     *
-     * @return Properties - the properties specific to the application
-     */
-    private ApplicationProperties loadApplicationPropertiesForDebug() {
-        // TODO: Move this functionality to Settings fragment
-        ApplicationProperties properties = new ApplicationProperties(getApplicationContext());
-        properties.setMqttServerProtocol("ssl");
-        properties.setMqttServerHostName("messaging.internetofthings.ibmcloud.com");
-        properties.setMqttServerPort("8883");
-        return properties;
-    }
+    // TODO: REMOVE THIS COMMENTED OUT METHOD
+//    /**
+//     * Load the application properties as which we will connect.
+//     * This will eventually be replaced by the Settings fragment.
+//     * @return Properties - the properties specific to the application
+//     */
+//    private ApplicationProperties loadApplicationPropertiesUntilSettingsFragmentIsCoded() {
+//        // TODO: Move this functionality to Settings fragment
+//        ApplicationProperties properties = new ApplicationProperties(getApplicationContext());
+//        properties.setMqttServerProtocol("ssl");
+//        properties.setMqttServerHostName("messaging.internetofthings.ibmcloud.com");
+//        properties.setMqttServerPort("8883");
+//        properties.setMaxNotificationCount(100);
+//        return properties;
+//    }
 
     /**
      * Return the ApplicationClient in use. If it is not connected,
@@ -843,6 +973,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
         try {
             getApplicationClient().disconnect();
         } catch (MqttException e) {
+            // TODO: Store this in the Notification deque
             Log.e(TAG, "Exception occurred while disconnecting: ", e);
         }
     }
@@ -852,7 +983,8 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
      * interacted with it. It's up to the MainActivity to take action, leaving
      * the Fragment uncluttered.
      *
-     * @param item
+     * @param item The item that was touched by the user and that this method needs
+     *             to do something with.
      */
     @Override
     public void onDashboardFragmentInteraction(IotDeviceContent.IotDeviceItem item) {
@@ -870,12 +1002,19 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnHo
         dialogFragment.show(getFragmentManager(), ActionDialogFragment.FRAGMENT_TAG);
     }
 
+    /**
+     * The DialogFragment wants to MainActivity to know the user has interacted with it.
+     * It's up to the MainActivity to take action, leaving the Fragment uncluttered.
+     *
+     * @param deviceId       The deviceId of the device on which the action is to be taken
+     * @param selectedAction The action that was chosen
+     */
     @Override
     public void onActionDialogFragmentInteraction(String deviceId, String selectedAction) {
         //Toast.makeText(getApplicationContext(), "You have chosen action '" + selectedAction + "'", Toast.LENGTH_LONG).show();
         // As a convenience to the user, the action contains its description. Strip that off
         /// so we just have the action.
-        StringTokenizer strtok = new StringTokenizer(selectedAction.toString(), ":=>");
+        StringTokenizer strtok = new StringTokenizer(selectedAction, ":=>");
         String action = strtok.nextToken();
         publishEvent(deviceId, action);
     }
