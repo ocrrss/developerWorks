@@ -121,6 +121,7 @@ function temperatureReading(temperatureReading) {
         temperatureEvent.shipment = shipment;
         temperatureEvent.temperature = temperatureReading.centigrade;
         temperatureEvent.message = 'Temperature threshold violated! Emitting TemperatureEvent for shipment: ' + shipment.$identifier;
+        //console.log(temperatureEvent.message);
         emit(temperatureEvent);
     }
 
