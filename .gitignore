@@ -5,3 +5,4 @@ makoto-home-automation/nodejs/package-lock.json
 **/node_modules/**
 makoto-home-automation/nodejs/myDeviceConfig.json
 makoto-home-automation/nodejs/myAppConfig.json
+makoto-home-automation/nodejs/winston.log

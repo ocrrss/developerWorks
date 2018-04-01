@@ -18,6 +18,7 @@
   "homepage": "https://github.com/jstevenperry/developerWorks#readme",
   "dependencies": {
     "child_process": "^1.0.2",
-    "ibmiotf": "^0.2.41"
+    "ibmiotf": "^0.2.41",
+    "winston": "^2.4.1"
   }
 }
