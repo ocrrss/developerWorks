@@ -1,0 +1,63 @@
+{ 
+  "d" : {
+    "deviceIdComment" : "Make sure the deviceId below matches the one you have defined in Watson IoT",
+    "deviceId" : "Node-Controller-1",
+    "deviceResponse" : "discovery",    
+
+    "devicesComment" : "Add devices that your home automation system wants to be discoverable in the devices array below",
+    "devices" : [
+      {
+        "deviceId" : "Outlet-1",            
+        "description" : "433MHz RF Outlet",            
+        "actions" : [                
+          {                    
+            "action" : "on", 
+            "description" : "Turns the outlet on"                
+            
+          },                
+          {                    
+            "action" : "off", 
+            "description" : "Turns the outlet off"
+          }            
+        ]        
+      },        
+      {            
+        "deviceId" : "Outlet-2",            
+        "description" : "433MHz RF Outlet",            
+        "actions" : [                
+          {                    
+            "action" : "on", 
+            "description" : "Turns the outlet on"                
+            
+          },                
+          {                    
+            "action" : "off", 
+            "description" : "Turns the outlet off"              
+          }            
+        ]        
+      },        
+      {            
+        "deviceId" : "Alarm-1",            
+        "description" : "433MHz Home Alarm System",       
+        "actions" : [                
+          {                    
+            "action" : "arm-away",                    
+            "description" : "Arms the system in away mode (motion sensors active)"
+          },                
+          {                    
+            "action" : "arm-stay",
+            "description" : "Arms the system in stay mode (motion sensors inactive)"                
+          },                
+          {                    
+            "action" : "off",
+            "description" : "Disarms the system"                
+          },
+          {                    
+            "action" : "panic",                    
+            "description" : "Triggers the alarm siren (SOS)"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,9 @@
+{
+    "org" : "qsj4yy",
+    "id" : "homeautomation",
+    "domain" : "internetofthings.ibmcloud.com",
+    "auth-key" : "a-qsj4yy-rrtdtd1nca",
+    "auth-token" : "fYq@DLb4Jr93B0*_-r",
+    "deviceType" : "HomeAutomationController",
+    "deviceId" : "Node-Controller-1"
+}
