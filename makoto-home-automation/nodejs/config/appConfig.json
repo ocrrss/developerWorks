@@ -8,5 +8,5 @@
     "deviceType" : "HomeAutomationController",
     "deviceId" : "Node-Controller-1",
 
-    "transmitCommand" : "codesend"
+    "transmitterProgram" : "codesend"
 }

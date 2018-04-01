@@ -294,7 +294,19 @@ function applyIotDeviceAction(actionMetadata) {
     var encoding = actionMetadata.encoding;
     var delay = actionMetadata.delay;
 
-    exec
+    // Build the transmit command that sends the signal to the
+    /// 433MHz IoT device
+    var transmitCommand = appConfig.transmitterProgram + " " + encoding + " " + delay;
+    winston.debug("Sending command to device: " + transmitCommand);
+    // Now execute the transmit command
+    exec(transmitCommand, function (error, stdout, stderr) {
+        winston.info("stdout: " + stdout);
+        winston.info('stderr: ' + stderr);
+        if (error) {
+            winston.error("Error while invoking command '" + transmitCommand + ": " + error.message.toString());
+        }
+    });
+
 }
 
 /**
