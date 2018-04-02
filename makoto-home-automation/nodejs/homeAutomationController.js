@@ -48,7 +48,7 @@ applicationClient.on("connect", function() {
  * When an error is received, process it
  */
 applicationClient.on("error", function(err) {
-    winston.error("Error: " + err);
+    winston.error("Application Client Error: " + err);
 });
 
 /**
@@ -83,7 +83,7 @@ deviceClient.on("connect", function() {
  * When an error is received, process it
  */
 deviceClient.on("error", function(err) {
-    winston.info("Error: " + err);
+    winston.info("Device Client Error: " + err);
 });
 
 /**
