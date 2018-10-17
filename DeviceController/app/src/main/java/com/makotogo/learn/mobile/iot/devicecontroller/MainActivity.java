@@ -16,6 +16,7 @@
 
 package com.makotogo.learn.mobile.iot.devicecontroller;
 
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -67,7 +68,7 @@ import javax.net.ssl.TrustManagerFactory;
  * TODO: Connection state gets weird upon device configuration changes (e.g., rotation). Portrait mode forced. Look into this.
  * TODO: The number of lines of code in this class is TOO DAMN HIGH! (Erm, I mean, refactor this class into smaller, more tightly-focused classes)
  */
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends Activity
         implements HomeFragment.OnHomeFragmentInteractionListener,
         DashboardFragment.OnDashboardFragmentInteractionListener,
         ActionDialogFragment.OnActionDialogFragmentInteractionListener,
