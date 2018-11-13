@@ -12,7 +12,7 @@ Background:
     """
     And I have added the following asset of type org.acme.shipping.perishable.Contract
         | contractId | grower           | shipper               | importer           | arrivalDateTime  | unitPrice | minTemperature | maxTemperature | minPenaltyFactor | maxPenaltyFactor |
-        | CON_001    | grower@email.com | supermarket@email.com | supermarket@email.com | 10/26/2019 00:00 | 0.5       | 2              | 10             | 0.2              | 0.1              | 
+        | CON_001    | grower@email.com | supermarket@email.com | supermarket@email.com | 10/26/2020 00:00 | 0.5       | 2              | 10             | 0.2              | 0.1              | 
         
     And I have added the following asset of type org.acme.shipping.perishable.Shipment
         | shipmentId | type    | status     | unitCount | contract |
