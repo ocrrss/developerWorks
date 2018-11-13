@@ -70,3 +70,6 @@ Submit a `GpsReading` transaction:
 If the GPS reading indicates the ship's location is the Port of New Jersey/New York (40.6840,-74.0062) then a `ShipmentInPortEvent` is emitted.
 
 Enjoy!
+
+## License <a name="license"></a>
+Hyperledger Project source code files are made available under the Apache License, Version 2.0 (Apache-2.0), located in the LICENSE file. Hyperledger Project documentation files are made available under the Creative Commons Attribution 4.0 International License (CC-BY-4.0), available at http://creativecommons.org/licenses/by/4.0/.
