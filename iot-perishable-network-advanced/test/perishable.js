@@ -15,207 +15,187 @@
 'use strict';
 
 const AdminConnection = require('composer-admin').AdminConnection;
-const BrowserFS = require('browserfs/dist/node/index');
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const { BusinessNetworkDefinition, CertificateUtil, IdCard } = require('composer-common');
 const path = require('path');
 
 require('chai').should();
+let sinon = require('sinon');
 
-const bfs_fs = BrowserFS.BFSRequire('fs');
-const NS = 'org.acme.shipping.perishable';
+const namespace = 'org.acme.shipping.perishable';
 let grower_id = 'farmer@email.com';
 let importer_id = 'supermarket@email.com';
-let factory;
 
-describe('Advanced IoT Perishable Shipping Network', () => {
-
+describe('Perishable Shipping Network', () => {
+    // In-memory card store for testing so cards are not persisted to the file system
+    const cardStore = require('composer-common').NetworkCardStoreManager.getCardStore( { type: 'composer-wallet-inmemory' } );
+    let adminConnection;
     let businessNetworkConnection;
+    let factory;
+    let clock;
 
-    before(() => {
-        BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
-        const adminConnection = new AdminConnection({ fs: bfs_fs });
-        return adminConnection.createProfile('defaultProfile', {
-            type: 'embedded'
-        })
-        .then(() => {
-            return adminConnection.connect('defaultProfile', 'admin', 'Xurw3yU9zI0l');
-        })
-        .then(() => {
-            return BusinessNetworkDefinition.fromDirectory(path.resolve(__dirname, '..'));
-        })
-        .then((businessNetworkDefinition) => {
-            return adminConnection.deploy(businessNetworkDefinition);
-        })
-        .then(() => {
-            businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
-            return businessNetworkConnection.connect('defaultProfile', 'iot-perishable-network-advanced', 'admin', 'Xurw3yU9zI0l');
-        })
-        .then(() => {
-            // submit the setup demo transaction
-            // this will create some sample assets and participants
-            factory = businessNetworkConnection.getBusinessNetwork().getFactory();
-            const setupDemo = factory.newTransaction(NS, 'SetupDemo');
-            return businessNetworkConnection.submitTransaction(setupDemo);
-        });
+    before(async () => {
+        // Embedded connection used for local testing
+        const connectionProfile = {
+            name: 'embedded',
+            'x-type': 'embedded'
+        };
+        // Generate certificates for use with the embedded connection
+        const credentials = CertificateUtil.generate({ commonName: 'admin' });
+
+        // PeerAdmin identity used with the admin connection to deploy business networks
+        const deployerMetadata = {
+            version: 1,
+            userName: 'PeerAdmin',
+            roles: [ 'PeerAdmin', 'ChannelAdmin' ]
+        };
+        const deployerCard = new IdCard(deployerMetadata, connectionProfile);
+        const deployerCardName = 'PeerAdmin';
+        deployerCard.setCredentials(credentials);
+
+        // setup admin connection
+        adminConnection = new AdminConnection({ cardStore: cardStore });
+        await adminConnection.importCard(deployerCardName, deployerCard);
+        await adminConnection.connect(deployerCardName);
+
+        const adminUserName = 'admin';
+        const businessNetworkDefinition = await BusinessNetworkDefinition.fromDirectory(path.resolve(__dirname, '..'));
+
+        businessNetworkConnection = new BusinessNetworkConnection({ cardStore: cardStore });
+
+        // Install the Composer runtime for the new business network
+        await adminConnection.install(businessNetworkDefinition);
+
+        // Start the business network and configure an network admin identity
+        const startOptions = {
+            networkAdmins: [
+                {
+                    userName: adminUserName,
+                    enrollmentSecret: 'adminpw'
+                }
+            ]
+        };
+        const adminCards = await adminConnection.start(businessNetworkDefinition.getName(), businessNetworkDefinition.getVersion(), startOptions);
+
+        // Import the network admin identity for us to use
+        const adminCardName = `${adminUserName}@${businessNetworkDefinition.getName()}`;
+        await adminConnection.importCard(adminCardName, adminCards.get(adminUserName));
+
+        // Connect to the business network using the network admin identity
+        await businessNetworkConnection.connect(adminCardName);
+
+        factory = businessNetworkConnection.getBusinessNetwork().getFactory();
+        const setupDemo = factory.newTransaction(namespace, 'SetupDemo');
+        await businessNetworkConnection.submitTransaction(setupDemo);
+    });
+
+    beforeEach(() => {
+        clock = sinon.useFakeTimers();
+    });
+
+    afterEach(function () {
+        clock.restore();
     });
 
     describe('#shipment', () => {
 
-        it('should receive base price for a shipment within temperature range', () => {
-            const tempReading = factory.newTransaction(NS, 'TemperatureReading');
-            tempReading.shipment = factory.newRelationship(NS, 'Shipment', 'SHIP_001');
+        it('should receive base price for a shipment within temperature range', async () => {
+            // submit the temperature reading
+            const tempReading = factory.newTransaction(namespace, 'TemperatureReading');
+            tempReading.shipment = factory.newRelationship(namespace, 'Shipment', 'SHIP_001');
             tempReading.centigrade = 4.5;
-            return businessNetworkConnection.submitTransaction(tempReading)
-                .then(() => {
-                    // submit the shipment received
-                    const received = factory.newTransaction(NS, 'ShipmentReceived');
-                    received.shipment = factory.newRelationship(NS, 'Shipment', 'SHIP_001');
-                    return businessNetworkConnection.submitTransaction(received);
-                })
-                .then(() => {
-                    return businessNetworkConnection.getParticipantRegistry(NS + '.Grower');
-                })
-                .then((growerRegistry) => {
-                    // check the grower's balance
-                    return growerRegistry.get(grower_id);
-                })
-                .then((newGrower) => {
-                    // console.log(JSON.stringify(businessNetworkConnection.getBusinessNetwork().getSerializer().toJSON(newGrower)));
-                    newGrower.accountBalance.should.equal(2500);
-                })
-                .then(() => {
-                    return businessNetworkConnection.getParticipantRegistry(NS + '.Importer');
-                })
-                .then((importerRegistry) => {
-                    // check the importer's balance
-                    return importerRegistry.get(importer_id);
-                })
-                .then((newImporter) => {
-                    newImporter.accountBalance.should.equal(-2500);
-                })
-                .then(() => {
-                    return businessNetworkConnection.getAssetRegistry(NS + '.Shipment');
-                })
-                .then((shipmentRegistry) => {
-                    // check the state of the shipment
-                    return shipmentRegistry.get('SHIP_001');
-                })
-                .then((shipment) => {
-                    shipment.status.should.equal('ARRIVED');
-                });
+            await businessNetworkConnection.submitTransaction(tempReading);
+
+            // submit the shipment received
+            const received = factory.newTransaction(namespace, 'ShipmentReceived');
+            received.shipment = factory.newRelationship(namespace, 'Shipment', 'SHIP_001');
+            await businessNetworkConnection.submitTransaction(received);
+
+            // check the grower's balance
+            const growerRegistry = await businessNetworkConnection.getParticipantRegistry(namespace + '.Grower');
+            const newGrower = await growerRegistry.get(grower_id);
+            newGrower.accountBalance.should.equal(2500);
+
+            // check the importer's balance
+            const importerRegistry = await businessNetworkConnection.getParticipantRegistry(namespace + '.Importer');
+            const newImporter = await importerRegistry.get(importer_id);
+            newImporter.accountBalance.should.equal(-2500);
+
+            // check the state of the shipment
+            const shipmentRegistry = await businessNetworkConnection.getAssetRegistry(namespace + '.Shipment');
+            const shipment = await shipmentRegistry.get('SHIP_001');
+            shipment.status.should.equal('ARRIVED');
         });
 
-        // This test does not work. You cannot set state in the transaction anymore.
-        // Don't know what has changed, but the attempt to set the timestamp does
-        // not work, so this test fails. Commenting it out.
-        // it('should receive nothing for a late shipment', () => {
-        //     // submit the temperature reading
-        //     const tempReading = factory.newTransaction(NS, 'TemperatureReading');
-        //     tempReading.shipment = factory.newRelationship(NS, 'Shipment', 'SHIP_001');
-        //     tempReading.centigrade = 4.5;
-        //     return businessNetworkConnection.submitTransaction(tempReading)
-        //         .then(() => {
-        //             // submit the shipment received
-        //             const received = factory.newTransaction(NS, 'ShipmentReceived');
-        //             received.shipment = factory.newRelationship(NS, 'Shipment', 'SHIP_001');
-        //             const late = new Date();
-        //             late.setDate(late.getDate() + 2);
-        //             received.timestamp = late;
-        //             return businessNetworkConnection.submitTransaction(received);
-        //         })
-        //         .then(() => {
-        //             return businessNetworkConnection.getParticipantRegistry(NS + '.Grower');
-        //         })
-        //         .then((growerRegistry) => {
-        //             // check the grower's balance
-        //             return growerRegistry.get(grower_id);
-        //         })
-        //         .then((newGrower) => {
-        //             // console.log(JSON.stringify(businessNetworkConnection.getBusinessNetwork().getSerializer().toJSON(newGrower)));
-        //             newGrower.accountBalance.should.equal(2500);
-        //         })
-        //         .then(() => {
-        //             return businessNetworkConnection.getParticipantRegistry(NS + '.Importer');
-        //         })
-        //         .then((importerRegistry) => {
-        //             // check the importer's balance
-        //             return importerRegistry.get(importer_id);
-        //         })
-        //         .then((newImporter) => {
-        //             newImporter.accountBalance.should.equal(-2500);
-        //         });
-        // });
-
-        it('should apply penalty for min temperature violation', () => {
+        it('should receive nothing for a late shipment', async () => {
             // submit the temperature reading
-            const tempReading = factory.newTransaction(NS, 'TemperatureReading');
-            tempReading.shipment = factory.newRelationship(NS, 'Shipment', 'SHIP_001');
+            const tempReading = factory.newTransaction(namespace, 'TemperatureReading');
+            tempReading.shipment = factory.newRelationship(namespace, 'Shipment', 'SHIP_001');
+            tempReading.centigrade = 4.5;
+            // advance the javascript clock to create a time-advanced test timestamp
+            clock.tick(1000000000000000);
+            await businessNetworkConnection.submitTransaction(tempReading);
+
+            // submit the shipment received
+            const received = factory.newTransaction(namespace, 'ShipmentReceived');
+            received.shipment = factory.newRelationship(namespace, 'Shipment', 'SHIP_001');
+            await businessNetworkConnection.submitTransaction(received);
+
+            // check the grower's balance
+            const growerRegistry = await businessNetworkConnection.getParticipantRegistry(namespace + '.Grower');
+            const newGrower = await growerRegistry.get(grower_id);
+            newGrower.accountBalance.should.equal(2500);
+
+            // check the importer's balance
+            const importerRegistry = await businessNetworkConnection.getParticipantRegistry(namespace + '.Importer');
+            const newImporter = await importerRegistry.get(importer_id);
+            newImporter.accountBalance.should.equal(-2500);
+        });
+
+        it('should apply penalty for min temperature violation', async () => {
+            // submit the temperature reading
+            const tempReading = factory.newTransaction(namespace, 'TemperatureReading');
+            tempReading.shipment = factory.newRelationship(namespace, 'Shipment', 'SHIP_001');
             tempReading.centigrade = 1;
-            return businessNetworkConnection.submitTransaction(tempReading)
-                .then(() => {
-                    // submit the shipment received
-                    const received = factory.newTransaction(NS, 'ShipmentReceived');
-                    received.shipment = factory.newRelationship(NS, 'Shipment', 'SHIP_001');
-                    return businessNetworkConnection.submitTransaction(received);
-                })
-                .then(() => {
-                    return businessNetworkConnection.getParticipantRegistry(NS + '.Grower');
-                })
-                .then((growerRegistry) => {
-                    // check the grower's balance
-                    return growerRegistry.get(grower_id);
-                })
-                .then((newGrower) => {
-                    // console.log(JSON.stringify(businessNetworkConnection.getBusinessNetwork().getSerializer().toJSON(newGrower)));
-                    newGrower.accountBalance.should.equal(4000);
-                })
-                .then(() => {
-                    return businessNetworkConnection.getParticipantRegistry(NS + '.Importer');
-                })
-                .then((importerRegistry) => {
-                    // check the importer's balance
-                    return importerRegistry.get(importer_id);
-                })
-                .then((newImporter) => {
-                    newImporter.accountBalance.should.equal(-4000);
-                });
+            await businessNetworkConnection.submitTransaction(tempReading);
+
+            // submit the shipment received
+            const received = factory.newTransaction(namespace, 'ShipmentReceived');
+            received.shipment = factory.newRelationship(namespace, 'Shipment', 'SHIP_001');
+            await businessNetworkConnection.submitTransaction(received);
+
+            // check the grower's balance
+            const growerRegistry = await businessNetworkConnection.getParticipantRegistry(namespace + '.Grower');
+            const newGrower =  await growerRegistry.get(grower_id);
+            newGrower.accountBalance.should.equal(4000);
+
+            // check the importer's balance
+            const importerRegistry = await businessNetworkConnection.getParticipantRegistry(namespace + '.Importer');
+            const newImporter = await importerRegistry.get(importer_id);
+            newImporter.accountBalance.should.equal(-4000);
         });
 
-        it('should apply penalty for max temperature violation', () => {
+        it('should apply penalty for max temperature violation', async () => {
             // submit the temperature reading
-            const tempReading = factory.newTransaction(NS, 'TemperatureReading');
-            tempReading.shipment = factory.newRelationship(NS, 'Shipment', 'SHIP_001');
+            const tempReading = factory.newTransaction(namespace, 'TemperatureReading');
+            tempReading.shipment = factory.newRelationship(namespace, 'Shipment', 'SHIP_001');
             tempReading.centigrade = 11;
-            return businessNetworkConnection.submitTransaction(tempReading)
-                .then(() => {
-                    // submit the shipment received
-                    const received = factory.newTransaction(NS, 'ShipmentReceived');
-                    received.shipment = factory.newRelationship(NS, 'Shipment', 'SHIP_001');
-                    return businessNetworkConnection.submitTransaction(received);
-                })
-                .then(() => {
-                    return businessNetworkConnection.getParticipantRegistry(NS + '.Grower');
-                })
-                .then((growerRegistry) => {
-                    // check the grower's balance
-                    return growerRegistry.get(grower_id);
-                })
-                .then((newGrower) => {
-                    // console.log(JSON.stringify(businessNetworkConnection.getBusinessNetwork().getSerializer().toJSON(newGrower)));
-                    newGrower.accountBalance.should.equal(5000);
-                })
-                .then(() => {
-                    return businessNetworkConnection.getParticipantRegistry(NS + '.Importer');
-                })
-                .then((importerRegistry) => {
-                    // check the importer's balance
-                    return importerRegistry.get(importer_id);
-                })
-                .then((newImporter) => {
-                    newImporter.accountBalance.should.equal(-5000);
-                });
-        });
+            await businessNetworkConnection.submitTransaction(tempReading);
 
+            // submit the shipment received
+            const received = factory.newTransaction(namespace, 'ShipmentReceived');
+            received.shipment = factory.newRelationship(namespace, 'Shipment', 'SHIP_001');
+            await businessNetworkConnection.submitTransaction(received);
+
+            // check the grower's balance
+            const growerRegistry = await businessNetworkConnection.getParticipantRegistry(namespace + '.Grower');
+            const newGrower = await growerRegistry.get(grower_id);
+            newGrower.accountBalance.should.equal(5000);
+
+            // check the importer's balance
+            const importerRegistry = await businessNetworkConnection.getParticipantRegistry(namespace + '.Importer');
+            const newImporter = await importerRegistry.get(importer_id);
+            newImporter.accountBalance.should.equal(-5000);
+        });
     });
 });

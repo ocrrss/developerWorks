@@ -1,9 +1,23 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 /**
-  * A business network for shipping perishable goods
-  * The cargo is temperature controlled and contracts
-  * can be negociated based on the temperature
-  * readings received for the cargo
-  */
+ * A business network for shipping perishable goods
+ * The cargo is temperature controlled and contracts
+ * can be negociated based on the temperature
+ * readings received for the cargo
+ */
 
 namespace org.acme.shipping.perishable
 
@@ -27,21 +41,21 @@ enum ShipmentStatus {
   o ARRIVED
 }
 
-/**
- * Directions of the compass
- */
-enum CompassDirection {
-  o N
-  o S
-  o E
-  o W
+/** 
+ * Directions of the compass 
+ */ 
+enum CompassDirection { 
+  o N 
+  o S 
+  o E 
+  o W 
 }
 
 /**
  * An abstract transaction that is related to a Shipment
  */
 abstract transaction ShipmentTransaction {
-    --> Shipment shipment
+  --> Shipment shipment
 }
 
 /**
@@ -52,17 +66,17 @@ transaction TemperatureReading extends ShipmentTransaction {
   o Double centigrade
 }
 
-/**
- * A GPS reading for a shipment. E.g. received from a device
- * within a shipping container
- */
-transaction GpsReading extends ShipmentTransaction {
-  o String readingTime
-  o String readingDate
-  o String latitude
-  o CompassDirection latitudeDir
-  o String longitude
-  o CompassDirection longitudeDir
+/** 
+ * A GPS reading for a shipment. E.g. received from a device 
+ * within a shipping container 
+ */ 
+transaction GpsReading extends ShipmentTransaction { 
+  o String readingTime 
+  o String readingDate 
+  o String latitude 
+  o CompassDirection latitudeDir 
+  o String longitude 
+  o CompassDirection longitudeDir 
 }
 
 /**
@@ -100,12 +114,12 @@ asset Shipment identified by shipmentId {
   o ProductType type
   o ShipmentStatus status
   o Long unitCount
-  --> Contract contract
   o TemperatureReading[] temperatureReadings optional
   o GpsReading[] gpsReadings optional
-  o ShipmentPacked shipmentPacked optional
-  o ShipmentPickup shipmentPickup optional
-  o ShipmentLoaded shipmentLoaded optional
+  --> Contract contract
+  o ShipmentPacked shipmentPacked optional 
+  o ShipmentPickup shipmentPickup optional 
+  o ShipmentLoaded shipmentLoaded optional 
   o ShipmentReceived shipmentReceived optional
 }
 
@@ -185,12 +199,6 @@ participant GpsSensor extends IoTDevice {
 }
 
 /**
- * JUST FOR INITIALIZING A DEMO
- */
-transaction SetupDemo {
-}
-
-/**
  * An event - when the temperature goes outside the agreed-upon boundaries
  */
 event TemperatureThresholdEvent {
@@ -198,9 +206,9 @@ event TemperatureThresholdEvent {
   o Double temperature
   --> Shipment shipment
 }
-
+ 
 /**
- * Event - when the ship arrives at the port
+ * An event - when the ship arrives at the port
  */
 event ShipmentInPortEvent {
   o String message
@@ -237,4 +245,10 @@ event ShipmentLoadedEvent {
 event ShipmentReceivedEvent {
   o String message
   --> Shipment shipment
+}
+
+/**
+ * JUST FOR INITIALIZING A DEMO
+ */
+transaction SetupDemo {
 }
