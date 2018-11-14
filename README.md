@@ -5,7 +5,8 @@ Code for tutorials and articles I have written for IBM developerWorks
 
 ## Create an artificial neural network using the Neuroph Java framework: Dominate your office March Madness pool!
 
-* [Article, published 8 January 2018](https://www.ibm.com/developerworks/library/cc-artificial-neural-networks-neuroph-machine-learning/index.html)  * [Code path](https://github.com/makotogo/developerWorks/tree/master/NcaaMarchMadness)
+* [Article, published 8 January 2018](https://www.ibm.com/developerworks/library/cc-artificial-neural-networks-neuroph-machine-learning/index.html)
+* [Code path](https://github.com/makotogo/developerWorks/tree/master/NcaaMarchMadness)
 
 # IoT and the Smart Home, Part 1
 
